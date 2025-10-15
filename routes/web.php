@@ -4,14 +4,10 @@ use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataFeedController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\StockAlertController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\InventoryController;
@@ -36,15 +32,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/json-dashboard-income', [DataFeedController::class, 'getDashboardIncome'])->name('json_dashboard-income');
     Route::get('/json-dashboard-expense', [DataFeedController::class, 'getDashboardExpense'])->name('json_dashboard-expense');
     Route::get('/json-dashboard-net', [DataFeedController::class, 'getDashboardNet'])->name('json_dashboard-net');
-
-
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/analytics', [DashboardController::class, 'analytics'])->name('analytics');
     Route::get('/dashboard/fintech', [DashboardController::class, 'fintech'])->name('fintech');
     Route::get('/dashboard/fintech', [DashboardController::class, 'fintech'])->name('fintech');
+
     // Employer
     Route::get('/employees/status-chart', [EmployeeController::class, 'statusChart'])->name('employees.status.chart');
-
 
     // Stock controller
     Route::get('/stock-alerts', [StockAlertController::class, 'index'])->name('stock.list');
@@ -55,7 +49,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/chart-top-employers', [ChartController::class, 'topEmployers'])->name('chart.top.employers');
     Route::get('/chart-income-vs-expenses', [ChartController::class, 'monthlyTransactionsChart'])->name('chart.income.expenses');
     Route::get('/chart-record-count', [ChartController::class, 'dailyTransactionsChart'])->name('chart.record.count');
-
 
     // Configurations Settings
     Route::prefix('configurations')->group(function () {
@@ -73,6 +66,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/goals', [ReportController::class, 'goals'])->name('reports.goals');
         Route::get('/profit', [ReportController::class, 'profit'])->name('reports.profit');
         Route::get('/data/ajax-fetch', [ReportController::class, 'ajax_data'])->name('reports.data');
+        Route::get('/employer-performance', [ReportController::class, 'EmployerContribution'])->name('reports.employer.performance');
     });
 
     // Inventory
@@ -108,7 +102,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         ->name('transactions.edit');
     Route::put('/transactions/update-record/{id}', [TransactionController::class, 'update'])
         ->name('transactions.update');
-
 
     // settings
     Route::get('/settings/user-management', [SettingController::class, 'index'])
