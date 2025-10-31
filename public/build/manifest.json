@@ -1,0 +1,18 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-Ce8kcYSB.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/css/filament-fixes.css": {
+    "file": "assets/filament-fixes-DsWOdcid.css",
+    "src": "resources/css/filament-fixes.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-D6-ahZun.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}
