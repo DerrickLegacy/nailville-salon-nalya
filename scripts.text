@@ -3,3 +3,4 @@ ADD COLUMN date DATE AFTER id;
 
 UPDATE transactions
 SET date = DATE(created_at);
+ pk
