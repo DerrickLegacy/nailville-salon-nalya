@@ -149,12 +149,10 @@
                             <li><a href="{{ route('reports.expense') }}"
                                     class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Expense</a>
                             </li>
-                            <li><a href="{{ route('reports.profit') }}"
-                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Profit</a>
+                            <li><a href="{{ route('reports.net.income') }}"
+                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Net Income</a>
                             </li>
-                            <li><a href="{{ route('reports.goals') }}"
-                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Goals</a>
-                            </li>
+
                         </ul>
                     </li>
 
@@ -188,45 +186,46 @@
                                     class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Manage
                                     Items</a></li>
                             {{-- <li><a href="{{ route('inventory.price.changes') }}"
-                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Price
-                                    Changes</a></li> --}}
-                        </ul>
-                    </li>
+                            class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Price
+                            Changes</a>
+                    </li> --}}
+                </ul>
+                </li>
 
-                    {{-- Settings --}}
-                    <li class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-linear-to-r">
-                        <a href="#0" class="block text-gray-800 dark:text-gray-100 truncate transition"
-                            @click.prevent="openDropdown = (openDropdown === 'settings' ? null : 'settings'); sidebarExpanded = true">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <svg class="shrink-0 fill-current text-gray-400 dark:text-gray-500"
-                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                        viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd"
-                                            d="M10.5 1a3.502 3.502 0 0 1 3.355 2.5H15a1 1 0 1 1 0 2h-1.145a3.502 3.502 0 0 1-6.71 0H1a1 1 0 0 1 0-2h6.145A3.502 3.502 0 0 1 10.5 1ZM9 4.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM5.5 9a3.502 3.502 0 0 1 3.355 2.5H15a1 1 0 1 1 0 2H8.855a3.502 3.502 0 0 1-6.71 0H1a1 1 0 1 1 0-2h1.145A3.502 3.502 0 0 1 5.5 9ZM4 12.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z" />
-                                    </svg>
-                                    <span
-                                        class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Settings</span>
-                                </div>
-                                <div
-                                    class="flex shrink-0 ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                    <svg class="w-3 h-3 shrink-0 ml-1 fill-current text-gray-400 dark:text-gray-500"
-                                        :class="openDropdown === 'settings' ? 'rotate-180' : 'rotate-0'"
-                                        viewBox="0 0 12 12">
-                                        <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
-                                    </svg>
-                                </div>
+                {{-- Settings --}}
+                <li class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-linear-to-r">
+                    <a href="#0" class="block text-gray-800 dark:text-gray-100 truncate transition"
+                        @click.prevent="openDropdown = (openDropdown === 'settings' ? null : 'settings'); sidebarExpanded = true">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg class="shrink-0 fill-current text-gray-400 dark:text-gray-500"
+                                    xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M10.5 1a3.502 3.502 0 0 1 3.355 2.5H15a1 1 0 1 1 0 2h-1.145a3.502 3.502 0 0 1-6.71 0H1a1 1 0 0 1 0-2h6.145A3.502 3.502 0 0 1 10.5 1ZM9 4.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM5.5 9a3.502 3.502 0 0 1 3.355 2.5H15a1 1 0 1 1 0 2H8.855a3.502 3.502 0 0 1-6.71 0H1a1 1 0 1 1 0-2h1.145A3.502 3.502 0 0 1 5.5 9ZM4 12.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z" />
+                                </svg>
+                                <span
+                                    class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Settings</span>
                             </div>
-                        </a>
-                        <ul class="pl-8 mt-1" x-show="openDropdown === 'settings'" x-transition>
-                            <li><a href="{{ route('settings.my.account') }}"
-                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">My
-                                    Account</a></li>
-                            <li><a href="{{ route('settings.management') }}"
-                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">User
-                                    Management</a></li>
-                        </ul>
-                    </li>
+                            <div
+                                class="flex shrink-0 ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                                <svg class="w-3 h-3 shrink-0 ml-1 fill-current text-gray-400 dark:text-gray-500"
+                                    :class="openDropdown === 'settings' ? 'rotate-180' : 'rotate-0'"
+                                    viewBox="0 0 12 12">
+                                    <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+                    <ul class="pl-8 mt-1" x-show="openDropdown === 'settings'" x-transition>
+                        <li><a href="{{ route('settings.my.account') }}"
+                                class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">My
+                                Account</a></li>
+                        <li><a href="{{ route('settings.management') }}"
+                                class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">User
+                                Management</a></li>
+                    </ul>
+                </li>
                 </ul>
             </div>
             <!-- More group -->

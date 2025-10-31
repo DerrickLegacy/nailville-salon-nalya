@@ -29,19 +29,22 @@
                 <?php echo $report_type; ?> Performance Report</h5>
             <h5 id="report_period" class="font-semibold dark:text-white my-2 text-1xl text-center">
                 <?php echo $report_type; ?> Performance Report</h5>
+            <p class="text-center">
+                <small>"Let's Talk Only About <?php echo $report_type; ?>"</small>
+            </p>
 
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Filters:</h2>
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div x-data="{ active: 'Today' }" class="flex flex-wrap items-center gap-2">
                     @foreach (['Today', 'This Week', 'This Month', 'This Year'] as $label)
-                        <button type="button" @click="active = '{{ $label }}'"
-                            :class="active === '{{ $label }}'
+                    <button type="button" @click="active = '{{ $label }}'"
+                        :class="active === '{{ $label }}'
                                 ?
                                 'bg-[#8200DB] text-white border-[#8200DB]' :
                                 'border border-[#8200DB] text-[#8200DB] hover:bg-purple-500 hover:text-white'"
-                            class="solid-filter-btns px-4 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-150">
-                            {{ $label }}
-                        </button>
+                        class="solid-filter-btns px-4 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-150">
+                        {{ $label }}
+                    </button>
                     @endforeach
                 </div>
                 <div class="flex items-center gap-2">
@@ -55,7 +58,7 @@
                         class="block w-full sm:w-48 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
                         <option value="">-- Select Employee --</option>
                         @foreach ($employees as $employee)
-                            <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
+                        <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
                         @endforeach
                     </select>
 
@@ -82,12 +85,12 @@
                             <!-- Selected Employer Section -->
                             <div id="employee_table_wrapper" class="mb-6 hidden">
                                 <h5 id="employee_table_heading" class="text-xl font-semibold dark:text-white mb-4">
-                                    Selected Employer
+                                    Selected Employer <?php echo $report_type; ?> Details
                                 </h5>
+                                <!-- <p class="heading text-center"></p> -->
 
                                 <!-- Cards Row -->
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                                    <!-- Total Income Card -->
                                     <div
                                         class="bg-white dark:bg-[#8200DB] border border-[#c180ed] dark:border-[#9b4dff] rounded-lg shadow-md p-4 flex items-center space-x-4 transition-transform transform hover:scale-105">
                                         <div class="flex-shrink-0">
@@ -98,7 +101,7 @@
                                             <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1">
                                                 Total {{ $report_type }}</h3>
                                             <p id="total_income_card"
-                                                class="text-xl font-bold text-gray-900 dark:text-white"></p>
+                                                class="text-xl font-bold text-gray-900 dark:text-white">Shs. 0</p>
                                         </div>
                                     </div>
 
@@ -345,7 +348,7 @@
                     </div>
                 </div>
             </div>
-            <input type="hidden"id="report_type" name="report_type" value="<?php echo $report_type; ?>">
+            <input type="hidden" id="report_type" name="report_type" value="<?php echo $report_type; ?>">
         </div>
         <script>
             $(document).ready(function() {
@@ -527,7 +530,11 @@
                             `);
                             });
                             $('#income_table tfoot td:last').text(total_income.toLocaleString());
-                            rollSlots(total_income, 'total_income_card', 1500, 100);
+
+                            if (employeData && employeData.employee_id) {
+                                $('#employee_table_wrapper').removeClass('hidden')
+                                rollSlots(total_income, 'total_income_card', 1500, 100);
+                            }
                             rollSlots(data
                                 .expected_income_target, 'expected_income', 2000, 100);
                             rollSlots(total_income, 'achieved_income', 2000, 100);

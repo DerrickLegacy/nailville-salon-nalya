@@ -65,6 +65,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/expense', [ReportController::class, 'expense'])->name('reports.expense');
         Route::get('/goals', [ReportController::class, 'goals'])->name('reports.goals');
         Route::get('/profit', [ReportController::class, 'profit'])->name('reports.profit');
+        Route::get('/net-ncome', [ReportController::class, 'netIncome'])->name('reports.net.income');
+        Route::get('/data/net-income-data', [ReportController::class, 'getNetIncomeData'])->name('reports.net.income.data');
         Route::get('/data/ajax-fetch', [ReportController::class, 'ajax_data'])->name('reports.data');
         Route::get('/employer-performance', [ReportController::class, 'EmployerContribution'])->name('reports.employer.performance');
     });
