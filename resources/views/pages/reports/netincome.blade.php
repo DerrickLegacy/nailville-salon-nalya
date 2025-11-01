@@ -34,12 +34,12 @@
                 <span class="heading">Today</span>'s <?php echo $report_type; ?> Performance Report
             </h5>
             <p class="text-center">
-                <small>"Businness Performance After Deducting Expenses"</small>
+                <small>"Let's Talk About Businness Performance After Deducting Expenses"</small>
             </p>
 
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Filters:</h2>
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div x-data="{ active: 'Today' }" class="flex flex-wrap items-center gap-2">
+                <div id="simple_custom_filter" x-data="{ active: 'Today' }" class="flex flex-wrap items-center gap-2">
                     @foreach (['Today', 'This Week', 'This Month', 'This Year'] as $label)
                     <button type="button" @click="active = '{{ $label }}'"
                         :class="active === '{{ $label }}'
@@ -50,6 +50,36 @@
                         {{ $label }}
                     </button>
                     @endforeach
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <div class="flex items-center gap-2">
+                        <select id="month_filter"
+                            class="border border-[#8200DB] text-[#8200DB] px-6 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-50 w-full sm:w-auto">
+                            <option>--Filter By Month--</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <select id="year_filter"
+                            class="border border-[#8200DB] text-[#8200DB] px-6 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-50 w-full sm:w-auto">
+                            <option>--Filter By Year--</option>
+                            @for ($year = date('Y'); $year >= 2000; $year--)
+                            <option value="{{ $year }}">{{ $year }}</option>
+                            @endfor
+                        </select>
+                    </div>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
@@ -233,6 +263,58 @@
                 let heading = $('.heading');
                 let expected_income = $('#expected_income');
                 let achieved_income = $('#achieved_income');
+                let month_filter = $('#month_filter');
+                let year_filter = $('#year_filter');
+                let selectedMonth = '';
+                let selectedYear = '';
+
+                month_filter.on('change', function() {
+                    selectedMonth = $(this).val();
+                    if (selectedMonth) {
+                        solid_filter_btns.removeClass(
+                            'bg-[#8200DB] text-white border-[#8200DB]').addClass(
+                            'border border-[#8200DB] text-[#8200DB] hover:bg-purple-500 hover:text-white');
+                        selectedPeriod = 'Month Filter'
+                    } else {
+                        month_filter.prop('selectedIndex', 0);
+                        selectedPeriod = 'Today';
+                    }
+                    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'
+                    ];
+                    const month = monthNames[selectedMonth - 1];
+                    heading.text(month ? month : 'Today');
+                    report_period.textContent = `Month of ${month}'s Report`;
+                    initTable(selectedPeriod, searchTerm, null, null, selectedMonth, selectedYear);
+                });
+
+                year_filter.on('change', function() {
+                    selectedYear = $(this).val();
+                    if (selectedYear) {
+                        solid_filter_btns.removeClass(
+                            'bg-[#8200DB] text-white border-[#8200DB]').addClass(
+                            'border border-[#8200DB] text-[#8200DB] hover:bg-purple-500 hover:text-white');
+                        selectedPeriod = 'Month Filter'
+                    } else {
+                        month_filter.prop('selectedIndex', 0);
+                        selectedPeriod = 'Today';
+                    }
+                    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'
+                    ];
+                    const month = monthNames[selectedMonth - 1];
+                    heading.text(month ? month : 'Today');
+                    if (selectedMonth && selectedYear) {
+                        report_period.textContent = `Month of ${month}'s ${selectedYear} Report`;
+                        initTable(selectedPeriod, searchTerm, null, null, selectedMonth, selectedYear);
+                    } else if (selectedYear) {
+                        report_period.textContent = `Year of ${selectedYear} -Report`;
+                        initTable(selectedPeriod, searchTerm, null, null, null, selectedYear);
+                    } else {
+                        console.warn('Waiting for both month and year to be selected...');
+                    }
+
+                });
 
                 service_search.on('input', function() {
                     searchTerm = $(this).val().toLowerCase();
@@ -241,8 +323,7 @@
 
                 solid_filter_btns.on('click', function() {
                     selectedPeriod = $(this).text().trim();
-
-
+                    month_filter.prop('selectedIndex', 0);
                     heading.text(selectedPeriod ? selectedPeriod : 'Today');
                     report_period.textContent = `${selectedPeriod}'s Report`;
                     initTable(selectedPeriod, searchTerm);
@@ -254,6 +335,10 @@
                     const range = $(this).text().trim();
                     const employee_id = $('#employee_id').val();
                     const ww = document.getElementById('dateSelect').value.split('-').map(d => d.trim());
+                    month_filter.prop('selectedIndex', 0);
+                    solid_filter_btns.removeClass(
+                        'bg-[#8200DB] text-white border-[#8200DB]').addClass(
+                        'border border-[#8200DB] text-[#8200DB] hover:bg-purple-500 hover:text-white');
 
                     if (ww.length === 1) {
                         startDate = ww[0];
@@ -270,10 +355,11 @@
                     initTable('Custom Range', searchTerm, startDate, endDate);
                 });
 
-                function initTable(period = null, searchTerm = null, startDate = null, endDate = null) {
+                function initTable(period = null, searchTerm = null, startDate = null, endDate = null, month = null, year = null) {
                     if (table) {
                         table.destroy();
                     }
+                    console.log('Selected Month-Year:', month, year);
 
                     table = new DataTable('#net_income_table', {
                         responsive: true,
@@ -287,79 +373,122 @@
                                 selectedPeriod: period,
                                 searchTerm: searchTerm,
                                 startDate: startDate,
-                                endDate: endDate
+                                endDate: endDate,
+                                month: month,
+                                year: year
                             },
                             dataSrc: function(response) {
+                                // === Universal numeric cleaner ===
+                                function cleanNumbersInObject(obj) {
+                                    const cleaned = {};
+
+                                    for (const key in obj) {
+                                        if (!obj.hasOwnProperty(key)) continue;
+
+                                        const value = obj[key];
+
+                                        // Handle nested arrays/objects
+                                        if (typeof value === 'object' && value !== null) {
+                                            cleaned[key] = Array.isArray(value) ?
+                                                value.map(v => cleanNumbersInObject(v)) :
+                                                cleanNumbersInObject(value);
+                                        }
+                                        // Convert formatted numeric strings -> numbers
+                                        else if (typeof value === 'string' && value.match(/^-?[\d,.\s]+$/)) {
+                                            cleaned[key] = parseFloat(value.replace(/[, ]/g, '').trim()) || 0;
+                                        } else {
+                                            cleaned[key] = value;
+                                        }
+                                    }
+
+                                    return cleaned;
+                                }
+
+                                // 🧼 Clean all numbers in backend response
+                                response = cleanNumbersInObject(response);
+
+                                // === Display expected income and animate targets ===
                                 expected_income = response.expected_income_target;
                                 $('#expected_income').text(Number(response.expected_income_target).toLocaleString());
                                 rollSlots(response.monthlyNetIncomeTarget, 'monthlyIncomeTarget', 2000, 100);
-                                const chartData = response.data.map(item => ({
-                                    y: item.period,
-                                    income: parseFloat(item.income),
-                                    expense: parseFloat(item.expense),
-                                    net_income: parseFloat(item.net_income)
-                                }));
 
-                                $('#netIncomeChart').empty();
+                                if (response.data.length !== 0) {
+                                    console.log('Data received for charts:', response.data);
 
-                                // ===== Line Chart =====
-                                Morris.Line({
-                                    element: 'netIncomeChart',
-                                    data: chartData,
-                                    xkey: 'y',
-                                    ykeys: ['income', 'expense', 'net_income'],
-                                    labels: ['Income', 'Expense', 'Net Income'],
-                                    lineColors: ['#28a745', '#dc3545', '#007bff'],
-                                    hideHover: 'auto',
-                                    resize: true,
-                                    parseTime: false
-                                });
-                                const data = response.data.map(item => ({
-                                    y: item.period,
-                                    income: parseFloat(item.income),
-                                    expense: parseFloat(item.expense),
-                                    net_income: parseFloat(item.net_income)
-                                }));
+                                    // === Prepare chart data ===
+                                    const chartData = response.data.map(item => ({
+                                        y: item.period,
+                                        income: item.income,
+                                        expense: item.expense,
+                                        net_income: item.net_income
+                                    }));
 
-                                // ===== Bar Chart =====
-                                $('#netIncomeBarChart').empty();
-                                Morris.Bar({
-                                    element: 'netIncomeBarChart',
-                                    data: data,
-                                    xkey: 'y',
-                                    ykeys: ['income', 'expense', 'net_income'],
-                                    labels: ['Income', 'Expense', 'Net Income'],
-                                    barColors: ['#28a745', '#dc3545', '#007bff'],
-                                    hideHover: 'auto',
-                                    resize: true,
-                                    gridLineColor: '#eef0f2',
-                                    stacked: false,
-                                });
+                                    // === Reset chart containers before re-render ===
+                                    $('#netIncomeChart').empty();
+                                    $('#netIncomeBarChart').empty();
+                                    $('#incomeExpenseDonut').empty();
 
-                                // ===== Donut Chart =====
-                                const totalIncome = data.reduce((sum, d) => sum + d.income, 0);
-                                const totalExpense = data.reduce((sum, d) => sum + d.expense, 0);
-                                const totalNet = data.reduce((sum, d) => sum + d.net_income, 0);
+                                    // === Line Chart ===
+                                    Morris.Line({
+                                        element: 'netIncomeChart',
+                                        data: chartData,
+                                        xkey: 'y',
+                                        ykeys: ['income', 'expense', 'net_income'],
+                                        labels: ['Income', 'Expense', 'Net Income'],
+                                        lineColors: ['#28a745', '#dc3545', '#007bff'],
+                                        hideHover: 'auto',
+                                        resize: true,
+                                        parseTime: false
+                                    });
 
-                                $('#incomeExpenseDonut').empty();
-                                Morris.Donut({
-                                    element: 'incomeExpenseDonut',
-                                    data: [{
-                                            label: 'Total Income',
-                                            value: totalIncome
-                                        },
-                                        {
-                                            label: 'Total Expense',
-                                            value: totalExpense
-                                        },
-                                        {
-                                            label: 'Net Income',
-                                            value: totalNet
-                                        }
-                                    ],
-                                    colors: ['#28a745', '#dc3545', '#007bff'],
-                                    resize: true
-                                });
+                                    // === Bar Chart ===
+                                    Morris.Bar({
+                                        element: 'netIncomeBarChart',
+                                        data: chartData,
+                                        xkey: 'y',
+                                        ykeys: ['income', 'expense', 'net_income'],
+                                        labels: ['Income', 'Expense', 'Net Income'],
+                                        barColors: ['#28a745', '#dc3545', '#007bff'],
+                                        hideHover: 'auto',
+                                        resize: true,
+                                        gridLineColor: '#eef0f2',
+                                        stacked: false
+                                    });
+
+                                    // === Donut Chart ===
+                                    const totalIncome = chartData.reduce((sum, d) => sum + d.income, 0);
+                                    const totalExpense = chartData.reduce((sum, d) => sum + d.expense, 0);
+                                    const totalNet = chartData.reduce((sum, d) => sum + d.net_income, 0);
+
+                                    Morris.Donut({
+                                        element: 'incomeExpenseDonut',
+                                        data: [{
+                                                label: 'Total Income',
+                                                value: totalIncome
+                                            },
+                                            {
+                                                label: 'Total Expense',
+                                                value: totalExpense
+                                            },
+                                            {
+                                                label: 'Net Income',
+                                                value: totalNet
+                                            }
+                                        ],
+                                        colors: ['#28a745', '#dc3545', '#007bff'],
+                                        resize: true
+                                    });
+                                } else {
+                                    $('#netIncomeChart').empty();
+                                    $('#netIncomeBarChart').empty();
+                                    $('#incomeExpenseDonut').empty();
+                                    Swal.fire({
+                                        title: 'No Data Available',
+                                        text: 'No data available for the selected time periods.',
+                                        icon: 'info',
+                                        confirmButtonText: 'Ok'
+                                    });
+                                }
                                 return response.data;
                             },
                         },
@@ -489,7 +618,6 @@
                         }, intervalTime);
                     });
                 }
-
                 initTable(selectedPeriod);
             });
         </script>

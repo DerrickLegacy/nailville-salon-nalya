@@ -356,6 +356,27 @@ class ReportController extends Controller
                 $expected_income_target = $monthlyNetIncomeTarget * 12;
 
                 break;
+            case 'Month Filter':
+
+                $month = $request->input('month', null);
+                $year = $request->input('year', Date('Y'));
+
+                if ($month) {
+                    $startDate = Carbon::createFromDate($year, $month, 1)->startOfDay();
+                    $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth()->endOfDay();
+                    $expected_income_target = $monthlyNetIncomeTarget;
+                } else {
+                    $startDate = Carbon::today()->startOfDay();
+                    $endDate = Carbon::today()->endOfDay();
+                    $expected_income_target = $monthlyNetIncomeTarget / 30;
+                }
+
+                if ($year) {
+                    $startDate = Carbon::createFromDate($year, 1, 1)->startOfDay();
+                    $endDate = Carbon::createFromDate($year, 12, 31)->endOfDay();
+                    $expected_income_target = $monthlyNetIncomeTarget * 12;
+                }
+                break;
             case 'Custom Range':
                 try {
                     if ($startDate !== '' && $endDate !== '') {
@@ -392,14 +413,13 @@ class ReportController extends Controller
                 break;
         }
 
+
         // 🧠 Dynamically change grouping expression
         if ($selectedPeriod === 'This Year') {
-            // Group by month (YYYY-MM)
             $groupExpr = "DATE_FORMAT(date, '%Y-%m')";
             $labelAlias = 'month';
             $orderExpr = 'DATE_FORMAT(date, "%Y-%m")';
         } else {
-            // Group by full date (YYYY-MM-DD)
             $groupExpr = 'DATE(date)';
             $labelAlias = 'date';
             $orderExpr = 'DATE(date)';
@@ -450,6 +470,7 @@ class ReportController extends Controller
 
         ]);
     }
+
 
 
 
