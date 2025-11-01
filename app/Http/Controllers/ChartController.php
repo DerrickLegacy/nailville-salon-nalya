@@ -103,29 +103,86 @@ class ChartController extends Controller
     }
     public function monthlyTransactionsChart()
     {
-        $year = Carbon::now()->year;
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
 
-        // Get transactions grouped by month and type
-        $transactions = Transaction::select(
-            DB::raw('MONTH(created_at) as month'),
-            DB::raw('SUM(CASE WHEN transaction_type = "Income" THEN amount ELSE 0 END) as income'),
-            DB::raw('SUM(CASE WHEN transaction_type = "Expense" THEN amount ELSE 0 END) as expense')
-        )
-            ->whereYear('created_at', $year)
-            ->groupBy('month')
-            ->orderBy('month')
+        $data = DB::table('transactions')
+            ->select(
+                DB::raw("DATE_FORMAT(MIN(date), '%b') as month"),
+                DB::raw("SUM(CASE WHEN transaction_type = 'Income' THEN amount ELSE 0 END) as Income"),
+                DB::raw("SUM(CASE WHEN transaction_type = 'Expense' THEN amount ELSE 0 END) as Expense")
+            )
+            ->whereMonth('date', $currentMonth)
+            ->whereYear('date', $currentYear)
+            ->groupBy(DB::raw("YEAR(date), MONTH(date)"))
+            ->limit(1)
             ->get();
 
-        // Prepare data for Morris.js
+        if ($data->isEmpty()) {
+            $data = collect([[
+                'month' => Carbon::now()->format('M'),
+                'Income' => 0,
+                'Expense' => 0,
+            ]]);
+        }
+
+        return response()->json($data);
+    }
+
+
+    // public function ()
+    // {
+    //     $year = Carbon::now()->year;
+    //     $currentMonth = Carbon::now()->month;
+
+    //     // Get total income and expense for the current month
+    //     $transaction = Transaction::select(
+    //         DB::raw('SUM(CASE WHEN transaction_type = "Income" THEN amount ELSE 0 END) as income'),
+    //         DB::raw('SUM(CASE WHEN transaction_type = "Expense" THEN amount ELSE 0 END) as expense')
+    //     )
+    //         ->whereMonth('created_at', $currentMonth)
+    //         ->whereYear('created_at', $year)
+    //         ->first();
+
+    //     // Format for Morris.js
+    //     $chartData = [
+    //         [
+    //             'month'   => Carbon::now()->format('M'), // e.g., "Nov"
+    //             'Income'  => (float) ($transaction->income ?? 0),
+    //             'Expense' => (float) ($transaction->expense ?? 0),
+    //         ]
+    //     ];
+
+    //     return response()->json($chartData);
+    // }
+
+    public function yearlyTransactionsChart()
+    {
+        $year = Carbon::now()->year;
+
+        // Group transactions by month
+        $transactions = DB::table('transactions')
+            ->select(
+                DB::raw('MONTH(date) as month_number'),
+                DB::raw("SUM(CASE WHEN transaction_type = 'Income' THEN amount ELSE 0 END) as Income"),
+                DB::raw("SUM(CASE WHEN transaction_type = 'Expense' THEN amount ELSE 0 END) as Expense")
+            )
+            ->whereYear('date', $year)
+            ->groupBy(DB::raw('MONTH(date)'))
+            ->orderBy(DB::raw('MONTH(date)'))
+            ->get()
+            ->keyBy('month_number');
+
+        // Build full 12 months, fill missing months with 0
         $chartData = [];
-        foreach ($transactions as $t) {
+        for ($m = 1; $m <= 12; $m++) {
             $chartData[] = [
-                'month' => Carbon::create()->month($t->month)->format('M'), // e.g., 'Sep'
-                'Income' => (float) $t->income,
-                'Expense' => (float) $t->expense,
+                'month' => Carbon::create()->month($m)->format('M'),
+                'Income' => isset($transactions[$m]) ? (float)$transactions[$m]->Income : 0,
+                'Expense' => isset($transactions[$m]) ? (float)$transactions[$m]->Expense : 0,
             ];
         }
 
-        return $chartData;
+        return response()->json($chartData);
     }
 }

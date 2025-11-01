@@ -434,7 +434,7 @@ class ReportController extends Controller
             )
             ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
             ->groupBy(DB::raw($groupExpr))
-            ->orderBy(DB::raw($orderExpr), 'desc')
+            ->orderBy(DB::raw($orderExpr), 'asc')
             ->get();
 
         // Step 2: Map data for the frontend

@@ -108,65 +108,65 @@
                     </h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         @foreach ($monthlyBusinessGoals as $card)
-                            <div class="bg-white rounded-xl shadow p-6 flex flex-col">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <!-- Percentage -->
-                                        <p class="text-{{ $card['color'] }}-500 font-bold text-lg--">
-                                            {{ $card['percentage'] }}%
-                                        </p>
+                        <div class="bg-white rounded-xl shadow p-6 flex flex-col">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <!-- Percentage -->
+                                    <p class="text-{{ $card['color'] }}-500 font-bold text-lg--">
+                                        {{ $card['percentage'] }}%
+                                    </p>
 
-                                        <!-- Title -->
-                                        <p class="text-gray-600">{{ $card['title'] }}</p>
+                                    <!-- Title -->
+                                    <p class="text-gray-600">{{ $card['title'] }}</p>
 
-                                        <!-- Values -->
-                                        <p class="text-gray-800 font-semibold text-sm mt-1">
-                                            {{ number_format($card['value']) }} Ugx /
-                                            {{ number_format($card['target']) }} Ugx
-                                        </p>
-                                    </div>
-
-                                    <!-- Icon -->
-                                    <div class="bg-{{ $card['color'] }}-100 p-3 rounded-lg">
-                                        @if ($card['icon'] === 'money')
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="w-6 h-6 text-{{ $card['color'] }}-500" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2-1.343-2-3-2zm0 6v2m0-10V4m0 16h.01" />
-                                            </svg>
-                                        @elseif ($card['icon'] === 'arrow-up')
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="w-6 h-6 text-{{ $card['color'] }}-500" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                                            </svg>
-                                        @elseif ($card['icon'] === 'flag')
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="w-6 h-6 text-{{ $card['color'] }}-500" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M13 7l5 5-5 5M6 7l5 5-5 5" />
-                                            </svg>
-                                        @elseif ($card['icon'] === 'box')
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="w-6 h-6 text-{{ $card['color'] }}-500" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M20 13V7a2 2 0 00-2-2h-6V3H8v2H4a2 2 0 00-2 2v6h2v7a2 2 0 002 2h12a2 2 0 002-2v-7h2z" />
-                                            </svg>
-                                        @endif
-                                    </div>
+                                    <!-- Values -->
+                                    <p class="text-gray-800 font-semibold text-sm mt-1">
+                                        {{ number_format($card['value']) }} Ugx /
+                                        {{ number_format($card['target']) }} Ugx
+                                    </p>
                                 </div>
 
-                                <!-- Progress Bar -->
-                                <div class="w-full bg-gray-200 rounded-full h-2 mt-4">
-                                    <div class="bg-{{ $card['color'] }}-500 h-2 rounded-full"
-                                        style="width: {{ min($card['percentage'], 100) }}%">
-                                    </div>
+                                <!-- Icon -->
+                                <div class="bg-{{ $card['color'] }}-100 p-3 rounded-lg">
+                                    @if ($card['icon'] === 'money')
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="w-6 h-6 text-{{ $card['color'] }}-500" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2-1.343-2-3-2zm0 6v2m0-10V4m0 16h.01" />
+                                    </svg>
+                                    @elseif ($card['icon'] === 'arrow-up')
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="w-6 h-6 text-{{ $card['color'] }}-500" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                    </svg>
+                                    @elseif ($card['icon'] === 'flag')
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="w-6 h-6 text-{{ $card['color'] }}-500" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 7l5 5-5 5M6 7l5 5-5 5" />
+                                    </svg>
+                                    @elseif ($card['icon'] === 'box')
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="w-6 h-6 text-{{ $card['color'] }}-500" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20 13V7a2 2 0 00-2-2h-6V3H8v2H4a2 2 0 00-2 2v6h2v7a2 2 0 002 2h12a2 2 0 002-2v-7h2z" />
+                                    </svg>
+                                    @endif
                                 </div>
                             </div>
+
+                            <!-- Progress Bar -->
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-4">
+                                <div class="bg-{{ $card['color'] }}-500 h-2 rounded-full"
+                                    style="width: {{ min($card['percentage'], 100) }}%">
+                                </div>
+                            </div>
+                        </div>
                         @endforeach
                     </div>
                 </div>
@@ -248,10 +248,32 @@
                     <div id="employers-table"></div>
                 </div>
 
-                <div x-data="stockAlert()" class="bg-white dark:bg-gray-800 shadow-xs rounded-xl p-4 ">
-                    <h3 class="text-gray-800 dark:text-gray-100 font-semibold mb-0">Monthly Expenses Vs Income
-                        Transactions</h3>
-                    <div id="transactions-bar-chart" class="w-full"
+                <div x-data="stockAlert()" class="bg-white dark:bg-gray-800 shadow-xs rounded-xl p-4 text-center">
+                    <h3 class="text-gray-800 dark:text-gray-100 font-semibold mb-0">
+                        Monthly Transactions</h3>
+                    <p>Expenses Vs Income </p>
+                    <small><?= date("F") ?></small>
+
+                    <div id="transactions-bar-chart-month" class="w-full"
+                        style="min-height: 200px; height: 350px; max-height: 50vw;">
+                    </div>
+                    <div class="flex justify-center space-x-6 mt-4  mb-4 items-center">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-4 h-4 rounded-full bg-blue-500 block"></span>
+                            <span class="text-gray-700 text-sm">Income</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-4 h-4 rounded-full bg-red-500 block"></span>
+                            <span class="text-gray-700 text-sm">Expense</span>
+                        </div>
+                    </div>
+                </div>
+                <div x-data="stockAlert()" class="bg-white dark:bg-gray-800 shadow-xs rounded-xl p-4 text-center">
+                    <h3 class="text-gray-800 dark:text-gray-100 font-semibold mb-0">
+                        Year Transactions</h3>
+                    <p>Expenses Vs Income</p>
+                    <small><?= date("Y") ?></small>
+                    <div id="transactions-bar-chart-year" class="w-full"
                         style="min-height: 200px; height: 350px; max-height: 50vw;">
                     </div>
                     <div class="flex justify-center space-x-6 mt-4  mb-4 items-center">
@@ -438,12 +460,14 @@
     });
 
     $.ajax({
-        url: "{{ route('chart.income.expenses') }}",
+        url: "{{ route('chart.income.expenses.month') }}",
         method: "GET",
         dataType: "json",
         success: function(data) {
+            console.log("this MONTH's Data:", data);
+
             new Morris.Bar({
-                element: 'transactions-bar-chart',
+                element: 'transactions-bar-chart-month',
                 data: data,
                 xkey: 'month',
                 ykeys: ['Income', 'Expense'],
@@ -457,6 +481,31 @@
             console.error("Error loading chart data:", error);
         }
     });
+
+
+
+    $.ajax({
+        url: "{{ route('chart.income.expenses.year') }}",
+        method: "GET",
+        dataType: "json",
+        success: function(data) {
+            console.log("YEAR : ", data);
+            new Morris.Bar({
+                element: 'transactions-bar-chart-year',
+                data: data,
+                xkey: 'month',
+                ykeys: ['Income', 'Expense'],
+                labels: ['Income', 'Expense'],
+                barColors: ['#3490dc', '#e3342f'],
+                hideHover: 'auto',
+                resize: true
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error("Error loading chart data:", error);
+        }
+    });
+
 
     $.ajax({
         url: "{{ route('employees.status.chart') }}",

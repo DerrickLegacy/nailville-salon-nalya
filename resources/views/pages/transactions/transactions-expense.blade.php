@@ -405,8 +405,10 @@
                     pageLength: perPage,
                     searching: false,
                     lengthChange: true,
-                    lengthMenu: [5, 10, 25, 50, 100, 500, 1000, 5000, 10000],
-
+                    lengthMenu: [10, 25, 50, 100, 500, 1000, 5000, 10000],
+                    order: [
+                        [0, 'desc']
+                    ],
                     ajax: {
                         url: "{{ route('transactions.getRecords') }}",
                         data: {
@@ -446,8 +448,6 @@
                             console.error('DataTable AJAX error:', status, error);
                         }
                     },
-
-                    // Update the columns configuration to dynamically handle both Income and Expense
                     columns: [{
                             data: "created_at",
                             render: function(data) {
@@ -512,45 +512,46 @@
 
 
                                 return `
-        <div class="flex space-x-2 justify-center">
-            <!-- View (Eye icon) -->
-            <a href="${detailsUrl}"
-               class="p-2 rounded-md bg-blue-500 text-white hover:bg-blue-600"
-               title="View">
-               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-               </svg>
-            </a>
+                                    <div class="flex space-x-2 justify-center">
+                                        <!-- View (Eye icon) -->
+                                        <a href="${detailsUrl}"
+                                        class="p-2 rounded-md bg-blue-500 text-white hover:bg-blue-600"
+                                        title="View">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        </a>
 
-            <!-- Edit (Pencil icon) -->
-           <a href="${editUrl}"
-   class="p-2 rounded-md bg-green-500 text-white hover:bg-green-600"
-   title="Edit">
-   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5m-7-7l7 7m0 0v4m0-4h-4"/>
-   </svg>
-</a>
-
-
+                                        <!-- Edit (Pencil icon) -->
+                                    <a href="${editUrl}"
+                            class="p-2 rounded-md bg-green-500 text-white hover:bg-green-600"
+                            title="Edit">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5m-7-7l7 7m0 0v4m0-4h-4"/>
+                            </svg>
+                            </a>
 
 
 
-            <!-- Delete (Trash icon) -->
-            <button type="button"
-               class="action-link delete-link p-2 rounded-md bg-red-500 text-white hover:bg-red-600"
-               data-action="delete" data-id="${row.id}" title="Delete">
-               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a2 2 0 00-2 2v0h8v0a2 2 0 00-2-2m-4 0V5a2 2 0 014 0v0" />
-               </svg>
-            </button>
 
-        </div>
-    `;
+
+                                        <!-- Delete (Trash icon) -->
+                                        <button type="button"
+                                        class="action-link delete-link p-2 rounded-md bg-red-500 text-white hover:bg-red-600"
+                                        data-action="delete" data-id="${row.id}" title="Delete">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a2 2 0 00-2 2v0h8v0a2 2 0 00-2-2m-4 0V5a2 2 0 014 0v0" />
+                                        </svg>
+                                        </button>
+
+                                    </div>
+                                `;
                             }
 
                         }
                     ],
+
                     drawCallback: function(settings) {
                         const api = this.api();
 
