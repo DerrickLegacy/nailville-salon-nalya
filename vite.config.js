@@ -13,7 +13,7 @@ export default defineConfig({
         }),
     ],
     build: {
-        outDir: 'public/build',   // relative to project root
+        outDir: 'public/build',
         emptyOutDir: true,
         rollupOptions: {
             output: {
@@ -23,5 +23,4 @@ export default defineConfig({
             },
         },
     },
-
 });
