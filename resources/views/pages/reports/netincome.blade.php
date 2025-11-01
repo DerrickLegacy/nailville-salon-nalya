@@ -56,7 +56,7 @@
                     <div class="flex items-center gap-2">
                         <select id="month_filter"
                             class="border border-[#8200DB] text-[#8200DB] px-6 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-50 w-full sm:w-auto">
-                            <option>--Filter By Month--</option>
+                            <option value="null">--Filter By Month--</option>
                             <option value="1">January</option>
                             <option value="2">February</option>
                             <option value="3">March</option>
@@ -311,6 +311,7 @@
 
                 month_filter.on('change', function() {
                     selectedMonth = $(this).val();
+                    console.log('Selected Month:', selectedMonth);
                     if (selectedMonth) {
                         solid_filter_btns.removeClass(
                             'bg-[#8200DB] text-white border-[#8200DB]').addClass(
@@ -326,7 +327,11 @@
                     const month = monthNames[selectedMonth - 1];
                     heading.text(month ? month : 'Today');
                     report_period.textContent = `Month of ${month}'s Report`;
-                    initTable(selectedPeriod, searchTerm, null, null, selectedMonth, selectedYear);
+                    if (selectedMonth != 'null') {
+                        initTable(selectedPeriod, searchTerm, null, null, selectedMonth, selectedYear);
+                    } else {
+                        initTable(selectedPeriod, searchTerm, null, null, null, selectedYear);
+                    }
                 });
 
                 year_filter.on('change', function() {
