@@ -129,33 +129,6 @@ class ChartController extends Controller
         return response()->json($data);
     }
 
-
-    // public function ()
-    // {
-    //     $year = Carbon::now()->year;
-    //     $currentMonth = Carbon::now()->month;
-
-    //     // Get total income and expense for the current month
-    //     $transaction = Transaction::select(
-    //         DB::raw('SUM(CASE WHEN transaction_type = "Income" THEN amount ELSE 0 END) as income'),
-    //         DB::raw('SUM(CASE WHEN transaction_type = "Expense" THEN amount ELSE 0 END) as expense')
-    //     )
-    //         ->whereMonth('created_at', $currentMonth)
-    //         ->whereYear('created_at', $year)
-    //         ->first();
-
-    //     // Format for Morris.js
-    //     $chartData = [
-    //         [
-    //             'month'   => Carbon::now()->format('M'), // e.g., "Nov"
-    //             'Income'  => (float) ($transaction->income ?? 0),
-    //             'Expense' => (float) ($transaction->expense ?? 0),
-    //         ]
-    //     ];
-
-    //     return response()->json($chartData);
-    // }
-
     public function yearlyTransactionsChart()
     {
         $year = Carbon::now()->year;
