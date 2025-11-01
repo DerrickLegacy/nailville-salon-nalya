@@ -20,6 +20,7 @@ class Transaction extends Model
         'payment_method',
         'service_description',
         'notes',
+        'date',
         'created_at',
         'updated_at'
     ];

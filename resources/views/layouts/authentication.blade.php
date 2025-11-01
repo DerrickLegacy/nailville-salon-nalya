@@ -60,18 +60,19 @@
             </div>
 
             <!-- Image -->
+
             <?php
-            $images = ['images/fahrad-norouzi-Udy1IKvjeJU-unsplash.jpg', 'images/auth-image.jpg', 'images/junior-reis-doXuH8GbUns-unsplash.jpg', 'images/nailville_logo.svg', 'images/facial_tools.png'];
+            $images = ['images/nailville_logo.svg', 'images/pexels-mati-2528695.jpg', 'images/pexels-n-voitkevich-5128234.jpg', 'images/pexels-cottonbro-3993133.jpg', 'images/pexels-cottonbro-3992855.jpg', 'images/pexels-cottonbro-3992870.jpg', 'images/fahrad-norouzi-Udy1IKvjeJU-unsplash.jpg', 'images/auth-image.jpg', 'images/junior-reis-doXuH8GbUns-unsplash.jpg', 'images/facial_tools.png'];
             ?>
 
             <div class="hidden md:block absolute top-0 bottom-0 right-0 md:w-1/2" aria-hidden="true">
                 <div class="swiper mySwiper w-full h-full">
                     <div class="swiper-wrapper">
                         @foreach ($images as $image)
-                            <div class="swiper-slide">
-                                <img class="object-cover object-center w-full h-full" src="{{ asset($image) }}"
-                                    alt="Authentication image" />
-                            </div>
+                        <div class="swiper-slide">
+                            <img class="object-cover object-center w-full h-full" src="{{ asset($image) }}"
+                                alt="Authentication image" />
+                        </div>
                         @endforeach
                     </div>
                     <div class="swiper-pagination"></div>

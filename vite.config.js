@@ -6,14 +6,14 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
-                'resources/css/filament-fixes.css', // Add this line
+                'resources/css/filament-fixes.css',
                 'resources/js/app.js',
             ],
             refresh: true,
         }),
     ],
     build: {
-        outDir: 'public/build',   // relative to project root
+        outDir: 'public/build',
         emptyOutDir: true,
         rollupOptions: {
             output: {
@@ -23,5 +23,4 @@ export default defineConfig({
             },
         },
     },
-
 });

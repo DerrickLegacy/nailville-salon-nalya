@@ -48,7 +48,7 @@ class ReportController extends Controller
         switch ($range) {
             case 'This Week':
                 $totalNumberOfDays = 7;
-                $query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+                $query->whereBetween('date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
                 $rangeLabel = 'This Week';
                 if ($employee_id) {
                     $query->where('employee_id', $employee_id);
@@ -59,8 +59,8 @@ class ReportController extends Controller
 
             case 'This Month':
                 $totalNumberOfDays = Carbon::now()->daysInMonth;
-                $query->whereMonth('created_at', Carbon::now()->month)
-                    ->whereYear('created_at', Carbon::now()->year);
+                $query->whereMonth('date', Carbon::now()->month)
+                    ->whereYear('date', Carbon::now()->year);
                 if ($employee_id) {
                     $query->where('employee_id', $employee_id);
                 }
@@ -70,7 +70,7 @@ class ReportController extends Controller
 
             case 'This Year':
                 $totalNumberOfDays = Carbon::now()->isLeapYear() ? 366 : 365;
-                $query->whereYear('created_at', Carbon::now()->year);
+                $query->whereYear('date', Carbon::now()->year);
                 $rangeLabel = 'This Year';
                 if ($employee_id) {
                     $query->where('employee_id', $employee_id);
@@ -97,7 +97,7 @@ class ReportController extends Controller
                         $totalNumberOfDays = $start->diffInDays($end) + 1;
 
                         // Base query for transactions in range
-                        $transactionQuery = Transaction::whereBetween('created_at', [$start, $end])
+                        $transactionQuery = Transaction::whereBetween('date', [$start, $end])
                             ->where('transaction_type', $report_type);
 
                         if ($employee_id) {
@@ -117,7 +117,7 @@ class ReportController extends Controller
 
                         // rank among all employees in that period
                         $rankQuery = Transaction::select('employee_id', DB::raw('SUM(amount) as total'))
-                            ->whereBetween('created_at', [$start, $end])
+                            ->whereBetween('date', [$start, $end])
                             ->where('transaction_type', $report_type)
                             ->groupBy('employee_id')
                             ->orderByDesc('total')
@@ -165,7 +165,7 @@ class ReportController extends Controller
                 break;
 
             default: // Today
-                $query->whereDate('created_at', Carbon::today());
+                $query->whereDate('date', Carbon::today());
                 $rangeLabel = 'Today';
                 $expected_income_target = $monthlyIncomeTarget / 30;
 
@@ -173,7 +173,7 @@ class ReportController extends Controller
         }
 
         // Execute query
-        $incomes = $query->orderBy('created_at', 'desc')->get();
+        $incomes = $query->orderBy('date', 'desc')->get();
 
         // Goals and totals
         $daily_goal = (float) ApplicationConfigurationSetting::get('daily_expected_income', 800000);
@@ -188,10 +188,10 @@ class ReportController extends Controller
 
         // Group data by time period
         if ($range === 'This Year') {
-            $grouped_by_period = $incomes->groupBy(fn($t) => Carbon::parse($t->created_at)->format('M'))
+            $grouped_by_period = $incomes->groupBy(fn($t) => Carbon::parse($t->date)->format('M'))
                 ->map(fn($g) => $g->sum('amount'));
         } else {
-            $grouped_by_period = $incomes->groupBy(fn($t) => Carbon::parse($t->created_at)->format('Y-m-d'))
+            $grouped_by_period = $incomes->groupBy(fn($t) => Carbon::parse($t->date)->format('Y-m-d'))
                 ->map(fn($g) => $g->sum('amount'));
         }
 
@@ -274,7 +274,7 @@ class ReportController extends Controller
         // Apply report_type filter
 
         // Apply date filter with table prefix to avoid ambiguity
-        $query->whereBetween('transactions.created_at', [$startDate, $endDate]);
+        $query->whereBetween('transactions.date', [$startDate, $endDate]);
 
         // Optional filter by employee
         if ($employee_id) {
@@ -319,6 +319,161 @@ class ReportController extends Controller
 
         return view('pages.reports.income_expense', compact('services', 'employees', 'report_type'));
     }
+
+    public function netIncome()
+    {
+        $report_type =  "Net Income";
+        return view('pages.reports.netincome', compact('report_type'));
+    }
+    public function getNetIncomeData(Request $request)
+    {
+        $selectedPeriod = $request->input('selectedPeriod', 'Today');
+        $startDate  = trim($request->input('startDate', ''));
+        $endDate  = trim($request->input('endDate', ''));
+        $searchTerm = trim($request->input('searchTerm', ''));
+        $monthlyIncomeTarget = (float) AppSetting::where('key', 'monthly_income_target')->value('value');
+        $monthlyExpensesTarget = (float) AppSetting::where('key', 'monthly_expenses_target')->value('value');
+        $monthlyNetIncomeTarget = $monthlyIncomeTarget - $monthlyExpensesTarget;
+        $expected_income_target = 0;
+
+        // Determine date range
+        switch ($selectedPeriod) {
+            case 'This Week':
+                $startDate = Carbon::now()->startOfWeek()->startOfDay();
+                $endDate = Carbon::now()->endOfWeek()->endOfDay();
+                $expected_income_target = ($monthlyNetIncomeTarget / 4);
+
+                break;
+            case 'This Month':
+                $startDate = Carbon::now()->startOfMonth()->startOfDay();
+                $endDate = Carbon::now()->endOfMonth()->endOfDay();
+                $expected_income_target = $monthlyNetIncomeTarget;
+
+                break;
+            case 'This Year':
+                $startDate = Carbon::now()->startOfYear()->startOfDay();
+                $endDate = Carbon::now()->endOfYear()->endOfDay();
+                $expected_income_target = $monthlyNetIncomeTarget * 12;
+
+                break;
+            case 'Month Filter':
+
+                $month = $request->input('month', null);
+                $year = $request->input('year', Date('Y'));
+
+                if ($month) {
+                    $startDate = Carbon::createFromDate($year, $month, 1)->startOfDay();
+                    $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth()->endOfDay();
+                    $expected_income_target = $monthlyNetIncomeTarget;
+                } else {
+                    $startDate = Carbon::today()->startOfDay();
+                    $endDate = Carbon::today()->endOfDay();
+                    $expected_income_target = $monthlyNetIncomeTarget / 30;
+                }
+
+                if ($year) {
+                    $startDate = Carbon::createFromDate($year, 1, 1)->startOfDay();
+                    $endDate = Carbon::createFromDate($year, 12, 31)->endOfDay();
+                    $expected_income_target = $monthlyNetIncomeTarget * 12;
+                }
+                break;
+            case 'Custom Range':
+                try {
+                    if ($startDate !== '' && $endDate !== '') {
+                        try {
+                            $startDate = Carbon::createFromFormat('Y-m-d', $startDate)->startOfDay();
+                            $endDate = Carbon::createFromFormat('Y-m-d', $endDate)->endOfDay();
+                        } catch (\Exception $e) {
+                            $startDate = Carbon::parse($startDate)->startOfDay();
+                            $endDate = Carbon::parse($endDate)->endOfDay();
+                        }
+
+                        // Adjust target based on range
+                        $daysInRange = date_diff($startDate, $endDate)->format("%a") + 1;
+                        $expected_income_target = ($monthlyNetIncomeTarget / 30) * $daysInRange;
+                    } else {
+                        // fallback today
+                        $startDate = Carbon::today()->startOfDay();
+                        $endDate = Carbon::today()->endOfDay();
+                        $expected_income_target = $monthlyNetIncomeTarget / 30;
+                    }
+                } catch (\Exception $e) {
+                    // fallback parsing error
+                    $startDate = Carbon::today()->startOfDay();
+                    $endDate = Carbon::today()->endOfDay();
+                    $expected_income_target = $monthlyNetIncomeTarget / 30;
+                }
+
+                break;
+            default:
+                $startDate = Carbon::today()->startOfDay();
+                $endDate = Carbon::today()->endOfDay();
+                $expected_income_target = $monthlyNetIncomeTarget / 30;
+
+                break;
+        }
+
+
+        // 🧠 Dynamically change grouping expression
+        if ($selectedPeriod === 'This Year') {
+            $groupExpr = "DATE_FORMAT(date, '%Y-%m')";
+            $labelAlias = 'month';
+            $orderExpr = 'DATE_FORMAT(date, "%Y-%m")';
+        } else {
+            $groupExpr = 'DATE(date)';
+            $labelAlias = 'date';
+            $orderExpr = 'DATE(date)';
+        }
+
+        // Step 1: Aggregate query
+        $records = Transaction::query()
+            ->select(
+                DB::raw("$groupExpr as $labelAlias"),
+                DB::raw("SUM(CASE WHEN transaction_type = 'Income' THEN amount ELSE 0 END) as total_income"),
+                DB::raw("SUM(CASE WHEN transaction_type = 'Expense' THEN amount ELSE 0 END) as total_expense")
+            )
+            ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->groupBy(DB::raw($groupExpr))
+            ->orderBy(DB::raw($orderExpr), 'desc')
+            ->get();
+
+        // Step 2: Map data for the frontend
+        $data = $records->map(function ($record) use ($labelAlias) {
+            return [
+                'period' => $record->{$labelAlias},
+                'income' => number_format((float) $record->total_income, 0, '.', ''),
+                'expense' => number_format((float) $record->total_expense, 0, '.', ''),
+                'net_income' => number_format((float) $record->total_income - (float) $record->total_expense, 0, '.', ''),
+            ];
+        });
+
+        // Step 3: Apply search filtering (on aggregated results)
+        if ($searchTerm !== '') {
+            $data = $data->filter(function ($item) use ($searchTerm) {
+                return str_contains($item['period'], $searchTerm)
+                    || str_contains($item['income'], $searchTerm)
+                    || str_contains($item['expense'], $searchTerm)
+                    || str_contains($item['net_income'], $searchTerm);
+            })->values();
+        }
+
+        // Step 4: Return JSON
+        return response()->json([
+            'data' => $data,
+            'searchTerm' => $searchTerm,
+            'period' => $selectedPeriod,
+            'expected_income_target' => number_format($expected_income_target, 0, '.', ''),
+            'startDate' => $startDate->toDateString(),
+            'endDate' => $endDate->toDateString(),
+            'datediff' => date_diff($startDate, $endDate)->format("%a") + 1,
+            'monthlyNetIncomeTarget' => $monthlyNetIncomeTarget,
+
+        ]);
+    }
+
+
+
+
     public function profit()
     {
         return view('pages.reports.profit');

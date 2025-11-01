@@ -37,7 +37,7 @@ class DashboardController extends Controller
         // Fetch top 10 highest income transactions, most recent first
         $transactions = Transaction::with('employee')
             ->where('transaction_type', 'Income') // ensure correct column name
-            ->orderBy('created_at', 'desc')      // most recent first
+            ->orderBy('date', 'desc')      // most recent first
             ->orderBy('amount', 'desc')          // highest amounts first
             ->take(10)
             ->get();
@@ -50,7 +50,7 @@ class DashboardController extends Controller
         // Fetch top 10 highest income transactions, most recent first
         $transactions = Transaction::with('employee')
             ->where('transaction_type', 'Expense') // ensure correct column name
-            ->orderBy('created_at', 'desc')      // most recent first
+            ->orderBy('date', 'desc')      // most recent first
             ->orderBy('amount', 'desc')          // highest amounts first
             ->take(10)
             ->get();
@@ -98,11 +98,11 @@ class DashboardController extends Controller
         $yesterday = Carbon::yesterday();
 
         $todayIncome = Transaction::where('transaction_type', 'Income')
-            ->whereDate('created_at', $today)
+            ->whereDate('date', $today)
             ->sum('amount');
 
         $yesterdayIncome = Transaction::where('transaction_type', 'Income')
-            ->whereDate('created_at', $yesterday)
+            ->whereDate('date', $yesterday)
             ->sum('amount');
 
         $percentageChange = 0;
@@ -138,11 +138,11 @@ class DashboardController extends Controller
         $yesterday = Carbon::yesterday();
 
         $todayExpense = Transaction::where('transaction_type', 'Expense')
-            ->whereDate('created_at', $today)
+            ->whereDate('date', $today)
             ->sum('amount');
 
         $yesterdayExpense = Transaction::where('transaction_type', 'Expense')
-            ->whereDate('created_at', $yesterday)
+            ->whereDate('date', $yesterday)
             ->sum('amount');
 
         $percentageChange = null;
@@ -175,20 +175,20 @@ class DashboardController extends Controller
 
         // Get today's totals
         $todayIncome = Transaction::where('transaction_type', 'Income')
-            ->whereDate('created_at', $today)
+            ->whereDate('date', $today)
             ->sum('amount');
 
         $todayExpense = Transaction::where('transaction_type', 'Expense')
-            ->whereDate('created_at', $today)
+            ->whereDate('date', $today)
             ->sum('amount');
 
         // Get yesterday's totals
         $yesterdayIncome = Transaction::where('transaction_type', 'Income')
-            ->whereDate('created_at', $yesterday)
+            ->whereDate('date', $yesterday)
             ->sum('amount');
 
         $yesterdayExpense = Transaction::where('transaction_type', 'Expense')
-            ->whereDate('created_at', $yesterday)
+            ->whereDate('date', $yesterday)
             ->sum('amount');
 
         // Calculate net incomes
@@ -235,22 +235,22 @@ class DashboardController extends Controller
 
         // Today Invoices
         $todayInvoicesCount = Transaction::where('transaction_type', 'Income')
-            ->whereDate('created_at', $today)
+            ->whereDate('date', $today)
             ->count();
 
         // This Month Invoices
         $monthInvoicesCount = Transaction::where('transaction_type', 'Income')
-            ->whereBetween('created_at', [$startOfMonth, Carbon::now()])
+            ->whereBetween('date', [$startOfMonth, Carbon::now()])
             ->count();
 
         // Today Sales
         $todaySales = Transaction::where('transaction_type', 'Income')
-            ->whereDate('created_at', $today)
+            ->whereDate('date', $today)
             ->sum('amount');
 
         // This Month Sales
         $monthSales = Transaction::where('transaction_type', 'Income')
-            ->whereBetween('created_at', [$startOfMonth, Carbon::now()])
+            ->whereBetween('date', [$startOfMonth, Carbon::now()])
             ->sum('amount');
 
         return [
@@ -271,21 +271,21 @@ class DashboardController extends Controller
 
         // Income this month
         $incomeThisMonth = Transaction::where('transaction_type', 'Income')
-            ->whereBetween('created_at', [$startOfMonth, Carbon::now()])
+            ->whereBetween('date', [$startOfMonth, Carbon::now()])
             ->sum('amount');
 
         $incomeTarget = (float) ApplicationConfigurationSetting::get('monthly_income_target', 0);
 
         // Expenses this month
         $expensesThisMonth = Transaction::where('transaction_type', 'Expense')
-            ->whereBetween('created_at', [$startOfMonth, Carbon::now()])
+            ->whereBetween('date', [$startOfMonth, Carbon::now()])
             ->sum('amount');
 
         $expensesTarget = (float) ApplicationConfigurationSetting::get('monthly_expenses_target', 0);
 
         // Sales this month
         $salesThisMonth = Transaction::where('transaction_type', 'Income')
-            ->whereBetween('created_at', [$startOfMonth, Carbon::now()])
+            ->whereBetween('date', [$startOfMonth, Carbon::now()])
             ->sum('amount'); // Assuming sales = income
 
         $salesTarget = (float) ApplicationConfigurationSetting::get('monthly_sales_target', 0);

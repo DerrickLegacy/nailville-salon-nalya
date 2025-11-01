@@ -16,14 +16,14 @@ class ChartController extends Controller
         $startDate = Carbon::now()->subMonth()->startOfDay();
 
         $data = DB::table('transactions')
-            ->selectRaw('DATE(created_at) as date, SUM(amount) as total')
+            ->select('date', DB::raw('SUM(amount) as total'))
             ->where('transaction_type', 'Income')
-            ->where('created_at', '>=', $startDate)
+            ->where('date', '>=', $startDate->toDateString()) // use date column
             ->groupBy('date')
             ->orderBy('date', 'asc')
             ->get();
 
-        // Format for Morris.js: [{ y: "2025-09-01", value: 12000 }, ...]
+        // Format for chart libraries like Morris.js
         $formatted = $data->map(function ($row) {
             return [
                 'y' => $row->date,
@@ -33,6 +33,7 @@ class ChartController extends Controller
 
         return response()->json($formatted);
     }
+
 
 
     public function topEmployers()
