@@ -236,7 +236,6 @@
 
                 service_search.on('input', function() {
                     searchTerm = $(this).val().toLowerCase();
-                    console.log('Searching for:', searchTerm);
                     initTable(selectedPeriod, searchTerm);
                 })
 
@@ -246,7 +245,6 @@
 
                     heading.text(selectedPeriod ? selectedPeriod : 'Today');
                     report_period.textContent = `${selectedPeriod}'s Report`;
-                    console.log('Searching fbbbor:', searchTerm, 'and', selectedPeriod);
                     initTable(selectedPeriod, searchTerm);
                 });
 
@@ -269,7 +267,6 @@
                     }
                     $('.heading').text(`${startDate} to ${endDate}`);
                     report_period.textContent = `From: ${startDate} to ${endDate}`;
-                    console.log('Filtering for:', startDate, 'to', endDate);
                     initTable('Custom Range', searchTerm, startDate, endDate);
                 });
 
@@ -295,7 +292,6 @@
                             dataSrc: function(response) {
                                 expected_income = response.expected_income_target;
                                 $('#expected_income').text(Number(response.expected_income_target).toLocaleString());
-                                console.log(response.monthlyNetIncomeTarget)
                                 rollSlots(response.monthlyNetIncomeTarget, 'monthlyIncomeTarget', 2000, 100);
                                 const chartData = response.data.map(item => ({
                                     y: item.period,
@@ -304,20 +300,19 @@
                                     net_income: parseFloat(item.net_income)
                                 }));
 
-                                // Clear previous chart if it exists
                                 $('#netIncomeChart').empty();
 
-                                // Create Morris Line Chart
+                                // ===== Line Chart =====
                                 Morris.Line({
                                     element: 'netIncomeChart',
                                     data: chartData,
                                     xkey: 'y',
                                     ykeys: ['income', 'expense', 'net_income'],
                                     labels: ['Income', 'Expense', 'Net Income'],
-                                    lineColors: ['#28a745', '#dc3545', '#007bff'], // green, red, blue
+                                    lineColors: ['#28a745', '#dc3545', '#007bff'],
                                     hideHover: 'auto',
                                     resize: true,
-                                    parseTime: false // since your x-axis is simple date strings
+                                    parseTime: false
                                 });
                                 const data = response.data.map(item => ({
                                     y: item.period,
@@ -327,14 +322,14 @@
                                 }));
 
                                 // ===== Bar Chart =====
-                                $('#netIncomeBarChart').empty(); // clear previous
+                                $('#netIncomeBarChart').empty();
                                 Morris.Bar({
                                     element: 'netIncomeBarChart',
                                     data: data,
                                     xkey: 'y',
                                     ykeys: ['income', 'expense', 'net_income'],
                                     labels: ['Income', 'Expense', 'Net Income'],
-                                    barColors: ['#28a745', '#dc3545', '#007bff'], // green, red, blue
+                                    barColors: ['#28a745', '#dc3545', '#007bff'],
                                     hideHover: 'auto',
                                     resize: true,
                                     gridLineColor: '#eef0f2',
@@ -346,7 +341,7 @@
                                 const totalExpense = data.reduce((sum, d) => sum + d.expense, 0);
                                 const totalNet = data.reduce((sum, d) => sum + d.net_income, 0);
 
-                                $('#incomeExpenseDonut').empty(); // clear previous
+                                $('#incomeExpenseDonut').empty();
                                 Morris.Donut({
                                     element: 'incomeExpenseDonut',
                                     data: [{
@@ -494,7 +489,6 @@
                         }, intervalTime);
                     });
                 }
-
 
                 initTable(selectedPeriod);
             });

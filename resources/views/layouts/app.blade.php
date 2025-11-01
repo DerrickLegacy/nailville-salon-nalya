@@ -7,9 +7,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @if ($title)
-        <title>{{ config('app.name', 'Laravel') }}{{ $title ? ' - ' . $title : '' }}</title>
+    <title>{{ config('app.name', 'Laravel') }}{{ $title ? ' - ' . $title : '' }}</title>
     @else
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Laravel') }}</title>
     @endif
     {{-- app icon --}}
     <link rel="icon" type="image/png" href="{{ asset('salon.png') }}">
@@ -47,6 +47,7 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 
 
     <!-- Styles -->
@@ -175,14 +176,14 @@
 
             <x-app.header :variant="$attributes['headerVariant']" />
             @if ($errors->any())
-                <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 2000)"
-                    class="bg-red-100 text-red-700 p-4 rounded mb-4 transition duration-500">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 2000)"
+                class="bg-red-100 text-red-700 p-4 rounded mb-4 transition duration-500">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
             @endif
 
 
@@ -190,15 +191,15 @@
                 {{ $slot }}
 
                 @if (session('success'))
-                    <script>
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: "{{ session('success') }}",
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-                    </script>
+                <script>
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: "{{ session('success') }}",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                </script>
                 @endif
 
 

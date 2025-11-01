@@ -64,6 +64,7 @@ class TransactionController extends Controller
             4 => 'customer_name',
             5 => 'payment_method',
             6 => 'amount',
+            // 7 => 'date',
         ];
 
         $orderColIndex = $request->input('order.0.column');
@@ -88,7 +89,7 @@ class TransactionController extends Controller
 
                 try {
                     $date = \Carbon\Carbon::parse($searchTerm);
-                    $q->orWhereDate('created_at', $date->toDateString());
+                    $q->orWhereDate('date', $date->toDateString());
                 } catch (\Exception $e) {
                     // ignore invalid date
                 }
@@ -116,7 +117,7 @@ class TransactionController extends Controller
             if (!$from && $to) $from = $to->copy()->startOfDay();
             if (!$to && $from) $to = $from->copy()->endOfDay();
 
-            $query->whereBetween('created_at', [$from, $to]);
+            $query->whereBetween('date', [$from, $to]);
         }
 
         if ($request->filled('transaction_type')) {
@@ -190,7 +191,7 @@ class TransactionController extends Controller
                 ? ($validated['service_offered'] ?? null)
                 : ($validated['expense_type'] ?? null),
             'notes'              => $validated['notes'] ?? null,
-            // 'created_at'         => $validated['date'] ?? now(),
+            'date'         => DATE('Y-m-d', strtotime($validated['date'])) ?? now(),
         ]);
 
         return redirect()->back()->with('success', 'Transaction saved successfully!');
@@ -249,7 +250,7 @@ class TransactionController extends Controller
                 ? ($validated['service_offered'] ?? null)
                 : ($validated['expense_type'] ?? null),
             'notes'              => $validated['notes'] ?? null,
-            'created_at'               => $validated['date'] ?? $transaction->date, // include this
+            'date'               => DATE('Y-m-d', strtotime($validated['date'])) ?? now(),
         ]);
 
 
