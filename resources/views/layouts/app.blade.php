@@ -2,18 +2,76 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
+    <!-- Basic Meta -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    @if ($title)
-    <title>{{ config('app.name', 'Laravel') }}{{ $title ? ' - ' . $title : '' }}</title>
-    @else
-    <title>{{ config('app.name', 'Laravel') }}</title>
-    @endif
-    {{-- app icon --}}
-    <link rel="icon" type="image/png" href="{{ asset('salon.png') }}">
-    {{-- <a  >Salon icons created by Freepik - Flaticon</a> --}}
+    <!-- site map -->
+    <meta name="google-site-verification" content="NxXiaY1odI6lPdxfwtvYHkE1VIEI2bI2gJ9Vt0XZ1R0" />
+
+    @php
+    $pageTitle = $title ?? null;
+    $fullTitle = $pageTitle
+    ? config('app.name', 'Nailville Salon') . ' - ' . $pageTitle
+    : config('app.name', 'Nailville Salon');
+    $pageDescription = $metaDescription ?? 'Nailville Salon is a unisex salon in Naalya opposite Quality Shopping Village Namugongo, offering beauty, hair, nail and spa services for men, women, and children.';
+    $canonicalUrl = url()->current();
+    $previewImage = asset('images/preview.png'); // Replace with your actual preview image path
+    @endphp
+
+    <title>{{ $fullTitle }}</title>
+    <meta name="description" content="{{ $pageDescription }}">
+    <meta name="keywords" content="Nailville, salon, beauty, hair, spa, nails, Kampala, Naalya, Uganda">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/preview.png')}}">
+
+    <!-- Open Graph Meta Tags (for Facebook, WhatsApp, LinkedIn, etc.) -->
+    <meta property="og:title" content="{{ $fullTitle }}">
+    <meta property="og:description" content="{{ $pageDescription }}">
+    <meta property="og:image" content="{{ $previewImage }}">
+    <meta property="og:url" content="{{ $canonicalUrl }}">
+    <meta property="og:site_name" content="Nailville Salon">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $fullTitle }}">
+    <meta name="twitter:description" content="{{ $pageDescription }}">
+    <meta name="twitter:image" content="{{ $previewImage }}">
+    <meta name="twitter:site" content="@NailvilleSalon"> <!-- Replace with your real handle -->
+    <meta name="twitter:creator" content="@NailvilleSalon">
+
+    <!-- Structured Data (Organization Schema for Google Rich Results) -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Nailville Salon",
+            "url": "https://staging-nailville-salon.kenvies.com",
+            "logo": "https://staging-nailville-salon.kenvies.com/salon.png",
+            "sameAs": [
+                "https://www.facebook.com/nailvillesalon",
+                "https://www.instagram.com/nailvillesalon"
+            ],
+            "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "+256-700-000000",
+                "contactType": "customer service",
+                "areaServed": "UG",
+                "availableLanguage": ["English"]
+            },
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Naalya, opposite Quality Shopping Village Namugongo",
+                "addressLocality": "Kampala",
+                "addressCountry": "UG"
+            }
+        }
+    </script>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
