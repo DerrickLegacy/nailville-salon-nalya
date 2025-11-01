@@ -172,12 +172,40 @@
                                     <h5>Net Income Linear Chart - <span class="heading">Today</span></h5>
                                     <div id="netIncomeChart" style="height: 300px;"></div>
                                 </div>
+                                <div class="flex justify-center space-x-6 mt-4  mb-4 items-center">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-4 h-4 rounded-full bg-green-500 block"></span>
+                                        <span class="text-gray-700 text-sm">Total Income</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-4 h-4 rounded-full bg-red-500 block"></span>
+                                        <span class="text-gray-700 text-sm">Total Expense</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-4 h-4 rounded-full bg-blue-500 block"></span>
+                                        <span class="text-gray-700 text-sm">Net Income</span>
+                                    </div>
+                                </div>
 
                             </div>
                             <div class="shadow ring-1 ring-black/5 rounded-lg mb-6 p-6">
                                 <div class="col-md-8">
                                     <h5>Net Income Bar Chart - <span class="heading">Today</span></h5>
                                     <div id="netIncomeBarChart" style="height: 300px;"></div>
+                                </div>
+                                <div class="flex justify-center space-x-6 mt-4  mb-4 items-center">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-4 h-4 rounded-full bg-green-500 block"></span>
+                                        <span class="text-gray-700 text-sm">Total Income</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-4 h-4 rounded-full bg-red-500 block"></span>
+                                        <span class="text-gray-700 text-sm">Total Expense</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-4 h-4 rounded-full bg-blue-500 block"></span>
+                                        <span class="text-gray-700 text-sm">Net Income</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -246,7 +274,20 @@
                                 <h5>Income vs Expense Donut Chart <span class="heading">Today</span> </h5>
                                 <div id="incomeExpenseDonut" style="height: 300px;"></div>
                             </div>
-                            <!-- <div id="todays-income-chart-progress" class="w-full h-64"></div> -->
+                            <div class="flex justify-center space-x-6 mt-4  mb-4 items-center">
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-4 h-4 rounded-full bg-green-500 block"></span>
+                                    <span class="text-gray-700 text-sm">Total Income</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-4 h-4 rounded-full bg-red-500 block"></span>
+                                    <span class="text-gray-700 text-sm">Total Expense</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-4 h-4 rounded-full bg-blue-500 block"></span>
+                                    <span class="text-gray-700 text-sm">Net Income</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -413,7 +454,6 @@
                                 rollSlots(response.monthlyNetIncomeTarget, 'monthlyIncomeTarget', 2000, 100);
 
                                 if (response.data.length !== 0) {
-                                    console.log('Data received for charts:', response.data);
 
                                     // === Prepare chart data ===
                                     const chartData = response.data.map(item => ({

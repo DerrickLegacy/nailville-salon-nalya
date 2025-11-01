@@ -3,4 +3,8 @@ ADD COLUMN date DATE AFTER id;
 
 UPDATE transactions
 SET date = DATE(created_at);
- pk
+ 
+
+
+ SELECT transaction_type, COUNT(id) as receipts_entered ,SUM(amount) as total_from_these_receipts FROM `transactions` 
+where date="2025-11-01" GROUP BY (transaction_type);

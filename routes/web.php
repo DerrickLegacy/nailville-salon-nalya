@@ -47,7 +47,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Charts
     Route::get('/chart-data', [ChartController::class, 'chartData'])->name('chart.data');
     Route::get('/chart-top-employers', [ChartController::class, 'topEmployers'])->name('chart.top.employers');
-    Route::get('/chart-income-vs-expenses', [ChartController::class, 'monthlyTransactionsChart'])->name('chart.income.expenses');
+    Route::get('/chart-income-vs-expenses-month', [ChartController::class, 'monthlyTransactionsChart'])->name('chart.income.expenses.month');
+    Route::get('/chart-income-vs-expenses-year', [ChartController::class, 'yearlyTransactionsChart'])->name('chart.income.expenses.year');
     Route::get('/chart-record-count', [ChartController::class, 'dailyTransactionsChart'])->name('chart.record.count');
 
     // Configurations Settings
