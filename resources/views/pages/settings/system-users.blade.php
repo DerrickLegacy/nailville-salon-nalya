@@ -1,23 +1,30 @@
 <x-app-layout class="bg-white">
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-full mx-auto">
+        <!-- Breadcrumb -->
+        <nav class="flex mb-4" aria-label="Breadcrumb">
+            <ol class="flex items-center space-x-2 text-sm">
+                <li><a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Settings</a></li>
+                <li class="flex items-center">
+                    <span class="text-gray-400 dark:text-gray-500 mx-2">›</span>
+                    <a href="{{ route('admin.users.index') }}" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">System Users</a>
+                </li>
+                <li class="flex items-center">
+                    <span class="text-gray-400 dark:text-gray-500 mx-2">›</span>
+                    <span class="text-gray-700 dark:text-gray-300">Edit User</span>
+                </li>
+            </ol>
+        </nav>
+
         <!-- Page Header -->
-        <div class="mb-2 flex flex-col md:flex-row md:justify-between md:items-center fade-in">
-            <div>
-                <nav class="flex mb-2" aria-label="Breadcrumb">
-                    <ol class="flex items-center space-x-2 text-sm">
-                        <li><a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Settings</a></li>
-                        <li class="flex items-center">
-                            <span class="text-gray-400 dark:text-gray-500 mx-2">›</span>
-                            <a href="{{ route('admin.users.index') }}" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">System Users</a>
-                        </li>
-                    </ol>
-                </nav>
-            </div>
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">System Users</h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-2">Available Users with Access to system</p>
         </div>
+
+
 
         <div class="mb-2 flex flex-col md:flex-row md:justify-between md:items-center">
             <h1 class="text-3xl text-gray-800 dark:text-gray-100 mb-4 md:mb-0">
-                System Users
             </h1>
 
             <div class="flex space-x-3">
@@ -64,6 +71,8 @@
         </div>
     </div>
 
+    <input type="hidden" id="authUserId" value="{{ auth()->user()->id }}">
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
@@ -73,7 +82,11 @@
                 lengthMenu: [10, 25, 50, 100],
                 ajax: {
                     url: "{{ route('admin.users.list') }}",
-                    dataSrc: 'data',
+                    dataSrc: function(response) {
+                        console.log(response.data)
+                        const data = response.data
+                        return data;
+                    },
                     error: function(xhr, status, error) {
                         console.error('Error:', status, error);
                     }
@@ -102,10 +115,11 @@
                         }
                     },
                     {
-                        data: 'is_active',
+                        data: 'activity',
                         title: 'Status',
                         render: function(data) {
-                            return data ?
+                            console.log(data);
+                            return data == "Active" ?
                                 '<span class="px-2 py-1 bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400 rounded-full text-xs font-semibold">Active</span>' :
                                 '<span class="px-2 py-1 bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-400 rounded-full text-xs font-semibold">Inactive</span>';
                         }
@@ -151,20 +165,18 @@
                                 </button>
                             `;
 
-                            // Delete button (only if not current user)
-                            if (row.id !== {
-                                    {
-                                        auth() - > id()
-                                    }
-                                }) {
-                                actions += `<button onclick="confirmDelete(${row.id})" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 flex items-center space-x-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                        <span>Delete</span>
-                                    </button>
-                                `;
+                            if (row.id !== parseInt(document.getElementById('authUserId').value)) {
+                                actions += `
+        <button onclick="confirmDelete(${row.id})" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 flex items-center space-x-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            <span>Delete</span>
+        </button>
+    `;
                             }
+
+
 
                             actions += `</div>`;
                             return actions;

@@ -1,5 +1,5 @@
-<x-app-layout class="bg-white dark:bg-gray-900">
-    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-3xl mx-auto">
+<x-app-layout class="bg-white dark:bg-white">
+    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full mx-auto">
         <!-- Breadcrumb -->
         <nav class="flex mb-4" aria-label="Breadcrumb">
             <ol class="flex items-center space-x-2 text-sm">
@@ -96,6 +96,8 @@
                             placeholder="Confirm new password">
                     </div>
                 </div>
+
+
 
                 <!-- Action Buttons -->
                 <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">

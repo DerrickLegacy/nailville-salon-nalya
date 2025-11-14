@@ -19,7 +19,7 @@ class UserController extends Controller
         $this->middleware(function ($request, $next) {
             $user = auth()->user();
             if (!$user || !$user->isAdmin()) {
-                abort(403, 'Unauthorized action.');
+                abort(403, "Unauthorized action. You need admin rights.");
             }
             return $next($request);
         });
