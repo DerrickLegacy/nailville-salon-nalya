@@ -34,6 +34,9 @@
             <div class="font-medium text-gray-800 dark:text-gray-100">{{ Auth::user()->name }}</div>
             <div class="text-xs text-gray-500 dark:text-gray-400 italic">Administrator</div>
         </div>
+    <script>
+    localStorage.setItem('username', JSON.stringify('{{ Auth::user()->name }}'));
+</script>
         <ul>
             <li>
                 <a class="font-medium text-sm text-violet-500 hover:text-violet-600 dark:hover:text-violet-400 flex items-center py-1 px-3" href="{{ route('profile.show') }}" @click="open = false" @focus="open = true" @focusout="open = false">Settings</a>

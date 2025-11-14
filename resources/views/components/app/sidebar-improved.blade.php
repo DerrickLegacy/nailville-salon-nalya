@@ -1,10 +1,4 @@
-<div x-data="{ 
-    sidebarOpen: false, 
-    sidebarExpanded: true, 
-    openDropdown: null,
-    activeParent: null,
-    activeChild: null
-}">
+{{-- Improved Sidebar with Better Styling and Working Toggle --}}
 <div class="min-w-fit">
     <!-- Sidebar backdrop (mobile only) -->
     <div class="fixed inset-0 bg-gray-900 bg-opacity-30 z-40 lg:hidden transition-opacity duration-200"
@@ -55,19 +49,38 @@
         <!-- Navigation Links -->
         <nav class="flex-1 px-3 py-6 space-y-2">
             <!-- Dashboard -->
-<!-- Dashboard -->
-<a href="{{ route('dashboard') }}"
-   class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200
-          {{ Request::is('dashboard*') ? 'bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
-    </svg>
-    <span class="font-medium text-sm transition-opacity duration-300"
-          :class="sidebarExpanded ? 'opacity-100' : 'opacity-0 w-0'">
-        Dashboard
-    </span>
-</a>
-
+            <div class="space-y-1">
+                <button @click="openDropdown = (openDropdown === 'dashboard' ? null : 'dashboard')"
+                        class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200
+                               {{ Request::is('dashboard*') ? 'bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                        </svg>
+                        <span class="font-medium text-sm transition-opacity duration-300"
+                              :class="sidebarExpanded ? 'opacity-100' : 'opacity-0 w-0'">
+                            Dashboard
+                        </span>
+                    </div>
+                    <svg class="w-4 h-4 transition-transform duration-200"
+                         :class="{'rotate-180': openDropdown === 'dashboard', 'opacity-0': !sidebarExpanded}"
+                         fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+                
+                <div x-show="openDropdown === 'dashboard'" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 transform -translate-y-2"
+                     x-transition:enter-end="opacity-100 transform translate-y-0"
+                     class="pl-11 space-y-1">
+                    <a href="{{ route('dashboard') }}" 
+                       class="block px-3 py-2 text-sm rounded-lg transition-colors
+                              {{ Request::is('dashboard') ? 'text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50' }}">
+                        Main Dashboard
+                    </a>
+                </div>
+            </div>
 
             <!-- Transactions -->
             <div class="space-y-1">
@@ -218,6 +231,4 @@
             </button>
         </div>
     </div>
-</div>
-
 </div>

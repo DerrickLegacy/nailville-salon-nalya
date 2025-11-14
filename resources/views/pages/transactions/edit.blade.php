@@ -165,8 +165,8 @@
                     <div>
                         <label for="date"
                             class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
-                        <input type="datetime-local" name="date" id="date"
-                            value="{{ $transaction->created_at->format('Y-m-d\TH:i') }}"
+                        <input type="date" name="date" id="date"
+                            value="{{ $transaction->date ? $transaction->date->format('Y-m-d') : now()->format('Y-m-d') }}"
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
                     </div>
 

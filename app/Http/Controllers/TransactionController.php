@@ -57,14 +57,13 @@ class TransactionController extends Controller
 
         // 🔹 Ordering
         $columns = [
-            0 => 'created_at',
+            0 => 'date',
             1 => 'service_description',
             2 => 'receipt_id',
             3 => 'employee_id',
             4 => 'customer_name',
             5 => 'payment_method',
             6 => 'amount',
-            // 7 => 'date',
         ];
 
         $orderColIndex = $request->input('order.0.column');
@@ -139,6 +138,7 @@ class TransactionController extends Controller
 
         // 🔹 Format dates
         $transactionsFormatted = $transactions->map(function ($txn) {
+            $txn->date = $txn->date ? $txn->date->format('Y-m-d\TH:i:s') : null;
             $txn->created_at = $txn->created_at->format('Y-m-d\TH:i:s');
             return $txn;
         });

@@ -1,5 +1,38 @@
 <x-authentication-layout>
-    <h1 class="text-3xl text-gray-800 dark:text-gray-100 font-bold mb-6">{{ __('Welcome back!') }}</h1>
+  <script>
+    // Run when the page loads
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // 1. Get the stored user object from localStorage
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (!storedUser) return;
+
+        // 2. Extract full name (adjust based on your stored structure)
+        const fullName = storedUser.name ?? storedUser.fullname ?? storedUser;
+
+        // 3. Split full name and get last name
+        const nameParts = fullName.split(" ");
+        const lastName = nameParts[nameParts.length - 1];
+
+        // 4. Insert last name into the DOM
+        const usernameSpan = document.getElementById('username');
+        usernameSpan.textContent = lastName;
+
+        // 5. Show the welcome message
+        const welcomeMessage = document.getElementById('welcome-message');
+        welcomeMessage.classList.remove('hidden');
+
+        // 6. Optional: Save last name separately
+        localStorage.setItem('user_last_name', lastName);
+
+        console.log("Full Name:", fullName);
+        console.log("Last Name:", lastName);
+    });
+</script>
+
+<h1 id="welcome-message" class="text-2xl text-gray-800 dark:text-gray-100 font-bold mb-6 hidden">
+    Welcome back, <span id="username"></span>😊
+</h1>
     @if (session('status'))
         <div class="mb-4 font-medium text-sm text-green-600">
             {{ session('status') }}
@@ -34,11 +67,11 @@
     <x-validation-errors class="mt-4" />
     <!-- Footer -->
     <div class="pt-5 mt-6 border-t border-gray-100 dark:border-gray-700/60">
-        {{-- <div class="text-sm">
+        <!-- <div class="text-sm">
             {{ __('Don\'t you have an account?') }} <a
                 class="font-medium text-violet-500 hover:text-violet-600 dark:hover:text-violet-400"
                 href="{{ route('register') }}">{{ __('Sign Up') }}</a>
-        </div> --}}
+        </div> -->
         <!-- Warning -->
         <div class="mt-5">
             <div class="bg-yellow-500/20 text-yellow-700 px-3 py-2 rounded-lg text-center">

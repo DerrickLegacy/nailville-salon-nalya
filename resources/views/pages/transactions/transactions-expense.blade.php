@@ -449,27 +449,20 @@
                         }
                     },
                     columns: [{
-                            data: "created_at",
+                            data: "date",
                             render: function(data) {
                                 if (!data) return 'N/A';
 
                                 const date = new Date(data);
 
-                                // Format date part
+                                // Format date part only (no time)
                                 const datePart = date.toLocaleDateString('en-GB', {
                                     day: '2-digit',
                                     month: 'short',
                                     year: 'numeric'
                                 });
 
-                                // Format time part
-                                const timePart = date.toLocaleTimeString('en-GB', {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    hour12: false
-                                });
-
-                                return `${datePart}, ${timePart}`;
+                                return datePart;
                             }
                         },
                         {

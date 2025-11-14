@@ -128,4 +128,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         ->name('settings.store.employer');
     Route::post('/user/profile')
         ->name('settings.my.account');
+    
+    // Admin User Management (System Users)
+    Route::prefix('admin/users')->name('admin.users.')->group(function () {
+        Route::get('/create-system-user', [App\Http\Controllers\Admin\UserController::class, 'create'])->name('create');
+        Route::post('/store', [App\Http\Controllers\Admin\UserController::class, 'store'])->name('store');
+        Route::get('/', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('index');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\UserController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\UserController::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('destroy');
+    });
 });

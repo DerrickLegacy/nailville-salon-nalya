@@ -28,6 +28,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'admin',
     ];
 
     /**
@@ -49,6 +50,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'admin' => 'boolean',
     ];
 
     /**
@@ -59,4 +61,28 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    /**
+     * Check if user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->admin === 1 || $this->admin === true;
+    }
+
+    /**
+     * Scope to get only admin users
+     */
+    public function scopeAdmins($query)
+    {
+        return $query->where('admin', 1);
+    }
+
+    /**
+     * Scope to get only non-admin users
+     */
+    public function scopeNonAdmins($query)
+    {
+        return $query->where('admin', 0);
+    }
 }

@@ -24,9 +24,25 @@
                 User Management
             </h1>
 
-            <a href="{{ route('settings.create.employer') }}">
-                <button class="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Add Employee</button>
-            </a>
+            <div class="flex space-x-3">
+                <a href="{{ route('settings.create.employer') }}">
+                    <button class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        <span>Add Employee</span>
+                    </button>
+                </a>
+                <a href="{{ route('admin.users.create') }}">
+                    <button class="px-5 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors flex items-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                        </svg>
+                        <span>Add System User</span>
+                    </button>
+                </a>
+            </div>
+        </div>
 
         </div>
 
