@@ -12,6 +12,37 @@ use Illuminate\Validation\Rules\Password;
 class UserController extends Controller
 {
     /**
+     * Ensure only admins can access these methods
+     */
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            $user = auth()->user();
+            if (!$user || !$user->isAdmin()) {
+                abort(403, 'Unauthorized action.');
+            }
+            return $next($request);
+        });
+    }
+
+    /**
+     * Display a listing of system users
+     */
+    public function index()
+    {
+        return view('pages.settings.system-users');
+    }
+
+    /**
+     * Get system users list for DataTables
+     */
+    public function list()
+    {
+        $users = User::orderBy('created_at', 'desc')->get();
+        return response()->json(['data' => $users]);
+    }
+
+    /**
      * Show the form for creating a new system user
      */
     public function create()
@@ -36,27 +67,19 @@ class UserController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
-        
-        $adminValue = $request->input('is_admin', 0); // default 0 if not set
 
-        $user = User::create([
+        $adminValue = $request->input('is_admin', 0);
+
+        User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'admin'=>$adminValue,
+            'admin' => $adminValue,
+            'activity' => 'Active',
         ]);
 
-        return redirect()->route('settings.management')
+        return redirect()->route('admin.users.index')
             ->with('success', 'System user created successfully!');
-    }
-
-    /**
-     * Display a listing of system users
-     */
-    public function index()
-    {
-        $users = User::orderBy('created_at', 'desc')->get();
-        return view('pages.settings.system-users', compact('users'));
     }
 
     /**
@@ -65,7 +88,7 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        return view('pages.settings.user-edit', compact('user'));
+        return view('pages.settings.system-user-edit', compact('user'));
     }
 
     /**
@@ -79,6 +102,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $id],
             'password' => ['nullable', 'string', 'confirmed', Password::defaults()],
+            'admin' => ['required', 'boolean', 'in:0,1']
         ]);
 
         if ($validator->fails()) {
@@ -89,15 +113,38 @@ class UserController extends Controller
 
         $user->name = $request->name;
         $user->email = $request->email;
-        
+        $user->admin = $request->admin;
+
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
-        
+
         $user->save();
 
-        return redirect()->route('settings.management')
+        return redirect()->route('admin.users.index')
             ->with('success', 'System user updated successfully!');
+    }
+
+    /**
+     * Toggle user active/inactive status
+     */
+    public function toggleStatus($id)
+    {
+        $targetUser = User::findOrFail($id);
+        $currentUser = auth()->user();
+
+        // Prevent deactivating yourself
+        if ($currentUser && $targetUser->id === $currentUser->id) {
+            return redirect()->back()
+                ->with('error', 'You cannot deactivate your own account!');
+        }
+
+        $targetUser->activity = $targetUser->activity === 'Active' ? 'Inactive' : 'Active';
+        $targetUser->save();
+
+        $status = $targetUser->activity === 'Active' ? 'activated' : 'deactivated';
+        return redirect()->route('admin.users.index')
+            ->with('success', "User has been {$status} successfully!");
     }
 
     /**
@@ -105,17 +152,18 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
-        
+        $targetUser = User::findOrFail($id);
+        $currentUser = auth()->user();
+
         // Prevent deleting yourself
-        if ($user->id === auth()->id()) {
+        if ($currentUser && $targetUser->id === $currentUser->id) {
             return redirect()->back()
                 ->with('error', 'You cannot delete your own account!');
         }
 
-        $user->delete();
+        $targetUser->delete();
 
-        return redirect()->route('settings.management')
+        return redirect()->route('admin.users.index')
             ->with('success', 'System user deleted successfully!');
     }
 }

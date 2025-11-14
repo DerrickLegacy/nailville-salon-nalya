@@ -85,4 +85,36 @@ class User extends Authenticatable
     {
         return $query->where('admin', 0);
     }
+
+    /**
+     * Get the is_active attribute based on activity column
+     */
+    public function getIsActiveAttribute()
+    {
+        return $this->activity === 'Active';
+    }
+
+    /**
+     * Set the is_active attribute to update activity column
+     */
+    public function setIsActiveAttribute($value)
+    {
+        $this->attributes['activity'] = $value ? 'Active' : 'Inactive';
+    }
+
+    /**
+     * Scope to get only active users
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('activity', 'Active');
+    }
+
+    /**
+     * Scope to get only inactive users
+     */
+    public function scopeInactive($query)
+    {
+        return $query->where('activity', 'Inactive');
+    }
 }
