@@ -1,28 +1,29 @@
 <x-authentication-layout>
     <script>
-        // Run when the page loads
         document.addEventListener("DOMContentLoaded", function() {
+            // Try to get stored user object
+            let storedUser = JSON.parse(localStorage.getItem('user') || 'null');
 
-            // 1. Get the stored user object from localStorage
-            const storedUser = JSON.parse(localStorage.getItem('user'));
-            if (!storedUser) return;
+            // Fallback to username string
+            if (!storedUser) {
+                const usernameStr = localStorage.getItem('username');
+                if (!usernameStr) return; // Nothing to show
+                storedUser = usernameStr;
+            }
 
-            // 2. Extract full name (adjust based on your stored structure)
+            // Get full name
             const fullName = storedUser.name ?? storedUser.fullname ?? storedUser;
 
-            // 3. Split full name and get last name
-            const nameParts = fullName.split(" ");
-            const lastName = nameParts[nameParts.length - 1];
+            // Get last name
+            const lastName = fullName.split(" ").pop();
 
-            // 4. Insert last name into the DOM
+            // Insert into DOM
             const usernameSpan = document.getElementById('username');
             usernameSpan.textContent = lastName;
 
-            // 5. Show the welcome message
             const welcomeMessage = document.getElementById('welcome-message');
             welcomeMessage.classList.remove('hidden');
 
-            // 6. Optional: Save last name separately
             localStorage.setItem('user_last_name', lastName);
         });
     </script>
