@@ -128,4 +128,25 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         ->name('settings.store.employer');
     Route::post('/user/profile')
         ->name('settings.my.account');
+
+    // Admin User Management (System Users)
+    Route::prefix('admin/users')->name('admin.users.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('index');
+        Route::get('/list', [App\Http\Controllers\Admin\UserController::class, 'list'])->name('list');
+        Route::get('/create-system-user', [App\Http\Controllers\Admin\UserController::class, 'create'])->name('create');
+        Route::post('/store', [App\Http\Controllers\Admin\UserController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\UserController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\UserController::class, 'update'])->name('update');
+        Route::get('/{id}/toggle-status', [App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('toggle-status');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('destroy');
+    });
+
+    // Notifications
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [App\Http\Controllers\NotificationController::class, 'index'])->name('index');
+        Route::get('/list', [App\Http\Controllers\NotificationController::class, 'list'])->name('list');
+        Route::post('/{id}/mark-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('mark-read');
+        Route::post('/mark-all-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
+        Route::delete('/{id}', [App\Http\Controllers\NotificationController::class, 'destroy'])->name('destroy');
+    });
 });

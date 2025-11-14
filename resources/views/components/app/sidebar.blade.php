@@ -1,293 +1,264 @@
-{{-- sidebar.blade.php component in components.app --}}
-<div class="min-w-fit" x-data="{ sidebarOpen: false, sidebarExpanded: true, openDropdown: null }">
+<div x-data="{ 
+    sidebarOpen: false, 
+    sidebarExpanded: true, 
+    openDropdown: null,
+    activeParent: '{{ Request::segment(1) }}',
+    activeChild: '{{ Request::segment(2) }}',
+    unreadCount: 0,
+    
+    async fetchUnreadCount() {
+        try {
+            const response = await fetch('{{ route('notifications.list') }}');
+            const data = await response.json();
+            this.unreadCount = data.unread_count || 0;
+        } catch (error) {
+            console.error('Error fetching unread count:', error);
+        }
+    },
+    
+    init() {
+        this.fetchUnreadCount();
+        // Refresh count every 30 seconds
+        setInterval(() => this.fetchUnreadCount(), 30000);
+    }
+}" class="min-w-fit">
+
     <!-- Sidebar backdrop (mobile only) -->
-    <div class="fixed inset-0 bg-gray-900/30 z-40 lg:hidden lg:z-auto transition-opacity duration-200"
-        :class="sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'" aria-hidden="true" x-cloak></div>
+    <div class="fixed inset-0 bg-gray-900 bg-opacity-30 z-40 lg:hidden transition-opacity duration-200"
+        :class="sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'"
+        @click="sidebarOpen = false"
+        aria-hidden="true"
+        x-cloak>
+    </div>
 
     <!-- Sidebar -->
     <div id="sidebar"
-        class="flex lg:flex! flex-col absolute z-40 left-0 top-0 lg:static lg:left-auto lg:top-auto lg:translate-x-0 h-[100dvh] overflow-y-scroll lg:overflow-y-auto no-scrollbar w-64 lg:w-20 lg:sidebar-expanded:!w-64 2xl:w-64! shrink-0 bg-white dark:bg-gray-800 p-4 transition-all duration-200 ease-in-out {{ $variant === 'v2' ? 'border-r border-gray-200 dark:border-gray-700/60' : 'rounded-r-2xl shadow-xs' }}"
-        :class="sidebarOpen ? 'max-lg:translate-x-0' : 'max-lg:-translate-x-64'" @click.outside="sidebarOpen = false"
+        class="flex flex-col absolute z-40 left-0 top-0 lg:static lg:left-auto lg:top-auto lg:translate-x-0 
+                h-screen overflow-y-auto no-scrollbar shrink-0 bg-white dark:bg-gray-800 
+                transition-all duration-300 ease-in-out border-r border-gray-200 dark:border-gray-700
+                shadow-lg lg:shadow-none"
+        :class="{
+             'w-64': sidebarExpanded,
+             'w-20': !sidebarExpanded,
+             'translate-x-0': sidebarOpen,
+             '-translate-x-64': !sidebarOpen
+         }"
+        @click.outside="sidebarOpen = false"
         @keydown.escape.window="sidebarOpen = false">
 
         <!-- Sidebar header -->
-        <div class="flex justify-between mb-10 pr-3 sm:px-2">
-            <!-- Close button -->
-            <button class="lg:hidden text-gray-500 hover:text-gray-400" @click.stop="sidebarOpen = !sidebarOpen"
-                aria-controls="sidebar" :aria-expanded="sidebarOpen">
-                <span class="sr-only">Close sidebar</span>
-                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                    <path d="M10.7 18.7l1.4-1.4L7.8 13H20v-2H7.8l4.3-4.3-1.4-1.4L4 12z" />
+        <div class="flex items-center justify-between px-4 py-6 border-b border-gray-200 dark:border-gray-700">
+            <!-- Close button (mobile) -->
+            <button class="lg:hidden text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                @click="sidebarOpen = false"
+                aria-label="Close sidebar">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
+
             <!-- Logo -->
-            <a class="block" href="{{ route('dashboard') }}">
-                <img class="object-cover object-center rounded-full border-2 border-purple-600"
-                    src="{{ asset('images/small_nailville_logo_50x50.jpg') }}" alt="Authentication image" />
+            <a href="{{ route('dashboard') }}" class="flex items-center space-x-3">
+                <img class="w-10 h-10 rounded-full border-2 border-violet-500 object-cover"
+                    src="{{ asset('images/small_nailville_logo_50x50.jpg') }}"
+                    alt="Nailville Logo" />
+                <span class="font-bold text-lg text-gray-800 dark:text-white transition-opacity duration-300"
+                    :class="sidebarExpanded ? 'opacity-100' : 'opacity-0 w-0'">
+                    Nailville
+                </span>
             </a>
         </div>
 
-        <!-- Links -->
-        <div class="space-y-8">
-            <div>
-                <h3 class="text-xs uppercase text-gray-400 dark:text-gray-500 font-semibold pl-3">
-                    <span class="hidden lg:block lg:sidebar-expanded:hidden 2xl:hidden text-center w-6"
-                        aria-hidden="true">•••</span>
-                    <span class="lg:hidden lg:sidebar-expanded:block 2xl:block">Pages</span>
-                </h3>
-                <ul class="mt-3">
+        <!-- Navigation Links -->
+        <nav class="flex-1 px-3 py-6 space-y-2">
 
-                    {{-- Dashboard --}}
-                    <li
-                        class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-linear-to-r @if (in_array(Request::segment(1), ['dashboard'])) from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04] @endif">
-                        <a href="#0"
-                            class="block text-gray-800 dark:text-gray-100 truncate transition @if (!in_array(Request::segment(1), ['dashboard'])) hover:text-gray-900 dark:hover:text-white @endif"
-                            @click.prevent="openDropdown = (openDropdown === 'dashboard' ? null : 'dashboard'); sidebarExpanded = true">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <svg class="shrink-0 fill-current @if (in_array(Request::segment(1), ['dashboard'])) text-violet-500 @else text-gray-400 dark:text-gray-500 @endif"
-                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                        viewBox="0 0 16 16">
-                                        <path
-                                            d="M5.936.278A7.983 7.983 0 0 1 8 0a8 8 0 1 1-8 8c0-.722.104-1.413.278-2.064a1 1 0 1 1 1.932.516A5.99 5.99 0 0 0 2 8a6 6 0 1 0 6-6c-.53 0-1.045.076-1.548.21A1 1 0 1 1 5.936.278Z" />
-                                        <path
-                                            d="M6.068 7.482A2.003 2.003 0 0 0 8 10a2 2 0 1 0-.518-3.932L3.707 2.293a1 1 0 0 0-1.414 1.414l3.775 3.775Z" />
-                                    </svg>
-                                    <span
-                                        class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Dashboard</span>
-                                </div>
-                                <div
-                                    class="flex shrink-0 ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                    <svg class="w-3 h-3 shrink-0 ml-1 fill-current text-gray-400 dark:text-gray-500"
-                                        :class="openDropdown === 'dashboard' ? 'rotate-180' : 'rotate-0'"
-                                        viewBox="0 0 12 12">
-                                        <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </a>
-                        <ul class="pl-8 mt-1" x-show="openDropdown === 'dashboard'" x-transition>
-                            <li>
-                                <a href="{{ route('dashboard') }}"
-                                    class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-sm">
-                                    Main
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+            <!-- Dashboard -->
+            <a href="{{ route('dashboard') }}"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200
+                      {{ Request::is('dashboard*') ? 'bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                </svg>
+                <span class="font-medium text-sm transition-opacity duration-300"
+                    :class="sidebarExpanded ? 'opacity-100' : 'opacity-0 w-0'">
+                    Dashboard
+                </span>
+            </a>
 
-                    {{-- Transactions --}}
-                    <li
-                        class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-linear-to-r @if (in_array(Request::segment(1), ['finance'])) from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04] @endif">
-                        <a href="#0"
-                            class="block text-gray-800 dark:text-gray-100 truncate transition @if (!in_array(Request::segment(1), ['finance'])) hover:text-gray-900 dark:hover:text-white @endif"
-                            @click.prevent="openDropdown = (openDropdown === 'finance' ? null : 'finance'); sidebarExpanded = true">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <svg class="shrink-0 fill-current @if (in_array(Request::segment(1), ['finance'])) text-violet-500 @else text-gray-400 dark:text-gray-500 @endif"
-                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                        viewBox="0 0 16 16">
-                                        <path
-                                            d="M6 0a6 6 0 0 0-6 6c0 1.077.304 2.062.78 2.912a1 1 0 1 0 1.745-.976A3.945 3.945 0 0 1 2 6a4 4 0 0 1 4-4c.693 0 1.344.194 1.936.525A1 1 0 1 0 8.912.779 5.944 5.944 0 0 0 6 0Z" />
-                                        <path
-                                            d="M10 4a6 6 0 1 0 0 12 6 6 0 0 0 0-12Zm-4 6a4 4 0 1 1 8 0 4 4 0 0 1-8 0Z" />
-                                    </svg>
-                                    <span
-                                        class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Transactions</span>
-                                </div>
-                                <div
-                                    class="flex shrink-0 ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                    <svg class="w-3 h-3 shrink-0 ml-1 fill-current text-gray-400 dark:text-gray-500"
-                                        :class="openDropdown === 'finance' ? 'rotate-180' : 'rotate-0'"
-                                        viewBox="0 0 12 12">
-                                        <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </a>
-                        <ul class="pl-8 mt-1" x-show="openDropdown === 'finance'" x-transition>
-                            <li><a href="{{ route('transactions.income', 'income') }}"
-                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Income
-                                    Transactions</a></li>
-                            <li><a href="{{ route('transactions.expense', 'expense') }}"
-                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Expense
-                                    Transactions</a></li>
-                        </ul>
-                    </li>
-
-                    {{-- Reports --}}
-                    <li class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-linear-to-r">
-                        <a href="#0" class="block text-gray-800 dark:text-gray-100 truncate transition"
-                            @click.prevent="openDropdown = (openDropdown === 'reports' ? null : 'reports'); sidebarExpanded = true">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <svg class="shrink-0 fill-current text-gray-400 dark:text-gray-500"
-                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                        viewBox="0 0 16 16">
-                                        <path
-                                            d="M6 0a6 6 0 0 0-6 6c0 1.077.304 2.062.78 2.912a1 1 0 1 0 1.745-.976A3.945 3.945 0 0 1 2 6a4 4 0 0 1 4-4c.693 0 1.344.194 1.936.525A1 1 0 1 0 8.912.779 5.944 5.944 0 0 0 6 0Z" />
-                                        <path
-                                            d="M10 4a6 6 0 1 0 0 12 6 6 0 0 0 0-12Zm-4 6a4 4 0 1 1 8 0 4 4 0 0 1-8 0Z" />
-                                    </svg>
-                                    <span
-                                        class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Reports</span>
-                                </div>
-                                <div
-                                    class="flex shrink-0 ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                    <svg class="w-3 h-3 shrink-0 ml-1 fill-current text-gray-400 dark:text-gray-500"
-                                        :class="openDropdown === 'reports' ? 'rotate-180' : 'rotate-0'"
-                                        viewBox="0 0 12 12">
-                                        <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </a>
-                        <ul class="pl-8 mt-1" x-show="openDropdown === 'reports'" x-transition>
-                            <li><a href="{{ route('reports.income') }}"
-                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Income</a>
-                            </li>
-                            <li><a href="{{ route('reports.expense') }}"
-                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Expense</a>
-                            </li>
-                            <li><a href="{{ route('reports.net.income') }}"
-                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Net Income</a>
-                            </li>
-
-                        </ul>
-                    </li>
-
-                    {{-- Inventory --}}
-                    <li class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-linear-to-r">
-                        <a href="#0" class="block text-gray-800 dark:text-gray-100 truncate transition"
-                            @click.prevent="openDropdown = (openDropdown === 'inventory' ? null : 'inventory'); sidebarExpanded = true">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <svg class="shrink-0 fill-current text-gray-400 dark:text-gray-500"
-                                        xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            d="M21 16V8c0-.5-.25-.9-.67-1.13l-8-4.5c-.2-.12-.46-.12-.66 0l-8 4.5C3.25 7.1 3 7.5 3 8v8c0 .36.19.7.5.89l8 4.8c.3.18.7.18 1 0l8-4.8c.31-.19.5-.53.5-.89ZM12 4.15 18.74 8 12 11.85 5.26 8 12 4.15ZM5 9.46l6 3.6v6.53l-6-3.6V9.46Zm8 10.13v-6.53l6-3.6v6.53l-6 3.6Z" />
-                                    </svg>
-                                    <span
-                                        class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Inventory</span>
-                                </div>
-                                <div
-                                    class="flex shrink-0 ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                    <svg class="w-3 h-3 shrink-0 ml-1 fill-current text-gray-400 dark:text-gray-500"
-                                        :class="openDropdown === 'inventory' ? 'rotate-180' : 'rotate-0'"
-                                        viewBox="0 0 12 12">
-                                        <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </a>
-                        <ul class="pl-8 mt-1" x-show="openDropdown === 'inventory'" x-transition>
-                            <li><a href="{{ route('inventory.manage') }}"
-                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Manage
-                                    Items</a></li>
-                            {{-- <li><a href="{{ route('inventory.price.changes') }}"
-                            class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Price
-                            Changes</a>
-                    </li> --}}
-                </ul>
-                </li>
-
-                {{-- Settings --}}
-                <li class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-linear-to-r">
-                    <a href="#0" class="block text-gray-800 dark:text-gray-100 truncate transition"
-                        @click.prevent="openDropdown = (openDropdown === 'settings' ? null : 'settings'); sidebarExpanded = true">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <svg class="shrink-0 fill-current text-gray-400 dark:text-gray-500"
-                                    xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                    viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd"
-                                        d="M10.5 1a3.502 3.502 0 0 1 3.355 2.5H15a1 1 0 1 1 0 2h-1.145a3.502 3.502 0 0 1-6.71 0H1a1 1 0 0 1 0-2h6.145A3.502 3.502 0 0 1 10.5 1ZM9 4.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM5.5 9a3.502 3.502 0 0 1 3.355 2.5H15a1 1 0 1 1 0 2H8.855a3.502 3.502 0 0 1-6.71 0H1a1 1 0 1 1 0-2h1.145A3.502 3.502 0 0 1 5.5 9ZM4 12.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z" />
-                                </svg>
-                                <span
-                                    class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Settings</span>
-                            </div>
-                            <div
-                                class="flex shrink-0 ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                <svg class="w-3 h-3 shrink-0 ml-1 fill-current text-gray-400 dark:text-gray-500"
-                                    :class="openDropdown === 'settings' ? 'rotate-180' : 'rotate-0'"
-                                    viewBox="0 0 12 12">
-                                    <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
-                                </svg>
-                            </div>
-                        </div>
-                    </a>
-                    <ul class="pl-8 mt-1" x-show="openDropdown === 'settings'" x-transition>
-                        <li><a href="{{ route('settings.my.account') }}"
-                                class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">My
-                                Account</a></li>
-                        <li><a href="{{ route('settings.management') }}"
-                                class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">User
-                                Management</a></li>
-                    </ul>
-                </li>
-                </ul>
-            </div>
-            <!-- More group -->
-            <div>
-                <h3 class="text-xs uppercase text-gray-400 dark:text-gray-500 font-semibold pl-3"> <span
-                        class="hidden lg:block lg:sidebar-expanded:hidden 2xl:hidden text-center w-6"
-                        aria-hidden="true">•••</span> <span
-                        class="lg:hidden lg:sidebar-expanded:block 2xl:block">More</span> </h3>
-                <ul class="mt-3"> <!-- Onboarding -->
-                    <li class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0" x-data="{ open: false }"> <a
-                            class="block text-gray-800 dark:text-gray-100 truncate transition"
-                            :class="open ? '' : 'hover:text-gray-900 dark:hover:text-white'" href="#0"
-                            @click.prevent="open = !open; sidebarExpanded = true">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center"> <svg
-                                        class="shrink-0 fill-current text-gray-400 dark:text-gray-500"
-                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                        viewBox="0 0 16 16">
-                                        <path
-                                            d="M6.668.714a1 1 0 0 1-.673 1.244 6.014 6.014 0 0 0-4.037 4.037 1 1 0 1 1-1.916-.571A8.014 8.014 0 0 1 5.425.041a1 1 0 0 1 1.243.673ZM7.71 4.709a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM9.995.04a1 1 0 1 0-.57 1.918 6.014 6.014 0 0 1 4.036 4.037 1 1 0 0 0 1.917-.571A8.014 8.014 0 0 0 9.995.041ZM14.705 8.75a1 1 0 0 1 .673 1.244 8.014 8.014 0 0 1-5.383 5.384 1 1 0 0 1-.57-1.917 6.014 6.014 0 0 0 4.036-4.037 1 1 0 0 1 1.244-.673ZM1.958 9.424a1 1 0 0 0-1.916.57 8.014 8.014 0 0 0 5.383 5.384 1 1 0 0 0 .57-1.917 6.014 6.014 0 0 1-4.037-4.037Z" />
-                                    </svg> <span
-                                        class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Configurations</span>
-                                </div> <!-- Icon -->
-                                <div
-                                    class="flex shrink-0 ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                    <svg class="w-3 h-3 shrink-0 ml-1 fill-current text-gray-400 dark:text-gray-500"
-                                        :class="{ 'rotate-180': open }" viewBox="0 0 12 12">
-                                        <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </a>
-                        <div class="lg:hidden lg:sidebar-expanded:block 2xl:block">
-                            <ul class="pl-8 mt-1 @if (!in_array(Request::segment(1), ['onboarding'])) {{ 'hidden' }} @endif"
-                                :class="open ? 'block!' : 'hidden'">
-                                <li class="mb-1 last:mb-0"> <a
-                                        class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate"
-                                        href="{{ route('configurations.settings') }}"> <span
-                                            class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Goals
-                                        </span> </a> </li>
-
-                            </ul>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Sidebar expand/collapse button -->
-        <div class="pt-3 inline-flex justify-end mt-auto">
-            <div class="w-12 pl-4 pr-3 py-2">
-                <button
-                    class="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400 transition-colors"
-                    @click="sidebarExpanded = !sidebarExpanded">
-                    <span class="sr-only">Expand / collapse sidebar</span>
-                    <svg class="shrink-0 fill-current text-gray-400 dark:text-gray-500 sidebar-expanded:rotate-180"
-                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-                        <path
-                            d="M15 16a1 1 0 0 1-1-1V1a1 1 0 1 1 2 0v14a1 1 0 0 1-1 1ZM8.586 7H1a1 1 0 1 0 0 2h7.586l-2.793 2.793a1 1 0 1 0 1.414 1.414l4.5-4.5A.997.997 0 0 0 12 8.01M11.924 7.617a.997.997 0 0 0-.217-.324l-4.5-4.5a1 1 0 0 0-1.414 1.414L8.586 7M12 7.99a.996.996 0 0 0-.076-.373Z" />
+            <!-- Transactions -->
+            <div class="space-y-1">
+                <button @click="openDropdown = (openDropdown === 'transactions' ? null : 'transactions'); activeParent='transactions'"
+                    class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200
+                               {{ Request::is('transactions*') ? 'bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium text-sm transition-opacity duration-300"
+                            :class="sidebarExpanded ? 'opacity-100' : 'opacity-0 w-0'">
+                            Transactions
+                        </span>
+                    </div>
+                    <svg class="w-4 h-4 transition-transform duration-200"
+                        :class="{'rotate-180': openDropdown === 'transactions', 'opacity-0': !sidebarExpanded}"
+                        fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>
                 </button>
+
+                <div x-show="openDropdown === 'transactions'"
+                    x-transition
+                    class="pl-11 space-y-1">
+                    <a href="{{ route('transactions.income') }}"
+                        @click="activeChild='income'"
+                        :class="activeChild==='income' ? 'text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50'"
+                        class="block px-3 py-2 text-sm rounded-lg transition-colors">
+                        Income
+                    </a>
+                    <a href="{{ route('transactions.expense') }}"
+                        @click="activeChild='expense'"
+                        :class="activeChild==='expense' ? 'text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50'"
+                        class="block px-3 py-2 text-sm rounded-lg transition-colors">
+                        Expenses
+                    </a>
+                </div>
             </div>
+
+            <!-- Reports -->
+            <div class="space-y-1">
+                <button @click="openDropdown = (openDropdown === 'reports' ? null : 'reports'); activeParent='reports'"
+                    class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200
+                               {{ Request::is('reports*') ? 'bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                        </svg>
+                        <span class="font-medium text-sm transition-opacity duration-300"
+                            :class="sidebarExpanded ? 'opacity-100' : 'opacity-0 w-0'">
+                            Reports
+                        </span>
+                    </div>
+                    <svg class="w-4 h-4 transition-transform duration-200"
+                        :class="{'rotate-180': openDropdown === 'reports', 'opacity-0': !sidebarExpanded}"
+                        fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+
+                <div x-show="openDropdown === 'reports'"
+                    x-transition
+                    class="pl-11 space-y-1">
+                    <a href="{{ route('reports.income') }}" @click="activeChild='income_report'"
+                        :class="activeChild==='income_report' ? 'text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50'"
+                        class="block px-3 py-2 text-sm rounded-lg transition-colors">Income Report</a>
+
+                    <a href="{{ route('reports.expense') }}" @click="activeChild='expense_report'"
+                        :class="activeChild==='expense_report' ? 'text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50'"
+                        class="block px-3 py-2 text-sm rounded-lg transition-colors">Expense Report</a>
+
+                    <a href="{{ route('reports.net.income') }}" @click="activeChild='net_income'"
+                        :class="activeChild==='net_income' ? 'text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50'"
+                        class="block px-3 py-2 text-sm rounded-lg transition-colors">Net Income</a>
+                </div>
+            </div>
+
+            <!-- Inventory -->
+            <a href="{{ route('inventory.manage') }}"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200
+                      {{ Request::is('inventory*') ? 'bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
+                </svg>
+                <span class="font-medium text-sm transition-opacity duration-300"
+                    :class="sidebarExpanded ? 'opacity-100' : 'opacity-0 w-0'">
+                    Inventory
+                </span>
+            </a>
+
+            <!-- Notifications -->
+            <a href="{{ route('notifications.index') }}"
+                class="relative flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200
+                      {{ Request::is('notifications*') ? 'bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                <div class="relative flex-shrink-0">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                    </svg>
+                </div>
+                <span class="font-medium text-sm transition-opacity duration-300"
+                    :class="sidebarExpanded ? 'opacity-100' : 'opacity-0 w-0'">
+                    Notifications
+                </span>
+                <span x-show="unreadCount > 0 && sidebarExpanded"
+                    class="ml-auto px-2 py-0.5 text-xs font-semibold text-white bg-red-500 rounded-full"
+                    x-text="unreadCount"
+                    x-cloak></span>
+            </a>
+
+            <!-- Settings -->
+            <div class="space-y-1">
+                <button @click="openDropdown = (openDropdown === 'settings' ? null : 'settings'); activeParent='settings'"
+                    class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200
+                               {{ Request::is('settings*') ? 'bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium text-sm transition-opacity duration-300"
+                            :class="sidebarExpanded ? 'opacity-100' : 'opacity-0 w-0'">
+                            Settings & Mgt
+                        </span>
+                    </div>
+                    <svg class="w-4 h-4 transition-transform duration-200"
+                        :class="{'rotate-180': openDropdown === 'settings', 'opacity-0': !sidebarExpanded}"
+                        fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+
+                <div x-show="openDropdown === 'settings'"
+                    x-transition
+                    class="pl-11 space-y-1">
+                    <a href="{{ route('settings.my.account') }}"
+                        class="block px-3 py-2 text-sm rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        My Account
+                    </a>
+                    <a href="{{ route('settings.management') }}"
+                        class="block px-3 py-2 text-sm rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        User Management
+                    </a>
+
+                    @if (Auth::user()?->isAdmin())
+                    <a href="{{ route('admin.users.index') }}"
+                        class="block px-3 py-2 text-sm rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        System Users
+                    </a>
+                    @endif
+
+                    <a href="{{ route('configurations.settings') }}"
+                        class="block px-3 py-2 text-sm rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        App Configuration
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Sidebar Toggle Button -->
+        <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+            <button @click="sidebarExpanded = !sidebarExpanded"
+                class="w-full flex items-center justify-center px-3 py-2 rounded-lg
+                           text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700
+                           transition-all duration-200"
+                :title="sidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar'">
+                <svg class="w-5 h-5 transition-transform duration-300"
+                    :class="{'rotate-180': !sidebarExpanded}"
+                    fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                <span class="ml-2 text-sm font-medium transition-opacity duration-300"
+                    :class="sidebarExpanded ? 'opacity-100' : 'opacity-0 w-0'">
+                    Collapse
+                </span>
+            </button>
         </div>
     </div>
 </div>

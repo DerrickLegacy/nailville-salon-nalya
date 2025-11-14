@@ -73,7 +73,7 @@
 
                     <div>
                         <p class="text-xs uppercase text-gray-400">Date</p>
-                        <p class="text-gray-800">{{ $transaction->created_at->format('d M Y, H:i') }}</p>
+                        <p class="text-gray-800">{{ $transaction->date ? $transaction->date->format('d M Y') : 'N/A' }}</p>
                     </div>
 
                     <div>
@@ -129,7 +129,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Create a shorter, more concise receipt text
             let receiptText =
-                `Kenvies Beauty:{{ $transaction->transaction_id }}:{{ $transaction->receipt_id ?? 'N/A' }}:{{ $transaction->customer_name ?? 'Walk-in' }}:{{ number_format($transaction->amount, 0) }}:{{ $transaction->payment_method }}:{{ $transaction->created_at->format('dMy') }}`;
+                `Kenvies Beauty:{{ $transaction->transaction_id }}:{{ $transaction->receipt_id ?? 'N/A' }}:{{ $transaction->customer_name ?? 'Walk-in' }}:{{ number_format($transaction->amount, 0) }}:{{ $transaction->payment_method }}:{{ $transaction->date ? $transaction->date->format('dMy') : now()->format('dMy') }}`;
 
             // Remove any special characters that might cause issues
             receiptText = receiptText.replace(/[^\w\s:.-]/gi, '');

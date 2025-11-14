@@ -37,6 +37,20 @@
                 </div>
             </div>
 
+            <!-- Card 3: Today Sales -->
+            <div class="bg-orange-400 text-white rounded-xl shadow p-4 flex items-center space-x-4">
+                <div class="p-3 bg-orange-500 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.5 6h13m-11-6v6m4-6v6m-8 0h16" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm">Today Sales</p>
+                    <p class="text-lg-- font-semibold">↑{{ number_format($cardData['today_sales']) }} Ugx</p>
+                </div>
+            </div>
+
             <!-- Card 2: This Month Invoices -->
             <div class="bg-pink-400 text-white rounded-xl shadow p-4 flex items-center space-x-4">
                 <div class="p-3 bg-pink-500 rounded-lg">
@@ -51,19 +65,7 @@
                 </div>
             </div>
 
-            <!-- Card 3: Today Sales -->
-            <div class="bg-orange-400 text-white rounded-xl shadow p-4 flex items-center space-x-4">
-                <div class="p-3 bg-orange-500 rounded-lg">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.5 6h13m-11-6v6m4-6v6m-8 0h16" />
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-sm">Today Sales</p>
-                    <p class="text-lg-- font-semibold">↑{{ number_format($cardData['today_sales']) }} Ugx</p>
-                </div>
-            </div>
+            
 
             <!-- Card 4: This Month Sales -->
             <div class="bg-green-400 text-white rounded-xl shadow p-4 flex items-center space-x-4">
@@ -252,7 +254,7 @@
                     <h3 class="text-gray-800 dark:text-gray-100 font-semibold mb-0">
                         Monthly Transactions</h3>
                     <p>Expenses Vs Income </p>
-                    <small><?= date("F") ?></small>
+                    <small><?php echo date("F") ?></small>
 
                     <div id="transactions-bar-chart-month" class="w-full"
                         style="min-height: 200px; height: 350px; max-height: 50vw;">
@@ -272,7 +274,7 @@
                     <h3 class="text-gray-800 dark:text-gray-100 font-semibold mb-0">
                         Year Transactions</h3>
                     <p>Expenses Vs Income</p>
-                    <small><?= date("Y") ?></small>
+                    <small><?php echo date("Y") ?></small>
                     <div id="transactions-bar-chart-year" class="w-full"
                         style="min-height: 200px; height: 350px; max-height: 50vw;">
                     </div>

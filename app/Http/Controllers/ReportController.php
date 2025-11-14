@@ -358,24 +358,33 @@ class ReportController extends Controller
                 break;
             case 'Month Filter':
 
-                $month = $request->input('month', null);
-                $year = $request->input('year', Date('Y'));
+                $month = $request->input('month'); // e.g. 11
+                $year = $request->input('year', date('Y')); // default current year if not provided
 
+                // If a month is selected (with or without year)
                 if ($month) {
                     $startDate = Carbon::createFromDate($year, $month, 1)->startOfDay();
                     $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth()->endOfDay();
+
                     $expected_income_target = $monthlyNetIncomeTarget;
-                } else {
+                }
+                // If only a year is selected
+                elseif ($year) {
+                    $startDate = Carbon::createFromDate($year, 1, 1)->startOfDay();
+                    $endDate = Carbon::createFromDate($year, 12, 31)->endOfDay();
+
+                    $expected_income_target = $monthlyNetIncomeTarget * 12;
+                }
+                // Otherwise (default: today)
+                else {
                     $startDate = Carbon::today()->startOfDay();
                     $endDate = Carbon::today()->endOfDay();
+
                     $expected_income_target = $monthlyNetIncomeTarget / 30;
                 }
 
-                if ($year) {
-                    $startDate = Carbon::createFromDate($year, 1, 1)->startOfDay();
-                    $endDate = Carbon::createFromDate($year, 12, 31)->endOfDay();
-                    $expected_income_target = $monthlyNetIncomeTarget * 12;
-                }
+                break;
+
                 break;
             case 'Custom Range':
                 try {

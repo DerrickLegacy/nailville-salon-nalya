@@ -1,0 +1,3 @@
+/opt/lampp/bin/mysqldump -u root -p --no-data u547313549_nailville \
+--socket=/opt/lampp/var/mysql/mysql.sock \
+> nailville_schema.sql
