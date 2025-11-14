@@ -1,7 +1,6 @@
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-
+// vite.config.js
 export default defineConfig({
+    base: '/public/',
     plugins: [
         laravel({
             input: [
