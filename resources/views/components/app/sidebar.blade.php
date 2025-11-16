@@ -67,14 +67,7 @@
 
         <!-- Sidebar header -->
         <div class="flex items-center justify-between px-4 py-6 border-b border-gray-200 dark:border-gray-700">
-            <!-- Close button (mobile) -->
-            <button class="lg:hidden text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-                @click="sidebarOpen = false"
-                aria-label="Close sidebar">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
+
 
             <!-- Logo -->
             <a href="{{ route('dashboard') }}" class="flex items-center space-x-3">
@@ -86,6 +79,15 @@
                     Nailville
                 </span>
             </a>
+
+            <!-- Close button (mobile) -->
+            <button class="lg:hidden text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                @click="sidebarOpen = false"
+                aria-label="Close sidebar">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
 
         <!-- Navigation Links -->

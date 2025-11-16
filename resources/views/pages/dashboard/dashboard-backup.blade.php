@@ -1,133 +1,135 @@
 <x-app-layout>
-    <div class="px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 w-full max-w-full mx-auto">
+    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
 
         <!-- Dashboard actions -->
-        <div class="sm:flex sm:justify-between sm:items-center mb-4 sm:mb-6 lg:mb-8">
+        <div class="sm:flex sm:justify-between sm:items-center mb-8">
 
-            <div class="mb-3 sm:mb-0">
-                <h1 class="text-lg sm:text-xl md:text-2xl text-gray-800 dark:text-gray-100 font-bold">Dashboard</h1>
+            <div class="mb-4 sm:mb-0">
+                <h1 class="text-xl md:text-2xl text-gray-800 dark:text-gray-100 font-bold">Dashboard</h1>
             </div>
 
-            <div class="flex flex-wrap gap-2 justify-start sm:justify-end">
+            <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
                 <x-dropdown-filter align="right" />
                 <button
-                    class="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white text-xs sm:text-sm px-3 py-2">
-                    <svg class="fill-current shrink-0 w-4 h-4 sm:mr-1" width="16" height="16" viewBox="0 0 16 16">
+                    class="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white">
+                    <svg class="fill-current shrink-0 xs:hidden" width="16" height="16" viewBox="0 0 16 16">
                         <path
                             d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
                     </svg>
-                    <span class="hidden sm:inline text-xs sm:text-sm">Add View</span>
+                    <span class="max-xs:sr-only">Add View</span>
                 </button>
             </div>
         </div>
 
         <!-- Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-0 mb-6 ">
             <!-- Card 1: Today Invoices -->
-            <div class="bg-teal-400 text-white rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 flex items-center space-x-3">
-                <div class="p-2 sm:p-3 bg-teal-500 rounded-lg flex-shrink-0">
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <div class="bg-teal-400 text-white rounded-xl shadow p-4 flex items-center space-x-4">
+                <div class="p-3 bg-teal-500 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h3l2 2h4l2-2h3a2 2 0 012 2v12a2 2 0 01-2 2z" />
                     </svg>
                 </div>
-                <div class="min-w-0 flex-1">
-                    <p class="text-xs sm:text-sm truncate">Today Invoices</p>
-                    <p class="text-base sm:text-lg font-semibold">+{{ $cardData['today_invoices'] }}</p>
+                <div>
+                    <p class="text-sm">Today Invoices</p>
+                    <p class="text-lg-- font-semibold">+{{ $cardData['today_invoices'] }}</p>
                 </div>
             </div>
 
             <!-- Card 3: Today Sales -->
-            <div class="bg-orange-400 text-white rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 flex items-center space-x-3">
-                <div class="p-2 sm:p-3 bg-orange-500 rounded-lg flex-shrink-0">
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <div class="bg-orange-400 text-white rounded-xl shadow p-4 flex items-center space-x-4">
+                <div class="p-3 bg-orange-500 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.5 6h13m-11-6v6m4-6v6m-8 0h16" />
                     </svg>
                 </div>
-                <div class="min-w-0 flex-1">
-                    <p class="text-xs sm:text-sm truncate">Today Sales</p>
-                    <p class="text-base sm:text-lg font-semibold truncate">↑{{ number_format($cardData['today_sales']) }} Ugx</p>
+                <div>
+                    <p class="text-sm">Today Sales</p>
+                    <p class="text-lg-- font-semibold">↑{{ number_format($cardData['today_sales']) }} Ugx</p>
                 </div>
             </div>
 
             <!-- Card 2: This Month Invoices -->
-            <div class="bg-pink-400 text-white rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 flex items-center space-x-3">
-                <div class="p-2 sm:p-3 bg-pink-500 rounded-lg flex-shrink-0">
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <div class="bg-pink-400 text-white rounded-xl shadow p-4 flex items-center space-x-4">
+                <div class="p-3 bg-pink-500 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h3l2 2h4l2-2h3a2 2 0 012 2v12a2 2 0 01-2 2z" />
                     </svg>
                 </div>
-                <div class="min-w-0 flex-1">
-                    <p class="text-xs sm:text-sm truncate">This Month Invoices</p>
-                    <p class="text-base sm:text-lg font-semibold">↑{{ $cardData['month_invoices'] }}</p>
+                <div>
+                    <p class="text-sm">This Month Invoices</p>
+                    <p class="text-lg-- font-semibold">↑{{ $cardData['month_invoices'] }}</p>
                 </div>
             </div>
 
+
+
             <!-- Card 4: This Month Sales -->
-            <div class="bg-green-400 text-white rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 flex items-center space-x-3">
-                <div class="p-2 sm:p-3 bg-green-500 rounded-lg flex-shrink-0">
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <div class="bg-green-400 text-white rounded-xl shadow p-4 flex items-center space-x-4">
+                <div class="p-3 bg-green-500 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V4m0 16v-4" />
                     </svg>
                 </div>
-                <div class="min-w-0 flex-1">
-                    <p class="text-xs sm:text-sm truncate">This Month Sales</p>
-                    <p class="text-base sm:text-lg font-semibold truncate">↑{{ number_format($cardData['month_sales']) }} Ugx</p>
+                <div>
+                    <p class="text-sm">This Month Sales</p>
+                    <p class="text-lg-- font-semibold">↑{{ number_format($cardData['month_sales']) }} Ugx</p>
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-            <div class="lg:col-span-3 space-y-4 sm:space-y-6"> <!-- left side -->
+            <div class="lg:col-span-3 space-y-6"> <!-- left side -->
 
-                <h2 class="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 flex justify-start">Todays Sales Vs
+                <h2 class=" font-semibold text-gray-800 dark:text-gray-100 flex justify-start">Todays Sales Vs
                     Previous Day</h2>
-                <div class="grid grid-cols-12 gap-3 sm:gap-4 lg:gap-6">
+                <div class="grid grid-cols-12 gap-6">
                     <x-dashboard.dashboard-card-01 :getTodaysIncomeSales="$getTodaysIncomeSales" />
                     <x-dashboard.dashboard-card-02 :getTodaysExpense="$getTodaysExpense" />
                     <x-dashboard.dashboard-card-03 :getTodaysNetIncome="$getTodaysNetIncome" />
                 </div>
 
-                <div class="space-y-3 sm:space-y-4">
-                    <h2 class="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 flex justify-start">Previous 30
+                <div class="space-y-6">
+                    <h2 class="text-lg-- font-semibold text-gray-800 dark:text-gray-100 flex justify-start">Previous 30
                         Days
                         Transactions</h2>
-                    <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg sm:rounded-xl p-3 sm:p-4">
+                    <div class="bg-white dark:bg-gray-800 shadow-xs rounded-xl p-4">
                         <div id="myfirstchart" class="w-full"
-                            style="min-height: 200px; height: 300px; max-height: 60vw;">
+                            style="min-height: 250px; height: 400px; max-height: 60vw;">
                         </div>
                     </div>
                 </div>
 
-                <div class="space-y-3 sm:space-y-4">
-                    <h2 class="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 flex justify-start">
+                <div class="space-y-6">
+                    <h2 class="text-lg-- font-semibold text-gray-800 dark:text-gray-100 flex justify-start">
                         <?php echo date('F'); ?> Transaction Goals
                     </h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         @foreach ($monthlyBusinessGoals as $card)
-                        <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-5 lg:p-6 flex flex-col">
-                            <div class="flex justify-between items-start gap-3">
-                                <div class="min-w-0 flex-1">
+                        <div class="bg-white rounded-xl shadow p-6 flex flex-col">
+                            <div class="flex justify-between items-start">
+                                <div>
                                     <!-- Percentage -->
-                                    <p class="text-{{ $card['color'] }}-500 font-bold text-base sm:text-lg">
+                                    <p class="text-{{ $card['color'] }}-500 font-bold text-lg--">
                                         {{ $card['percentage'] }}%
                                     </p>
 
                                     <!-- Title -->
-                                    <p class="text-gray-600 dark:text-gray-400 text-xs sm:text-sm truncate">{{ $card['title'] }}</p>
+                                    <p class="text-gray-600">{{ $card['title'] }}</p>
 
                                     <!-- Values -->
-                                    <p class="text-gray-800 dark:text-gray-200 font-semibold text-xs sm:text-sm mt-1 truncate">
+                                    <p class="text-gray-800 font-semibold text-sm mt-1">
                                         {{ number_format($card['value']) }} Ugx /
                                         {{ number_format($card['target']) }} Ugx
                                     </p>
                                 </div>
 
                                 <!-- Icon -->
-                                <div class="bg-{{ $card['color'] }}-100 dark:bg-{{ $card['color'] }}-900/20 p-2 sm:p-3 rounded-lg flex-shrink-0">
+                                <div class="bg-{{ $card['color'] }}-100 p-3 rounded-lg">
                                     @if ($card['icon'] === 'money')
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                         class="w-6 h-6 text-{{ $card['color'] }}-500" fill="none"

@@ -32,24 +32,20 @@ if ($isV3) $beforeClasses .= ' dark:before:bg-gray-900';
                     @click.stop="sidebarOpen = !sidebarOpen"
                     aria-controls="sidebar"
                     :aria-expanded="sidebarOpen">
-
                     <span class="sr-only">Open sidebar</span>
-
                     <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
                         <rect x="4" y="5" width="16" height="2" />
                         <rect x="4" y="11" width="16" height="2" />
                         <rect x="4" y="17" width="16" height="2" />
                     </svg>
-
                 </button>
-
             </div>
 
             <!-- Right Section -->
-            <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-2">
 
                 <!-- Notifications -->
-                <x-dropdown-notifications align="right" />
+                <x-dropdown-notifications align=" right" />
 
                 <!-- Theme toggle -->
                 <x-theme-toggle />
