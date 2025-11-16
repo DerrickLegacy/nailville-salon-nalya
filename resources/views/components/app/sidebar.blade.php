@@ -1,6 +1,4 @@
 <div x-data="{ 
-    sidebarOpen: false, 
-    sidebarExpanded: true, 
     openDropdown: null,
     activeParent: '{{ Request::segment(1) }}',
     activeChild: '{{ Request::segment(2) }}',
@@ -8,17 +6,38 @@
     
     async fetchUnreadCount() {
         try {
-            const response = await fetch('{{ route('notifications.list') }}');
+            const response = await fetch('{{ route('notifications.list') }}', {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]')?.content || ''
+                },
+                credentials: 'same-origin'
+            });
+            
+            if (!response.ok) {
+                console.warn('Failed to fetch notifications:', response.status);
+                this.unreadCount = 0;
+                return;
+            }
+            
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                console.warn('Response is not JSON, user might not be authenticated');
+                this.unreadCount = 0;
+                return;
+            }
+            
             const data = await response.json();
             this.unreadCount = data.unread_count || 0;
         } catch (error) {
             console.error('Error fetching unread count:', error);
+            this.unreadCount = 0;
         }
     },
     
     init() {
         this.fetchUnreadCount();
-        // Refresh count every 30 seconds
         setInterval(() => this.fetchUnreadCount(), 30000);
     }
 }" class="min-w-fit">

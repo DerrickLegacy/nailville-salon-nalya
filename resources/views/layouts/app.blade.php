@@ -224,7 +224,7 @@
     </script>
 
     <!-- Page wrapper -->
-    <div class="flex h-[100dvh] overflow-hidden">
+    <div class="flex h-[100dvh] overflow-hidden" x-data="{ sidebarOpen: false, sidebarExpanded: true }">
 
         <x-app.sidebar :variant="$attributes['sidebarVariant']" />
 

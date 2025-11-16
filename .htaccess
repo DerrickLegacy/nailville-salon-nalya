@@ -1,29 +1,3 @@
-# # --- Cloudflare IP Handling ---
-# <IfModule mod_setenvif.c>
-#     SetEnvIf CF-Connecting-IP "^" IS_CLOUDFLARE=1
-#     SetEnvIf CF-Connecting-IP "^(.*)$" HTTP_CF_CONNECTING_IP=$1
-#     SetEnvIf CF-RAY "^" IS_CLOUDFLARE=1
-# </IfModule>
-
-# # --- Laravel Routing (including POST/PUT/DELETE fix) ---
-# <IfModule mod_rewrite.c>
-#     RewriteEngine On
-
-#     # Prevent blocking of POST/PUT/DELETE
-#     RewriteCond %{REQUEST_METHOD} ^(POST|PUT|DELETE)$
-#     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
-
-#     # Map asset directories to /public/ (because root ≠ public)
-#     RewriteCond %{REQUEST_URI} ^/(build|css|js|images|fonts)/
-#     RewriteRule ^(.*)$ public/$1 [L]
-
-#     # If file or directory does not exist, send to Laravel
-#     RewriteCond %{REQUEST_FILENAME} !-f
-#     RewriteCond %{REQUEST_FILENAME} !-d
-#     RewriteRule ^ public/index.php [L]
-# </IfModule>
-
-
 <IfModule mod_rewrite.c>
 RewriteEngine On
 

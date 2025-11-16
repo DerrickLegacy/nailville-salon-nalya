@@ -65,7 +65,7 @@
                 </div>
             </div>
 
-            
+
 
             <!-- Card 4: This Month Sales -->
             <div class="bg-green-400 text-white rounded-xl shadow p-4 flex items-center space-x-4">
@@ -384,6 +384,7 @@
         method: "GET",
         dataType: "json",
         success: function(data) {
+            console.log("Chart:--", data)
             new Morris.Line({
                 element: 'record_count',
                 data: data,
