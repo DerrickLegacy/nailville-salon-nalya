@@ -1,0 +1,74 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Debug secrets before SSH (DO NOT print actual password in production!)
+      - name: Debug GitHub secrets
+        run: |
+          echo "HOSTINGER_HOST=${{ secrets.HOSTINGER_HOST }}"
+          echo "HOSTINGER_USER=${{ secrets.HOSTINGER_USER }}"
+          echo "HOSTINGER_PORT=${{ secrets.HOSTINGER_PORT }}"
+          echo "Branch being deployed: ${{ github.ref_name }}"
+
+      # Step 3: Deploy via SSH using password
+      - name: Deploy via SSH to Hostinger
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          password: ${{ secrets.HOSTINGER_PASSWORD }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          script: |
+            echo "----------------------------------------"
+            echo "🚀 Starting deployment on Hostinger"
+            echo "Branch: ${{ github.ref_name }}"
+            echo "----------------------------------------"
+
+            # Test environment variables inside SSH
+            echo "TEST: HOSTINGER_USER = ${{ secrets.HOSTINGER_USER }}"
+            echo "TEST: HOSTINGER_PORT = ${{ secrets.HOSTINGER_PORT }}"
+
+            # Select project directory based on branch
+            if [ "${{ github.ref_name }}" = "main" ]; then
+                PROJECT_DIR="/home/u547313549/domains/nailville-salon-nalya.kenvies.com/public_html"
+                ENV_FILE=".env.production"
+            else
+                PROJECT_DIR="/home/u547313549/domains/staging-nailville-salon.kenvies.com/public_html"
+                ENV_FILE=".env.staging"
+            fi
+
+
+            echo "Using directory under: $PROJECT_DIR"
+            cd $PROJECT_DIR || exit 1
+
+            # Copy correct env file
+            echo "Copy correct env file"
+            cp $ENV_FILE .env
+            echo "✔ Environment file updated ($ENV_FILE → .env)"
+
+            # Install composer dependencies
+            composer update
+            composer install --no-dev --optimize-autoloader
+
+            # Laravel clear + optimize
+            php artisan config:clear
+            php artisan cache:clear
+            php artisan route:clear
+            php artisan view:clear
+            php artisan optimize
+
+            echo "----------------------------------------"
+            echo "🎉 Deployment Completed Successfully!"
+            echo "----------------------------------------"
