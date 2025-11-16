@@ -199,12 +199,50 @@
                     </form>
 
                     @slot('footer')
-                    <button x-on:click="modalIsOpen = false"
-                        class="px-4 py-2 bg-red-700 text-white rounded">Cancel</button>
+                    <div x-data="{ isSubmitting: false }" class="flex space-x-2">
+                        <!-- Cancel Button -->
+                        <button
+                            x-on:click="
+                                        if(!isSubmitting) {
+                                            modalIsOpen = false;
+                                        } else {
+                                            Swal.fire({
+                                                icon: 'info',
+                                                title: 'Please wait',
+                                                text: 'Cancelling in progress !',
+                                                timer: 2000,
+                                                showConfirmButton: false
+                                            });
+                                        }
+                                    "
+                            :disabled="isSubmitting"
+                            class="px-4 py-2 bg-red-700 text-white rounded cursor-pointer disabled:opacity-50">
+                            Cancel
+                        </button>
 
-                    <button x-on:click="$refs.transactionForm && $refs.transactionForm.submit()"
-                        class="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
+                        <!-- Save Button -->
+                        <button
+                            x-on:click="
+                                        if(!isSubmitting && $refs.transactionForm) {
+                                            isSubmitting = true;
+                                            $refs.transactionForm.submit();
+                                        } else {
+                                            Swal.fire({
+                                                icon: 'info',
+                                                title: 'Please wait',
+                                                text: 'Transaction Processing in Progress...',
+                                                timer: 2000,
+                                                showConfirmButton: false
+                                            });
+                                        }
+                                    "
+                            :disabled="isSubmitting"
+                            class="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer disabled:opacity-50">
+                            Save
+                        </button>
+                    </div>
                     @endslot
+
                 </x-simple-modal>
             </div>
         </div>
