@@ -11,15 +11,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 2: Debug secrets before SSH (DO NOT print actual password in production!)
+      - name: Debug GitHub secrets
+        run: |
+          echo "HOSTINGER_HOST=${{ secrets.HOSTINGER_HOST }}"
+          echo "HOSTINGER_USER=${{ secrets.HOSTINGER_USER }}"
+          echo "HOSTINGER_PORT=${{ secrets.HOSTINGER_PORT }}"
+          echo "Branch being deployed: ${{ github.ref_name }}"
+
+      # Step 3: Deploy via SSH using password
       - name: Deploy via SSH to Hostinger
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOSTINGER_HOST }}
           username: ${{ secrets.HOSTINGER_USER }}
-          # key: ${{ secrets.HOSTINGER_SSH_KEY }}
           password: ${{ secrets.HOSTINGER_PASSWORD }}
           port: ${{ secrets.HOSTINGER_PORT }}
           script: |
@@ -27,7 +36,11 @@ jobs:
             echo "🚀 Starting deployment on Hostinger"
             echo "Branch: ${{ github.ref_name }}"
             echo "----------------------------------------"
-            echo "testing presence od key -${{ secrets.HOSTINGER_PASSWORD }}"
+
+            # Test environment variables inside SSH
+            echo "TEST: HOSTINGER_USER = ${{ secrets.HOSTINGER_USER }}"
+            echo "TEST: HOSTINGER_PORT = ${{ secrets.HOSTINGER_PORT }}"
+
             # Select project directory based on branch
             if [ "${{ github.ref_name }}" = "main" ]; then
                 PROJECT_DIR="/home/u547313549/domains/nailville-salon-nalya.kenvies.com"
@@ -38,11 +51,7 @@ jobs:
             fi
 
             echo "Using directory: $PROJECT_DIR"
-            cd $PROJECT_DIR
-
-            # Pull new code
-            git fetch --all
-            git reset --hard origin/${{ github.ref_name }}
+            cd $PROJECT_DIR || exit 1
 
             # Copy correct env file
             cp $ENV_FILE .env
