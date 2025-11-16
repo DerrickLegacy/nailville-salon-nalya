@@ -51,7 +51,7 @@ jobs:
             fi
 
             echo "Using directory: $PROJECT_DIR"
-            cd $PROJECT_DIR || exit 1
+            pwd
 
             # Copy correct env file
             cp $ENV_FILE .env
