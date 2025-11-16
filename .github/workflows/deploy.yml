@@ -46,12 +46,12 @@ jobs:
                 PROJECT_DIR="/home/u547313549/domains/nailville-salon-nalya.kenvies.com"
                 ENV_FILE=".env.production"
             else
-                PROJECT_DIR="/home/u547313549/domains/staging.nailville-salon-nalya.kenvies.com"
+                PROJECT_DIR="/home/u547313549/domains/staging-nailville-salon-nalya.kenvies.com"
                 ENV_FILE=".env.staging"
             fi
 
             echo "Using directory: $PROJECT_DIR"
-            pwd
+            cd $PROJECT_DIR || exit 1
 
             # Copy correct env file
             cp $ENV_FILE .env
