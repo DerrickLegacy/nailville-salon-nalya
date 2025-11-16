@@ -1,36 +1,88 @@
 <x-authentication-layout>
+    <div id="welcome-message-paragraph" class="hidden mb-6 p-4 rounded-lg shadow-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 transition-opacity duration-700 ease-in-out opacity-0">
+        <h1 id="welcome-message" class="text-2xl font-bold mb-1">
+            Welcome back, <span id="username"></span>! 😊
+        </h1>
+        <p id="welcome-submessage" class="text-sm font-medium"></p>
+    </div>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Try to get stored user object
             let storedUser = JSON.parse(localStorage.getItem('user') || 'null');
 
-            // Fallback to username string
             if (!storedUser) {
                 const usernameStr = localStorage.getItem('username');
-                if (!usernameStr) return; // Nothing to show
+                if (!usernameStr) return;
                 storedUser = usernameStr;
             }
 
-            // Get full name
-            const fullName = storedUser.name ?? storedUser.fullname ?? storedUser;
-
-            // Get last name
+            const fullName = (storedUser.name ?? storedUser.fullname ?? storedUser).replace(/^"|"$/g, '');
             const lastName = fullName.split(" ").pop();
 
-            // Insert into DOM
             const usernameSpan = document.getElementById('username');
+            const welcomeMessageDiv = document.getElementById('welcome-message-paragraph');
+            const subMessage = document.getElementById('welcome-submessage');
+
             usernameSpan.textContent = lastName;
 
-            const welcomeMessage = document.getElementById('welcome-message');
-            welcomeMessage.classList.remove('hidden');
+            // Short & catchy messages
+            const messages = [
+                "Time to shine! 🌟",
+                "Let's make today amazing! 🚀",
+                "Your dashboard awaits! 💼",
+                "Keep smiling, friend! 😊",
+                "New day, new opportunities! 🌞",
+                "Let's crush it today! 💪",
+                "Adventure starts here! 🗺️",
+                "Your energy is contagious! ⚡",
+                "Ready to create magic? ✨",
+                "Let's rock and roll! 🎸",
+                "Make it happen today! 🏆",
+                "Smiles all around! 😄",
+                "Dream big, act bigger! 🌈",
+                "You got this! 💯",
+                "Start strong, finish stronger! 🏃‍♂️",
+                "Time to slay those tasks! 🐉",
+                "Positive vibes only! 🌸",
+                "Fuel your ambition! 🔥",
+                "Another great day to shine! ✨",
+                "Let's go, superstar! ⭐",
+                "Hustle with a smile! 😎",
+                "Make every second count! ⏰",
+                "The world is yours! 🌍",
+                "Keep your head high! 🦅",
+                "Step up and shine! 🌟",
+                "Your energy = your superpower! ⚡",
+                "Time to sparkle and shine! ✨",
+                "Victory awaits you today! 🏅",
+                "Bring your A-game! 🎯",
+                "Keep glowing, friend! 💖",
+                "Smile, sparkle, succeed! ✨",
+                "Take the day by storm! 🌪️",
+                "Let's make waves! 🌊",
+                "Be unstoppable! 🏋️‍♀️",
+                "Smash your goals! 💥",
+                "Radiate positivity! 🌞",
+                "Own your moment! 👑",
+                "Today is your canvas! 🎨",
+                "Happiness looks good on you! 😄"
+            ];
+
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            subMessage.textContent = randomMessage;
+
+            // Show the card
+            welcomeMessageDiv.classList.remove('hidden');
+            setTimeout(() => {
+                welcomeMessageDiv.style.opacity = 1;
+            }, 50);
 
             localStorage.setItem('user_last_name', lastName);
         });
     </script>
 
-    <h1 id="welcome-message" class="text-2xl text-gray-800 dark:text-gray-100 font-bold mb-6 hidden">
-        Welcome back, <span id="username"></span> 😊
-    </h1>
+
+
     @if (session('status'))
     <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
         {{ session('status') }}
