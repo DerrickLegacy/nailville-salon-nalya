@@ -31,13 +31,13 @@
 
 
             @if ($errors->any())
-                <div class="p-2 bg-red-100 text-red-800 rounded mb-2">
-                    <ul class="list-disc pl-4">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+            <div class="p-2 bg-red-100 text-red-800 rounded mb-2">
+                <ul class="list-disc pl-4">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
             @endif
 
             <!-- Right: Actions -->
@@ -47,10 +47,10 @@
 
                 <x-simple-modal title="{{ $transactionType }} Transactions">
                     @slot('trigger')
-                        <button x-on:click="modalIsOpen = true"
-                            class="btn bg-blue-700 text-gray-100 hover:bg-blue-800 dark:bg-blue-100 dark:text-blue-800 dark:hover:bg-white">
-                            Add Transaction
-                        </button>
+                    <button x-on:click="modalIsOpen = true"
+                        class="btn bg-blue-700 text-gray-100 hover:bg-blue-800 dark:bg-blue-100 dark:text-blue-800 dark:hover:bg-white">
+                        Add Transaction
+                    </button>
                     @endslot
 
                     <!-- Form with x-ref -->
@@ -90,44 +90,44 @@
 
                             <!-- Income or Expense select -->
                             @if ($transactionType === 'Income')
-                                <div>
-                                    <label for="service_offered"
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Service Offered
-                                    </label>
-                                    <select name="service_offered" id="service_offered" required
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                                        <option value="">-- Select Service --</option>
-                                        @foreach ($services as $service)
-                                            <option value="{{ $service->name }}">{{ $service->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                            <div>
+                                <label for="service_offered"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Service Offered
+                                </label>
+                                <select name="service_offered" id="service_offered" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
+                                    <option value="">-- Select Service --</option>
+                                    @foreach ($services as $service)
+                                    <option value="{{ $service->name }}">{{ $service->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             @else
-                                <div>
-                                    <label for="expense_type"
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Expense
-                                        Category</label>
-                                    <select name="expense_type" id="expense_type" required
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                                        <option value="">-- Select Expense --</option>
-                                        <option value="Rent">Rent / Lease</option>
-                                        <option value="Salaries">Salaries & Wages</option>
-                                        <option value="Allowances">Allowances / Bonuses</option>
-                                        <option value="Training">Staff Training / Workshops</option>
-                                        <option value="Utilities">Utilities (Electricity, Water, Internet)</option>
-                                        <option value="BeautyProducts">Beauty Products</option>
-                                        <option value="HairSupplies">Hair Supplies</option>
-                                        <option value="NailSupplies">Nail Supplies</option>
-                                        <option value="Cleaning">Cleaning Supplies / Laundry</option>
-                                        <option value="FurnitureEquipment">Furniture & Equipment Purchase</option>
-                                        <option value="Maintenance">Equipment Maintenance & Repairs</option>
-                                        <option value="Marketing">Marketing & Advertising</option>
-                                        <option value="Transport">Transport / Delivery Costs</option>
-                                        <option value="Licenses">Licenses, Permits & Insurance</option>
-                                        <option value="Miscellaneous">Miscellaneous / Other</option>
-                                    </select>
-                                </div>
+                            <div>
+                                <label for="expense_type"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Expense
+                                    Category</label>
+                                <select name="expense_type" id="expense_type" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
+                                    <option value="">-- Select Expense --</option>
+                                    <option value="Rent">Rent / Lease</option>
+                                    <option value="Salaries">Salaries & Wages</option>
+                                    <option value="Allowances">Allowances / Bonuses</option>
+                                    <option value="Training">Staff Training / Workshops</option>
+                                    <option value="Utilities">Utilities (Electricity, Water, Internet)</option>
+                                    <option value="BeautyProducts">Beauty Products</option>
+                                    <option value="HairSupplies">Hair Supplies</option>
+                                    <option value="NailSupplies">Nail Supplies</option>
+                                    <option value="Cleaning">Cleaning Supplies / Laundry</option>
+                                    <option value="FurnitureEquipment">Furniture & Equipment Purchase</option>
+                                    <option value="Maintenance">Equipment Maintenance & Repairs</option>
+                                    <option value="Marketing">Marketing & Advertising</option>
+                                    <option value="Transport">Transport / Delivery Costs</option>
+                                    <option value="Licenses">Licenses, Permits & Insurance</option>
+                                    <option value="Miscellaneous">Miscellaneous / Other</option>
+                                </select>
+                            </div>
                             @endif
 
                             <!-- Amount -->
@@ -172,7 +172,7 @@
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
                                     <option value="">-- Select Employee --</option>
                                     @foreach ($employees as $employee)
-                                        <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
+                                    <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -199,11 +199,11 @@
                     </form>
 
                     @slot('footer')
-                        <button x-on:click="modalIsOpen = false"
-                            class="px-4 py-2 bg-red-700 text-white rounded">Cancel</button>
+                    <button x-on:click="modalIsOpen = false"
+                        class="px-4 py-2 bg-red-700 text-white rounded">Cancel</button>
 
-                        <button x-on:click="$refs.transactionForm && $refs.transactionForm.submit()"
-                            class="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
+                    <button x-on:click="$refs.transactionForm && $refs.transactionForm.submit()"
+                        class="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
                     @endslot
                 </x-simple-modal>
             </div>
@@ -381,8 +381,6 @@
                     order: [
                         [0, 'desc']
                     ],
-
-
                     ajax: {
                         url: "{{ route('transactions.getRecords') }}",
                         data: {
