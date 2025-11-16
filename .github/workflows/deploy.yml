@@ -1,0 +1,62 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH to Hostinger
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          script: |
+            echo "----------------------------------------"
+            echo "🚀 Starting deployment on Hostinger"
+            echo "Branch: ${{ github.ref_name }}"
+            echo "----------------------------------------"
+
+            # Select project directory based on branch
+            if [ "${{ github.ref_name }}" = "main" ]; then
+                PROJECT_DIR="/home/u547313549/domains/nailville-salon-nalya.kenvies.com"
+                ENV_FILE=".env.production"
+            else
+                PROJECT_DIR="/home/u547313549/domains/staging.nailville-salon-nalya.kenvies.com"
+                ENV_FILE=".env.staging"
+            fi
+
+            echo "Using directory: $PROJECT_DIR"
+            cd $PROJECT_DIR
+
+            # Pull new code
+            git fetch --all
+            git reset --hard origin/${{ github.ref_name }}
+
+            # Copy correct env file
+            cp $ENV_FILE .env
+            echo "✔ Environment file updated ($ENV_FILE → .env)"
+
+            # Install composer dependencies
+            composer install --no-dev --optimize-autoloader
+
+            # Laravel clear + optimize
+            php artisan config:clear
+            php artisan cache:clear
+            php artisan route:clear
+            php artisan view:clear
+            php artisan optimize
+
+            echo "----------------------------------------"
+            echo "🎉 Deployment Completed Successfully!"
+            echo "----------------------------------------"
