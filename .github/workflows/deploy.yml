@@ -60,6 +60,7 @@ jobs:
             echo "✔ Environment file updated ($ENV_FILE → .env)"
 
             # Install composer dependencies
+            composer update
             composer install --no-dev --optimize-autoloader
 
             # Laravel clear + optimize
