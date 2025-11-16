@@ -87,15 +87,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     //    transactions controller
     Route::get('/finance/transactions', [TransactionController::class, 'index01'])->name('transactions');
     Route::get('/transactions/get-records', [TransactionController::class, 'getRecords'])->name('transactions.getRecords');
-
     Route::get('/transactions/income', [TransactionController::class, 'index'])
         ->name('transactions.income')
         ->defaults('transaction_type', 'Income');
-
     Route::get('/transactions/expense', [TransactionController::class, 'index'])
         ->name('transactions.expense')
         ->defaults('transaction_type', 'Expense');
-
     Route::post('/transactions/store-records', [TransactionController::class, 'store'])->name('transactions.store');
     Route::get('/transactions/delete-record/{id}', [TransactionController::class, 'delete'])
         ->name('transactions.delete');
@@ -117,7 +114,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         ->name('settings.employee.details');
     Route::get('/settings/user-management/edit-employer/{id}', [SettingController::class, 'viewEditEmployerDetails'])
         ->name('settings.edit.employer')->defaults('pageType', 'edit');
-
     Route::get('/settings/user-management/delete-employer/{id}', [SettingController::class, 'deleteEmployee'])
         ->name('settings.delete.employer');
     Route::put('/settings/user-management/update-employer/{id}', [SettingController::class, 'updateEmployee'])

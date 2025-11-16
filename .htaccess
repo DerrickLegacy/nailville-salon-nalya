@@ -1,3 +1,21 @@
+<IfModule mod_setenvif.c>
+    # Trust Cloudflare IPs
+    SetEnvIf CF-Connecting-IP "^" IS_CLOUDFLARE=1
+    SetEnvIf CF-Connecting-IP "^(.*)$" HTTP_CF_CONNECTING_IP=$1
+
+    # Trust Cloudflare headers
+    SetEnvIf CF-RAY "^" IS_CLOUDFLARE=1
+</IfModule>
+
+# Allow POST, PUT, DELETE methods
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Don't block POST/PUT/DELETE requests
+    RewriteCond %{REQUEST_METHOD} ^(POST|PUT|DELETE)$
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
+</IfModule>
+
 <IfModule mod_rewrite.c>
 RewriteEngine On
 

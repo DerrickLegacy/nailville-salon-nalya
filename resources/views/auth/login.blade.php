@@ -29,7 +29,7 @@
     </script>
 
     <h1 id="welcome-message" class="text-2xl text-gray-800 dark:text-gray-100 font-bold mb-6 hidden">
-        Welcome back, <span id="username"></span>😊
+        Welcome back, <span id="username"></span> 😊
     </h1>
     @if (session('status'))
     <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
