@@ -19,14 +19,15 @@ jobs:
         with:
           host: ${{ secrets.HOSTINGER_HOST }}
           username: ${{ secrets.HOSTINGER_USER }}
-          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          # key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          password: ${{ secrets.HOSTINGER_PASSWORD }}
           port: ${{ secrets.HOSTINGER_PORT }}
           script: |
             echo "----------------------------------------"
             echo "🚀 Starting deployment on Hostinger"
             echo "Branch: ${{ github.ref_name }}"
             echo "----------------------------------------"
-
+            echo "testing presence od key -${{ secrets.HOSTINGER_PASSWORD }}"
             # Select project directory based on branch
             if [ "${{ github.ref_name }}" = "main" ]; then
                 PROJECT_DIR="/home/u547313549/domains/nailville-salon-nalya.kenvies.com"
