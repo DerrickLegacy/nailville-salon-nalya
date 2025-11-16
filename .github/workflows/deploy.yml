@@ -43,10 +43,10 @@ jobs:
 
             # Select project directory based on branch
             if [ "${{ github.ref_name }}" = "main" ]; then
-                PROJECT_DIR="/home/u547313549/domains/nailville-salon-nalya.kenvies.com"
+                PROJECT_DIR="/home/u547313549/domains/nailville-salon-nalya.kenvies.com/public_html"
                 ENV_FILE=".env.production"
             else
-                PROJECT_DIR="/home/u547313549/domains/staging-nailville-salon-nalya.kenvies.com"
+                PROJECT_DIR="/home/u547313549/domains/staging-nailville-salon-nalya.kenvies.com/public_html"
                 ENV_FILE=".env.staging"
             fi
 
