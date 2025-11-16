@@ -83,8 +83,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::delete('/inventory-product/{id}', [InventoryController::class, 'destroy'])
             ->name('inventory.product.destroy');
     });
-
-    //    transactions controller
+    // transactions controller
     Route::get('/finance/transactions', [TransactionController::class, 'index01'])->name('transactions');
     Route::get('/transactions/get-records', [TransactionController::class, 'getRecords'])->name('transactions.getRecords');
     Route::get('/transactions/income', [TransactionController::class, 'index'])

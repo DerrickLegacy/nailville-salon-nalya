@@ -223,23 +223,36 @@
                         <!-- Save Button -->
                         <button
                             x-on:click="
-                                        if(!isSubmitting && $refs.transactionForm) {
-                                            isSubmitting = true;
-                                            $refs.transactionForm.submit();
-                                        } else {
-                                            Swal.fire({
-                                                icon: 'info',
-                                                title: 'Please wait',
-                                                text: 'Transaction Processing in Progress...',
-                                                timer: 2000,
-                                                showConfirmButton: false
-                                            });
+                                if(!isSubmitting && $refs.transactionForm) {
+                                    isSubmitting = true;
+
+                                    Swal.fire({
+                                        icon: 'info',
+                                        title: 'Submitting...',
+                                        text: 'Please wait while the transaction is being processed.',
+                                        allowOutsideClick: false,
+                                        showConfirmButton: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
                                         }
-                                    "
+                                    });
+
+                                    $refs.transactionForm.submit(); // Let the form submit naturally (or via AJAX)
+                                } else {
+                                    Swal.fire({
+                                        icon: 'info',
+                                        title: 'Please wait',
+                                        text: 'The system is still submitting the transaction...',
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
+                                }
+                            "
                             :disabled="isSubmitting"
                             class="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer disabled:opacity-50">
                             Save
                         </button>
+
                     </div>
                     @endslot
 
