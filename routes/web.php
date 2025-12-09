@@ -133,7 +133,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/{id}/edit', [App\Http\Controllers\Admin\UserController::class, 'edit'])->name('edit');
         Route::put('/{id}', [App\Http\Controllers\Admin\UserController::class, 'update'])->name('update');
         Route::get('/{id}/toggle-status', [App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('toggle-status');
-        Route::delete('/{id}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('destroy');
+        Route::delete('/delete-system-user/{id}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('destroy');
     });
 
     // Notifications
@@ -143,5 +143,16 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/{id}/mark-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('mark-read');
         Route::post('/mark-all-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
         Route::delete('/{id}', [App\Http\Controllers\NotificationController::class, 'destroy'])->name('destroy');
+    });
+
+    // Services: CRUD operations
+    Route::prefix('admin/services')->name('admin.services.')->group(function () {
+        Route::get('/', [App\Http\Controllers\ServiceController::class, 'index'])->name('index');
+        Route::get('/list', [App\Http\Controllers\ServiceController::class, 'list'])->name('list');
+        Route::post('/store', [App\Http\Controllers\ServiceController::class, 'store'])->name('store');
+        Route::get('/{id}', [App\Http\Controllers\ServiceController::class, 'show'])->name('show');
+        Route::put('/{id}', [App\Http\Controllers\ServiceController::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\ServiceController::class, 'destroy'])->name('destroy');
+        Route::get('/categories/list', [App\Http\Controllers\ServiceController::class, 'getCategories'])->name('categories');
     });
 });

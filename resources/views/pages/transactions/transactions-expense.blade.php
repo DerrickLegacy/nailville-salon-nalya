@@ -43,7 +43,6 @@
             <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
                 <!-- Datepicker built with flatpickr -->
                 <x-datepicker />
-
                 <x-simple-modal title="{{ $transactionType }} Transactions">
                     @slot('trigger')
                     <button x-on:click="modalIsOpen = true"

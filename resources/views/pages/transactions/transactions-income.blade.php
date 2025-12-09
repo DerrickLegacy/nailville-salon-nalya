@@ -1,21 +1,21 @@
 <x-app-layout>
-    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
+    <div class="px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 w-full max-w-full mx-auto">
         <!-- Page Header -->
-        <div class="mb-2 flex flex-col md:flex-row md:justify-between md:items-center fade-in">
-            <div>
-                <nav class="flex mb-2" aria-label="Breadcrumb">
-                    <ol class="flex items-center space-x-2 text-sm">
-                        <li><a href="#" class="text-gray-500 hover:text-blue-600">Transactions</a></li>
+        <div class="mb-3 sm:mb-4 flex flex-col md:flex-row md:justify-between md:items-center fade-in">
+            <div class="w-full">
+                <nav class="flex mb-2 overflow-x-auto" aria-label="Breadcrumb">
+                    <ol class="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm whitespace-nowrap">
+                        <li><a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Transactions</a></li>
                         <li class="flex items-center">
-                            <span class="text-gray-400 mx-2">›</span>
+                            <span class="text-gray-400 dark:text-gray-600 mx-1 sm:mx-2">›</span>
                             <a href="{{ route('transactions.' . strtolower($transactionType)) }}"
-                                class="text-gray-500 hover:text-blue-600">
+                                class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
                                 {{ $transactionType }} Transactions
                             </a>
                         </li>
                         <li class="flex items-center">
-                            <span class="text-gray-400 mx-2">›</span>
-                            <a href="" class="text-gray-500 hover:text-blue-600">List</a>
+                            <span class="text-gray-400 dark:text-gray-600 mx-1 sm:mx-2">›</span>
+                            <a href="" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">List</a>
                         </li>
                     </ol>
                 </nav>
@@ -23,16 +23,16 @@
         </div>
 
         <!-- Dashboard actions -->
-        <div class="sm:flex sm:justify-between sm:items-center mb-2 fade-in">
+        <div class="sm:flex sm:justify-between sm:items-center mb-3 sm:mb-4 fade-in gap-3">
             <!-- Left: Title -->
-            <div class="mb-4 sm:mb-0">
-                <h1 class="text-2xl font-bold text-gray-900">{{ $transactionType }} Transactions</h1>
+            <div class="mb-3 sm:mb-0">
+                <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $transactionType }} Transactions</h1>
             </div>
 
 
             @if ($errors->any())
-            <div class="p-2 bg-red-100 text-red-800 rounded mb-2">
-                <ul class="list-disc pl-4">
+            <div class="p-3 bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-400 rounded-lg mb-3 text-xs sm:text-sm">
+                <ul class="list-disc pl-4 space-y-1">
                     @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                     @endforeach
@@ -41,15 +41,16 @@
             @endif
 
             <!-- Right: Actions -->
-            <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+            <div class="flex flex-wrap gap-2 justify-start sm:justify-end">
                 <!-- Datepicker built with flatpickr -->
                 <x-datepicker />
 
                 <x-simple-modal title="{{ $transactionType }} Transactions">
                     @slot('trigger')
                     <button x-on:click="modalIsOpen = true"
-                        class="btn bg-blue-700 text-gray-100 hover:bg-blue-800 dark:bg-blue-100 dark:text-blue-800 dark:hover:bg-white">
-                        Add Transaction
+                        class="btn bg-blue-700 text-gray-100 hover:bg-blue-800 dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700 text-xs sm:text-sm px-3 sm:px-4 py-2 whitespace-nowrap">
+                        <span class="hidden sm:inline">Add Transaction</span>
+                        <span class="sm:hidden">Add</span>
                     </button>
                     @endslot
 
@@ -259,49 +260,49 @@
                 </x-simple-modal>
             </div>
         </div>
-        <div class="py-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="py-3 sm:py-4">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
 
                 <!-- Total Records -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex flex-col items-center">
-                    <span class="text-gray-500 text-sm">Total Records</span>
-                    <span id="totalRecordsCount" class="text-purple-700 dark:text-white font-bold text-lg"></span>
+                <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 flex flex-col items-center">
+                    <span class="text-gray-500 dark:text-gray-400 text-xs sm:text-sm text-center">Total Records</span>
+                    <span id="totalRecordsCount" class="text-purple-700 dark:text-purple-400 font-bold text-base sm:text-lg lg:text-xl mt-1"></span>
                 </div>
 
                 <!-- Current Page -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex flex-col items-center">
-                    <span class="text-gray-500 text-sm">Current Page (Shs)</span>
-                    <span id="currnetPage" class="text-purple-700 dark:text-white font-bold text-lg"></span>
+                <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 flex flex-col items-center">
+                    <span class="text-gray-500 dark:text-gray-400 text-xs sm:text-sm text-center">Current Page (Shs)</span>
+                    <span id="currnetPage" class="text-purple-700 dark:text-purple-400 font-bold text-base sm:text-lg lg:text-xl mt-1 truncate max-w-full"></span>
                 </div>
 
                 <!-- All Pages Total -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex flex-col items-center">
-                    <span class="text-gray-500 text-sm">All Pages(Shs) </span>
+                <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 flex flex-col items-center">
+                    <span class="text-gray-500 dark:text-gray-400 text-xs sm:text-sm text-center">All Pages(Shs)</span>
                     <span id="totalAllPagesAmountRet"
-                        class="text-purple-700 dark:text-white font-bold text-lg"></span>
+                        class="text-purple-700 dark:text-purple-400 font-bold text-base sm:text-lg lg:text-xl mt-1 truncate max-w-full"></span>
                 </div>
 
                 <!-- Total Income/Expense -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex flex-col items-center">
-                    <span class="text-gray-500 text-sm">Total {{ $transactionType }} (Shs)</span>
+                <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 flex flex-col items-center">
+                    <span class="text-gray-500 dark:text-gray-400 text-xs sm:text-sm text-center">Total {{ $transactionType }} (Shs)</span>
                     <span id="total{{ $transactionType }}"
-                        class="text-purple-700 dark:text-white font-bold text-lg"></span>
+                        class="text-purple-700 dark:text-purple-400 font-bold text-base sm:text-lg lg:text-xl mt-1 truncate max-w-full"></span>
                 </div>
 
             </div>
         </div>
 
         <div class="grid grid-cols-12 gap-0 fade-in">
-            <div class="col-span-full xl:col-span-12 bg-white dark:bg-gray-800 shadow-xs rounded-xl p-3">
-                <div class="bg-white dark:bg-gray-800 mt-3 relative shadow-md sm:rounded-lg overflow-hidden">
+            <div class="col-span-full xl:col-span-12 bg-white dark:bg-gray-800 shadow-xs rounded-lg sm:rounded-xl p-2 sm:p-3">
+                <div class="bg-white dark:bg-gray-800 mt-2 sm:mt-3 relative shadow-sm sm:shadow-md rounded-lg overflow-hidden">
                     <div
-                        class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
+                        class="flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 md:space-x-3 p-3 sm:p-4">
                         <div class="w-full md:w-1/2">
                             <form class="flex items-center">
                                 <label for="simple-search" class="sr-only">Search</label>
                                 <div class="relative w-full">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-2 sm:pl-3 pointer-events-none">
+                                        <svg aria-hidden="true" class="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400"
                                             fill="currentColor" viewbox="0 0 20 20"
                                             xmlns="http://www.w3.org/2000/svg">
                                             <path fill-rule="evenodd"
@@ -310,22 +311,23 @@
                                         </svg>
                                     </div>
                                     <input type="text" id="simple-search" name="simple-search"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-8 sm:pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                         placeholder="Search" required="">
                                 </div>
                             </form>
                         </div>
                         <div
-                            class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
+                            class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-2 flex-shrink-0">
                             <!-- Export Button -->
                             <button type="button" id="export-button"
-                                class="flex items-center justify-center flex-shrink-0 px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                                <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                class="flex items-center justify-center flex-shrink-0 px-3 py-2 text-xs sm:text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 whitespace-nowrap">
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
                                     viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                                 </svg>
-                                Export PDF
+                                <span class="hidden sm:inline">Export PDF</span>
+                                <span class="sm:hidden">Export</span>
                             </button>
 
                             <x-dropdown-income-filter align="right" type="income" :filterPageCount="false"
@@ -335,10 +337,10 @@
 
                     <div class="relative">
                         <div id="transactions-spinner"
-                            class="absolute inset-1 flex items-center justify-center bg-white/70 dark:bg-gray-800/70 z-50 ">
+                            class="absolute inset-1 flex items-center justify-center bg-white/70 dark:bg-gray-800/70 z-50 rounded-lg">
                             <div role="status">
                                 <svg aria-hidden="true"
-                                    class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-yellow-400"
+                                    class="inline w-6 h-6 sm:w-8 sm:h-8 text-gray-200 animate-spin dark:text-gray-600 fill-yellow-400"
                                     viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
@@ -351,32 +353,32 @@
                             </div>
                         </div>
                         <div
-                            class="overflow-x-auto min-h-[200px] sm:min-h-[300px] lg:min-h-[400px] bg-white dark:bg-gray-800 rounded-md shadow">
+                            class="overflow-x-auto min-h-[250px] sm:min-h-[350px] lg:min-h-[450px] bg-white dark:bg-gray-800 rounded-lg shadow-sm">
                             <div id="transactions-export-wrapper">
                                 <table id="transactions-table"
-                                    class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                    <thead>
+                                    class="w-full text-xs sm:text-sm text-left text-gray-500 dark:text-gray-400">
+                                    <thead class="bg-gray-50 dark:bg-gray-700 sticky top-0">
                                         <tr>
-                                            <th class="px-2 py-3">Date</th>
-                                            <th class="px-4 py-3">Service </th>
-                                            <th class="px-4 py-3">Receipt ID</th>
-                                            <th class="px-4 py-3">Serviced By</th>
-                                            <th class="px-4 py-3">Customer Name</th>
-                                            <th class="px-4 py-3">Payment Method</th>
-                                            <th class="px-4 py-3">Amount</th>
-                                            <th class="px-4 py-3 text-center">Actions</th>
+                                            <th class="px-2 sm:px-3 py-2 sm:py-3 text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Service</th>
+                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Receipt ID</th>
+                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Serviced By</th>
+                                            <!-- <th class="px-2 sm:px-4 py-2 sm:py-3 text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Customer Name</th> -->
+                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Payment Method</th>
+                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Amount</th>
+                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider text-center">Actions</th>
                                         </tr>
                                     </thead>
 
-                                    <tbody id="transactions-wrapper">
+                                    <tbody id="transactions-wrapper" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                         <!-- DataTables will fill rows here -->
                                     </tbody>
-                                    <tfoot>
+                                    <tfoot class="bg-gray-50 dark:bg-gray-700 sticky bottom-0">
                                         <tr>
-                                            <th class="px-2 py-3">Total</th>
-                                            <th class="px-4 py-3" colspan="5"></th>
-                                            <th class="px-2 py-3" id="totalPageAmount"></th>
-                                            <th class="px-2 py-3"></th>
+                                            <th class="px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100">Total</th>
+                                            <th class="px-2 sm:px-4 py-2 sm:py-3" colspan="5"></th>
+                                            <th class="px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100" id="totalPageAmount"></th>
+                                            <th class="px-2 sm:px-3 py-2 sm:py-3"></th>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -434,13 +436,14 @@
                     ],
                     ajax: {
                         url: "{{ route('transactions.getRecords') }}",
-                        data: {
-                            transaction_type: $('#transaction_type').val(),
-                            perPage: perPage,
-                            searchTerm: searchInput,
-                            cashTypeFilter: cashTypeFilter,
-                            fromDate: fromDate,
-                            toDate: toDate
+                        data: function(d) {
+                            d.transaction_type = $('#transaction_type').val();
+                            d.perPage = perPage;
+                            d.searchTerm = searchInput;
+                            d.cashTypeFilter = cashTypeFilter;
+                            d.fromDate = fromDate;
+                            d.toDate = toDate;
+                            return d;
                         },
                         dataSrc: function(response) {
                             // Update summary info
@@ -505,13 +508,14 @@
                                     `${row.employee.first_name} ${row.employee.last_name}` :
                                     'N/A';
                             }
-                        }, {
-                            data: "customer_name",
-                            defaultContent: "Walkin Client",
-                            render: function(data) {
-                                return data || defaultText;
-                            }
                         },
+                        //  {
+                        //     data: "customer_name",
+                        //     defaultContent: "Walkin Client",
+                        //     render: function(data) {
+                        //         return data || defaultText;
+                        //     }
+                        // },
                         {
                             data: "payment_method",
                             defaultContent: "N/A"
@@ -534,12 +538,12 @@
 
 
                                 return `
-                                        <div class="flex space-x-2 justify-center">
+                                        <div class="flex gap-1 sm:gap-2 justify-center">
                                             <!-- View (Eye icon) -->
                                             <a href="${detailsUrl}"
-                                            class="p-2 rounded-md bg-blue-500 text-white hover:bg-blue-600"
+                                            class="p-1.5 sm:p-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-colors"
                                             title="View">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                             </svg>
@@ -547,22 +551,18 @@
 
                                             <!-- Edit (Pencil icon) -->
                                         <a href="${editUrl}"
-                                class="p-2 rounded-md bg-green-500 text-white hover:bg-green-600"
+                                class="p-1.5 sm:p-2 rounded-md bg-green-500 text-white hover:bg-green-600 transition-colors"
                                 title="Edit">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5m-7-7l7 7m0 0v4m0-4h-4"/>
                                 </svg>
                                 </a>
 
-
-
-
-
                                             <!-- Delete (Trash icon) -->
                                             <button type="button"
-                                            class="action-link delete-link p-2 rounded-md bg-red-500 text-white hover:bg-red-600"
+                                            class="action-link delete-link p-1.5 sm:p-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors"
                                             data-action="delete" data-id="${row.id}" title="Delete">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a2 2 0 00-2 2v0h8v0a2 2 0 00-2-2m-4 0V5a2 2 0 014 0v0" />
                                             </svg>
                                             </button>

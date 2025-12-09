@@ -5,54 +5,59 @@ A comprehensive salon management system built with Laravel 11, Livewire 3, and T
 ## 🌟 Features
 
 ### Transaction Management
-- **Income Tracking**: Record and manage all service-based income
-- **Expense Tracking**: Track all business expenses with categorization
-- **Real-time Analytics**: View totals, summaries, and trends
-- **Advanced Filtering**: Filter by date range, payment method, and transaction type
-- **Export to PDF**: Generate professional transaction reports
-- **Receipt Generation**: Digital receipts with QR codes
+
+-   **Income Tracking**: Record and manage all service-based income
+-   **Expense Tracking**: Track all business expenses with categorization
+-   **Real-time Analytics**: View totals, summaries, and trends
+-   **Advanced Filtering**: Filter by date range, payment method, and transaction type
+-   **Export to PDF**: Generate professional transaction reports
+-   **Receipt Generation**: Digital receipts with QR codes
 
 ### Employee Management
-- Track employee performance
-- Assign transactions to specific employees
-- Monitor individual employee contributions
+
+-   Track employee performance
+-   Assign transactions to specific employees
+-   Monitor individual employee contributions
 
 ### Inventory Management
-- Track beauty products and supplies
-- Stock alerts for low inventory
-- Manage product categories
+
+-   Track beauty products and supplies
+-   Stock alerts for low inventory
+-   Manage product categories
 
 ### Reports & Analytics
-- Income vs Expense reports
-- Net income calculations
-- Profit analysis
-- Interactive charts and visualizations
-- Date range filtering
+
+-   Income vs Expense reports
+-   Net income calculations
+-   Profit analysis
+-   Interactive charts and visualizations
+-   Date range filtering
 
 ### User Management
-- Role-based access control
-- User authentication with Laravel Jetstream
-- Two-factor authentication support
-- API token management
+
+-   Role-based access control
+-   User authentication with Laravel Jetstream
+-   Two-factor authentication support
+-   API token management
 
 ## 🚀 Tech Stack
 
-- **Backend**: Laravel 11
-- **Frontend**: Livewire 3, Alpine.js 3.14
-- **Styling**: Tailwind CSS 4
-- **Database**: MySQL/PostgreSQL
-- **Charts**: Chart.js 4.4, Morris.js
-- **Tables**: DataTables with server-side processing
-- **Date Picker**: Flatpickr
-- **Authentication**: Laravel Jetstream with Fortify
+-   **Backend**: Laravel 11
+-   **Frontend**: Livewire 3, Alpine.js 3.14
+-   **Styling**: Tailwind CSS 4
+-   **Database**: MySQL/PostgreSQL
+-   **Charts**: Chart.js 4.4, Morris.js
+-   **Tables**: DataTables with server-side processing
+-   **Date Picker**: Flatpickr
+-   **Authentication**: Laravel Jetstream with Fortify
 
 ## 📋 Requirements
 
-- PHP 8.2 or higher
-- Composer
-- Node.js 18+ and npm/pnpm
-- MySQL 8.0+ or PostgreSQL 13+
-- Web server (Apache/Nginx)
+-   PHP 8.2 or higher
+-   Composer
+-   Node.js 18+ and npm/pnpm
+-   MySQL 8.0+ or PostgreSQL 13+
+-   Web server (Apache/Nginx)
 
 ## 🛠️ Installation
 
@@ -195,61 +200,66 @@ nailville-salon/
 ### Transaction Date Handling
 
 The system uses the `date` field for transaction dates (not `created_at`). This allows:
-- Backdating transactions
-- Accurate historical reporting
-- Separation of record creation time from transaction time
+
+-   Backdating transactions
+-   Accurate historical reporting
+-   Separation of record creation time from transaction time
 
 ### Responsive Design
 
 The UI is fully responsive with:
-- Mobile-first approach
-- Tailwind CSS breakpoints
-- Touch-friendly interfaces
-- Optimized for tablets and phones
+
+-   Mobile-first approach
+-   Tailwind CSS breakpoints
+-   Touch-friendly interfaces
+-   Optimized for tablets and phones
 
 ### Server-Side DataTables
 
 All transaction tables use server-side processing for:
-- Fast loading with large datasets
-- Efficient pagination
-- Real-time search and filtering
-- Reduced memory usage
+
+-   Fast loading with large datasets
+-   Efficient pagination
+-   Real-time search and filtering
+-   Reduced memory usage
 
 ## 🎨 UI Improvements
 
 Recent UI enhancements include:
-- Modern card-based layouts
-- Smooth animations and transitions
-- Dark mode support
-- Improved form validation feedback
-- Better mobile navigation
-- Enhanced accessibility
+
+-   Modern card-based layouts
+-   Smooth animations and transitions
+-   Dark mode support
+-   Improved form validation feedback
+-   Better mobile navigation
+-   Enhanced accessibility
 
 ## 🔒 Security Features
 
-- CSRF protection on all forms
-- SQL injection prevention
-- XSS protection
-- Password hashing with bcrypt
-- Rate limiting on authentication
-- Secure session management
+-   CSRF protection on all forms
+-   SQL injection prevention
+-   XSS protection
+-   Password hashing with bcrypt
+-   Rate limiting on authentication
+-   Secure session management
 
 ## 📊 Database Schema
 
 ### Transactions Table
-- `id`: Primary key
-- `transaction_id`: Unique transaction identifier
-- `employee_id`: Foreign key to employees
-- `recorded_by`: Foreign key to users
-- `customer_name`: Customer name (nullable)
-- `amount`: Transaction amount (decimal)
-- `transaction_type`: Income or Expense
-- `payment_method`: Cash, MobileMoney, Card, Bank, Other
-- `service_description`: Service or expense category
-- `receipt_id`: Receipt number (nullable)
-- `notes`: Additional notes (nullable)
-- `date`: Transaction date
-- `created_at`, `updated_at`: Timestamps
+
+-   `id`: Primary key
+-   `transaction_id`: Unique transaction identifier
+-   `employee_id`: Foreign key to employees
+-   `recorded_by`: Foreign key to users
+-   `customer_name`: Customer name (nullable)
+-   `amount`: Transaction amount (decimal)
+-   `transaction_type`: Income or Expense
+-   `payment_method`: Cash, MobileMoney, Card, Bank, Other
+-   `service_description`: Service or expense category
+-   `receipt_id`: Receipt number (nullable)
+-   `notes`: Additional notes (nullable)
+-   `date`: Transaction date
+-   `created_at`, `updated_at`: Timestamps
 
 ## 🚀 Deployment
 
@@ -320,10 +330,10 @@ server {
 
 ### Coding Standards
 
-- Follow PSR-12 coding standards
-- Write tests for new features
-- Update documentation as needed
-- Use meaningful commit messages
+-   Follow PSR-12 coding standards
+-   Write tests for new features
+-   Update documentation as needed
+-   Use meaningful commit messages
 
 ## 📝 License
 
@@ -335,22 +345,22 @@ For support, email support@nailvillesalon.com or open an issue in the repository
 
 ## 🙏 Acknowledgments
 
-- Laravel Framework
-- Livewire
-- Tailwind CSS
-- Chart.js
-- DataTables
-- All open-source contributors
+-   Laravel Framework
+-   Livewire
+-   Tailwind CSS
+-   Chart.js
+-   DataTables
+-   All open-source contributors
 
 ## 📈 Roadmap
 
-- [ ] Mobile app (React Native)
-- [ ] SMS notifications
-- [ ] Online booking system
-- [ ] Customer loyalty program
-- [ ] Multi-location support
-- [ ] Advanced analytics dashboard
-- [ ] Integration with accounting software
+-   [ ] Mobile app (React Native)
+-   [ ] SMS notifications
+-   [ ] Online booking system
+-   [ ] Customer loyalty program
+-   [ ] Multi-location support
+-   [ ] Advanced analytics dashboard
+-   [ ] Integration with accounting software
 
 ---
 

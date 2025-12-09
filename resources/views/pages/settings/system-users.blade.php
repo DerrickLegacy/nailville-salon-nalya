@@ -117,8 +117,8 @@
                     {
                         data: 'activity',
                         title: 'Status',
-                        render: function(data) {
-                            console.log(data);
+                        render: function(data, row) {
+                            // console.log("Activity : ", data);
                             return data == "Active" ?
                                 '<span class="px-2 py-1 bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400 rounded-full text-xs font-semibold">Active</span>' :
                                 '<span class="px-2 py-1 bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-400 rounded-full text-xs font-semibold">Inactive</span>';
@@ -153,11 +153,12 @@
                                 </a>
                             `;
 
+                            console.log("ROW :", row.activity)
                             // Toggle status button
-                            const statusText = row.is_active ? 'Deactivate' : 'Activate';
-                            const statusColor = row.is_active ? 'orange' : 'green';
+                            const statusText = row.activity === "Active" ? 'Deactivate' : 'Activate';
+                            const statusColor = row.activity === "Active" ? 'orange' : 'green';
                             actions += `
-                                <button onclick="toggleStatus(${row.id}, '${statusText}')" class="px-2 py-1 bg-${statusColor}-500 text-white rounded hover:bg-${statusColor}-600 flex items-center space-x-1">
+                                <button onclick="toggleStatus(${row.id}, '${statusText}')" class="px-2 py-1  min-w-[110px] bg-${statusColor}-500 text-white rounded hover:bg-${statusColor}-600 flex items-center space-x-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                                     </svg>
@@ -165,15 +166,15 @@
                                 </button>
                             `;
 
-                            if (row.id !== parseInt(document.getElementById('authUserId').value)) {
+                            if (row.id !== parseInt(document.getElementById('authUserId').value) && row.has_transactions === 0) {
                                 actions += `
-        <button onclick="confirmDelete(${row.id})" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 flex items-center space-x-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-            <span>Delete</span>
-        </button>
-    `;
+                                <button onclick="confirmDelete(${row.id, row.activity})" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 flex items-center space-x-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    <span>Delete</span>
+                                </button>
+                            `;
                             }
 
 
@@ -218,7 +219,7 @@
                     // Create a form and submit it for DELETE request
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = `/admin/users/${userId}`;
+                    form.action = `/admin/users/delete-system-user/${userId}`;
 
                     const csrfToken = document.createElement('input');
                     csrfToken.type = 'hidden';

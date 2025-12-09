@@ -130,28 +130,28 @@
                                 <div class="bg-{{ $card['color'] }}-100 dark:bg-{{ $card['color'] }}-900/20 p-2 sm:p-3 rounded-lg flex-shrink-0">
                                     @if ($card['icon'] === 'money')
                                     <svg xmlns="http://www.w3.org/2000/svg"
-                                        class="w-6 h-6 text-{{ $card['color'] }}-500" fill="none"
+                                        class="w-5 h-5 sm:w-6 sm:h-6 text-{{ $card['color'] }}-500" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2-1.343-2-3-2zm0 6v2m0-10V4m0 16h.01" />
                                     </svg>
                                     @elseif ($card['icon'] === 'arrow-up')
                                     <svg xmlns="http://www.w3.org/2000/svg"
-                                        class="w-6 h-6 text-{{ $card['color'] }}-500" fill="none"
+                                        class="w-5 h-5 sm:w-6 sm:h-6 text-{{ $card['color'] }}-500" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                                     </svg>
                                     @elseif ($card['icon'] === 'flag')
                                     <svg xmlns="http://www.w3.org/2000/svg"
-                                        class="w-6 h-6 text-{{ $card['color'] }}-500" fill="none"
+                                        class="w-5 h-5 sm:w-6 sm:h-6 text-{{ $card['color'] }}-500" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M13 7l5 5-5 5M6 7l5 5-5 5" />
                                     </svg>
                                     @elseif ($card['icon'] === 'box')
                                     <svg xmlns="http://www.w3.org/2000/svg"
-                                        class="w-6 h-6 text-{{ $card['color'] }}-500" fill="none"
+                                        class="w-5 h-5 sm:w-6 sm:h-6 text-{{ $card['color'] }}-500" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M20 13V7a2 2 0 00-2-2h-6V3H8v2H4a2 2 0 00-2 2v6h2v7a2 2 0 002 2h12a2 2 0 002-2v-7h2z" />
@@ -161,8 +161,8 @@
                             </div>
 
                             <!-- Progress Bar -->
-                            <div class="w-full bg-gray-200 rounded-full h-2 mt-4">
-                                <div class="bg-{{ $card['color'] }}-500 h-2 rounded-full"
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 sm:h-2 mt-3 sm:mt-4">
+                                <div class="bg-{{ $card['color'] }}-500 h-1.5 sm:h-2 rounded-full transition-all duration-300"
                                     style="width: {{ min($card['percentage'], 100) }}%">
                                 </div>
                             </div>
@@ -171,119 +171,123 @@
                     </div>
                 </div>
 
-                <div class="space-y-6 animate-on-scroll">
-                    <h2 class="text-lg-- font-semibold text-gray-800 dark:text-gray-100 flex justify-start ">
+                <div class="space-y-3 sm:space-y-4 animate-on-scroll">
+                    <h2 class="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 flex justify-start">
                         <?php echo date('F'); ?> Transaction Count(Income Vs Expenses)
                     </h2>
-                    <div class="bg-white dark:bg-gray-800 shadow-xs rounded-xl p-4">
+                    <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg sm:rounded-xl p-3 sm:p-4">
                         <div id="record_count" class="w-full"
-                            style="min-height: 250px; height: 400px; max-height: 60vw;">
+                            style="min-height: 200px; height: 300px; max-height: 60vw;">
                         </div>
                     </div>
                 </div>
 
-                <div class="space-y-6">
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
+                <div class="space-y-3 sm:space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-3 sm:mb-4">
                         <h2 id="recent_transactions"
-                            class="font-semibold text-gray-800 dark:text-gray-100 mb-2 sm:mb-0">
+                            class="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100">
                             Most Recent Income Transactions
                         </h2>
-                        <div class="flex space-x-4">
+                        <div class="flex gap-2">
                             <button id="btn-income" onclick="showCategory('income')"
-                                class="category-btn px-3 py-1 rounded bg-purple-600 text-white">
+                                class="category-btn px-3 py-1.5 text-xs sm:text-sm rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors">
                                 Income
                             </button>
                             <button id="btn-expense" onclick="showCategory('expense')"
-                                class="category-btn px-3 py-1 rounded bg-gray-200 text-gray-700">
+                                class="category-btn px-3 py-1.5 text-xs sm:text-sm rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
                                 Expense
                             </button>
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table id="transactions-table" class="min-w-full divide-y divide-gray-200 border">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date
-                                    </th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Transaction ID
-                                    </th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Service
-                                    </th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Serviced By
-                                    </th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Payment
-                                        Method
-                                    </th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Amount
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="transactions-body" class="bg-white divide-y divide-gray-200">
-                            </tbody>
-                        </table>
+                    <div class="overflow-x-auto -mx-3 sm:mx-0">
+                        <div class="inline-block min-w-full align-middle">
+                            <div class="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5 rounded-lg">
+                                <table id="transactions-table" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead class="bg-gray-50 dark:bg-gray-700">
+                                        <tr>
+                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date
+                                            </th>
+                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                Transaction ID
+                                            </th>
+                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Service
+                                            </th>
+                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                Serviced By
+                                            </th>
+                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Payment
+                                                Method
+                                            </th>
+                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transactions-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-1 space-y-6 ">
-                <div class="dark:bg-gray-800 shadow-xs rounded-xl p-2 sm:p-4 w-full text-center">
-                    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Calendar</h2>
+            <div class="lg:col-span-1 space-y-4 sm:space-y-6">
+                <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg sm:rounded-xl p-3 sm:p-4 w-full text-center">
+                    <h2 class="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 mb-2 sm:mb-3">Calendar</h2>
                     <div id="weekRangePicker" class="w-full max-w-full"></div>
                 </div>
 
-                <div class="bg-white dark:bg-gray-800 shadow-xs rounded-xl p-4">
-                    <h3 class="text-gray-800 dark:text-gray-100 font-semibold mb-2 text-center">Employee Performance
+                <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg sm:rounded-xl p-3 sm:p-4">
+                    <h3 class="text-sm sm:text-base text-gray-800 dark:text-gray-100 font-semibold mb-2 sm:mb-3 text-center">Employee Performance
                     </h3>
-                    <div id="top-employers" class="w-full h-64 sm:h-72 md:h-80 lg:h-96"></div>
+                    <div id="top-employers" class="w-full h-48 sm:h-56 md:h-64 lg:h-80"></div>
                 </div>
 
-                <div class="bg-white dark:bg-gray-800 shadow-xs rounded-xl p-4 ">
-                    <h3 class="text-gray-800 dark:text-gray-100 font-semibold text-center">
-                        Employee Performance Sumary
+                <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg sm:rounded-xl p-3 sm:p-4">
+                    <h3 class="text-sm sm:text-base text-gray-800 dark:text-gray-100 font-semibold text-center">
+                        Employee Performance Summary
                     </h3>
-                    <p id="month_sumary" class="text-center mb-4"></p>
-                    <div id="employers-table"></div>
+                    <p id="month_sumary" class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center mb-3 sm:mb-4"></p>
+                    <div id="employers-table" class="overflow-x-auto -mx-3 sm:mx-0"></div>
                 </div>
 
-                <div x-data="stockAlert()" class="bg-white dark:bg-gray-800 shadow-xs rounded-xl p-4 text-center">
-                    <h3 class="text-gray-800 dark:text-gray-100 font-semibold mb-0">
+                <div x-data="stockAlert()" class="bg-white dark:bg-gray-800 shadow-xs rounded-lg sm:rounded-xl p-3 sm:p-4 text-center">
+                    <h3 class="text-sm sm:text-base text-gray-800 dark:text-gray-100 font-semibold mb-1">
                         Monthly Transactions</h3>
-                    <p>Expenses Vs Income </p>
-                    <small><?php echo date("F") ?></small>
+                    <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Expenses Vs Income</p>
+                    <small class="text-xs text-gray-500 dark:text-gray-500"><?php echo date("F") ?></small>
 
                     <div id="transactions-bar-chart-month" class="w-full"
-                        style="min-height: 200px; height: 350px; max-height: 50vw;">
+                        style="min-height: 180px; height: 280px; max-height: 50vw;">
                     </div>
-                    <div class="flex justify-center space-x-6 mt-4  mb-4 items-center">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-4 h-4 rounded-full bg-blue-500 block"></span>
-                            <span class="text-gray-700 text-sm">Income</span>
+                    <div class="flex justify-center gap-4 sm:gap-6 mt-3 sm:mt-4 mb-2 sm:mb-3 items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-blue-500 block"></span>
+                            <span class="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">Income</span>
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="w-4 h-4 rounded-full bg-red-500 block"></span>
-                            <span class="text-gray-700 text-sm">Expense</span>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-red-500 block"></span>
+                            <span class="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">Expense</span>
                         </div>
                     </div>
                 </div>
-                <div x-data="stockAlert()" class="bg-white dark:bg-gray-800 shadow-xs rounded-xl p-4 text-center">
-                    <h3 class="text-gray-800 dark:text-gray-100 font-semibold mb-0">
+                <div x-data="stockAlert()" class="bg-white dark:bg-gray-800 shadow-xs rounded-lg sm:rounded-xl p-3 sm:p-4 text-center">
+                    <h3 class="text-sm sm:text-base text-gray-800 dark:text-gray-100 font-semibold mb-1">
                         Year Transactions</h3>
-                    <p>Expenses Vs Income</p>
-                    <small><?php echo date("Y") ?></small>
+                    <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Expenses Vs Income</p>
+                    <small class="text-xs text-gray-500 dark:text-gray-500"><?php echo date("Y") ?></small>
                     <div id="transactions-bar-chart-year" class="w-full"
-                        style="min-height: 200px; height: 350px; max-height: 50vw;">
+                        style="min-height: 180px; height: 280px; max-height: 50vw;">
                     </div>
-                    <div class="flex justify-center space-x-6 mt-4  mb-4 items-center">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-4 h-4 rounded-full bg-blue-500 block"></span>
-                            <span class="text-gray-700 text-sm">Income</span>
+                    <div class="flex justify-center gap-4 sm:gap-6 mt-3 sm:mt-4 mb-2 sm:mb-3 items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-blue-500 block"></span>
+                            <span class="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">Income</span>
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="w-4 h-4 rounded-full bg-red-500 block"></span>
-                            <span class="text-gray-700 text-sm">Expense</span>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-red-500 block"></span>
+                            <span class="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">Expense</span>
                         </div>
                     </div>
                 </div>
@@ -337,13 +341,13 @@
         let rows = '';
         data.forEach(trx => {
             rows += `
-            <tr class="hover:bg-[#a698ff]">
-                <td class="px-4 py-2">${formatDate(trx.created_at)}</td>
-                <td class="px-4 py-2">${trx.transaction_id}</td>
-                <td class="px-4 py-2">${trx.service_description ?? '-'}</td>
-                <td class="px-4 py-2">${trx.employee.first_name} ${trx.employee.last_name}</td>
-                <td class="px-4 py-2">${trx.payment_method}</td>
-                <td class="px-4 py-2">${Number(trx.amount).toLocaleString()}</td>
+            <tr class="hover:bg-purple-50 dark:hover:bg-gray-700 transition-colors">
+                <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap">${formatDate(trx.created_at)}</td>
+                <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100">${trx.transaction_id}</td>
+                <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100">${trx.service_description ?? '-'}</td>
+                <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100">${trx.employee.first_name} ${trx.employee.last_name}</td>
+                <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100">${trx.payment_method}</td>
+                <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">${Number(trx.amount).toLocaleString()}</td>
             </tr>
         `;
         });
@@ -554,20 +558,20 @@
 
             let tableHtml = `
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                                <thead class="bg-gray-50 dark:bg-gray-700 sticky top-0">
-                                <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Employer</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-700 sticky top-0">
+                            <tr>
+                                <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Employer</th>
+                                <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     `;
 
             data.forEach(function(item) {
                 tableHtml += `
-                    <tr class=" hover:bg-[#9c8dfc]">
-                        <td class="px-4 py-2">${item.label}</td>
-                        <td class="px-4 py-2">${Number(item.value).toLocaleString()}</td>
+                    <tr class="hover:bg-purple-50 dark:hover:bg-gray-700 transition-colors">
+                        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-900 dark:text-gray-100">${item.label}</td>
+                        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">${Number(item.value).toLocaleString()}</td>
                     </tr>
                 `;
             });

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
@@ -17,7 +18,8 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            $user = auth()->user();
+            /** @var User|null $user */
+            $user = Auth::user();
             if (!$user || !$user->isAdmin()) {
                 abort(403, "Unauthorized action. You need admin rights.");
             }
@@ -131,7 +133,7 @@ class UserController extends Controller
     public function toggleStatus($id)
     {
         $targetUser = User::findOrFail($id);
-        $currentUser = auth()->user();
+        $currentUser = Auth::user();
 
         // Prevent deactivating yourself
         if ($currentUser && $targetUser->id === $currentUser->id) {
@@ -153,7 +155,7 @@ class UserController extends Controller
     public function destroy($id)
     {
         $targetUser = User::findOrFail($id);
-        $currentUser = auth()->user();
+        $currentUser = Auth::user();
 
         // Prevent deleting yourself
         if ($currentUser && $targetUser->id === $currentUser->id) {
@@ -161,7 +163,10 @@ class UserController extends Controller
                 ->with('error', 'You cannot delete your own account!');
         }
 
-        $targetUser->delete();
+        // $targetUser->delete();
+        $targetUser->was_deleted = false;
+        $targetUser->save();
+
 
         return redirect()->route('admin.users.index')
             ->with('success', 'System user deleted successfully!');
