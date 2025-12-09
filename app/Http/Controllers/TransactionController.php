@@ -64,6 +64,7 @@ class TransactionController extends Controller
             1 => 'service_name', //issue:use sevice name from service table
             2 => 'receipt_id',
             3 => 'employee_id',
+            4 => 'customer_name',
             5 => 'payment_method',
             6 => 'amount',
         ];
@@ -83,7 +84,7 @@ class TransactionController extends Controller
             $query->where(function ($q) use ($searchTerm) {
                 $q->orWhere('transaction_type', 'like', "%{$searchTerm}%")
                     ->orWhere('payment_method', 'like', "%{$searchTerm}%")
-                    ->orWhere('service_name', 'like', "%{$searchTerm}%")
+                    ->orWhere('service_description', 'like', "%{$searchTerm}%")
                     ->orWhere('receipt_id', 'like', "%{$searchTerm}%")
                     ->orWhereRaw("CAST(amount AS CHAR) LIKE ?", ["%{$searchTerm}%"]);
 
@@ -101,6 +102,13 @@ class TransactionController extends Controller
 
                 $q->orWhereHas('recordedBy', function ($userQuery) use ($searchTerm) {
                     $userQuery->where('name', 'like', "%{$searchTerm}%");
+                });
+
+                // Search in related service table
+                $q->orWhereHas('service', function ($serviceQuery) use ($searchTerm) {
+                    $serviceQuery->where('name', 'like', "%{$searchTerm}%")
+                        ->orWhere('service_code', 'like', "%{$searchTerm}%")
+                        ->orWhere('category', 'like', "%{$searchTerm}%");
                 });
             });
         }

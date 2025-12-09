@@ -496,26 +496,22 @@
                             }
                         },
                         {
-                            data: "service", // points to the nested object
+                            data: null,
                             render: function(data, type, row) {
-                                // `data` is the `service` object
-                                let defaultText = "N/A";
-                                return data && data.service_name ? data.service_name : defaultText;
+                                // Try to get service name from relationship first, then fallback to service_description
+                                if (row.service && row.service.service_name) {
+                                    return row.service.service_name;
+                                } else if (row.service_description) {
+                                    return row.service_description;
+                                }
+                                return "N/A";
                             }
                         },
                         {
                             data: "receipt_id",
                             defaultContent: "N/A"
                         },
-                        {
-                            data: null,
-                            render: function(row) {
-                                return (row.employee && row.employee.first_name && row.employee
-                                        .last_name) ?
-                                    `${row.employee.first_name} ${row.employee.last_name}` :
-                                    'N/A';
-                            }
-                        },
+
                         {
                             data: "customer_name",
                             defaultContent: "Walkin Client",
@@ -705,8 +701,6 @@
                     fromDate = val.trim();
                 }
 
-                console.log("From....:", fromDate);
-                console.log("To..........:", toDate);
                 loadTransactions();
             });
 
