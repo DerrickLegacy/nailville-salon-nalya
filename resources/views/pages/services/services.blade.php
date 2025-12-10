@@ -1,0 +1,521 @@
+<x-app-layout class="bg-white">
+    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-full mx-auto">
+        <!-- Breadcrumb -->
+        <nav class="flex mb-4" aria-label="Breadcrumb">
+            <ol class="flex items-center space-x-2 text-sm">
+                <li><a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Settings & Mgt</a></li>
+                <li class="flex items-center">
+                    <span class="text-gray-400 dark:text-gray-500 mx-2">›</span>
+                    <a href="{{ route('admin.users.index') }}" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">System Services</a>
+                </li>
+                <li class="flex items-center">
+                    <span class="text-gray-400 dark:text-gray-500 mx-2">›</span>
+                    <span class="text-gray-700 dark:text-gray-300">list</span>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Services Offered</h1>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Manage your salon services and pricing</p>
+
+        </div>
+
+        <!-- Info Alert -->
+        <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 mb-6">
+            <div class="flex">
+                <svg class="h-5 w-5 text-blue-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                    <p class="text-sm text-blue-700 dark:text-blue-300">
+                        <strong>Note:</strong> This is a list of services the business is offerring to the customers.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-2 flex flex-col md:flex-row md:justify-between md:items-center">
+            <h1 class="text-3xl text-gray-800 dark:text-gray-100 mb-4 md:mb-0">
+            </h1>
+
+            <div class="flex space-x-3">
+                <button id="addServiceBtn" class="btn bg-violet-600 hover:bg-violet-700 text-white shadow-lg px-5 py-2 rounded-lg flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Add Service</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Services Table -->
+        <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg border border-gray-200 dark:border-gray-700">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                    <select id="filterCategory" class="form-select w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                        <option value="">All Categories</option>
+                        <option value="Hair">Hair</option>
+                        <option value="Beauty">Beauty</option>
+                        <option value="Spa">Spa</option>
+                        <option value="Package">Package</option>
+                        <option value="Misc">Misc</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
+                    <select id="filterStatus" class="form-select w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                        <option value="">All Status</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button id="resetFilters" class="btn bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 w-full">
+                        Reset Filters
+                    </button>
+                </div>
+            </div>
+            <hr>
+            <div class="p-3 mt-2">
+                <div class="overflow-x-auto">
+                    <table id="servicesTable" class="table-auto w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="text-xs uppercase text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/20 border-t border-gray-200 dark:border-gray-700">
+                            <tr>
+                                <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                    <div class="font-semibold text-left">Code</div>
+                                </th>
+                                <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                    <div class="font-semibold text-left">Service Name</div>
+                                </th>
+                                <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap hidden md:table-cell">
+                                    <div class="font-semibold text-left">Category</div>
+                                </th>
+                                <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                    <div class="font-semibold text-right">Price</div>
+                                </th>
+                                <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap hidden lg:table-cell">
+                                    <div class="font-semibold text-center">Status</div>
+                                </th>
+                                <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                    <div class="font-semibold text-center">Actions</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <!-- DataTable will populate this -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add/Edit Service Modal -->
+        <div id="serviceModal" class="fixed inset-0 hidden z-50 fill-white drop-shadow-xl/50" style="z-index: 9999; backdrop-filter: blur(4px);">
+            <div class="flex items-center justify-center min-h-screen px-4 py-8">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative border border-gray-200 dark:border-gray-700">
+                    <div class="p-6">
+                        <!-- Modal Header -->
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 id="modalTitle" class="text-2xl font-bold text-gray-800 dark:text-gray-100">Add Service</h2>
+                            <button id="closeModal" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Modal Form -->
+                        <form id="serviceForm">
+                            <input type="hidden" id="serviceId" name="service_id">
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Service Code <span class="text-red-500">*</span></label>
+                                    <input type="text" id="serviceCode" name="service_code" required
+                                        class="form-input w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                                        placeholder="e.g., HAIRCUT">
+                                    <span class="text-red-500 text-xs error-message" id="error-service_code"></span>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Service Name <span class="text-red-500">*</span></label>
+                                    <input type="text" id="serviceName" name="name" required
+                                        class="form-input w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                                        placeholder="e.g., Hair Cut">
+                                    <span class="text-red-500 text-xs error-message" id="error-name"></span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                                    <select id="serviceCategory" name="category"
+                                        class="form-select w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                                        <option value="">Select Category</option>
+                                        <option value="Hair">Hair</option>
+                                        <option value="Beauty">Beauty</option>
+                                        <option value="Spa">Spa</option>
+                                        <option value="Package">Package</option>
+                                        <option value="Misc">Misc</option>
+                                    </select>
+                                    <span class="text-red-500 text-xs error-message" id="error-category"></span>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Price <span class="text-red-500">*</span></label>
+                                    <input type="number" id="servicePrice" name="price" required step="0.01" min="0"
+                                        class="form-input w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                                        placeholder="0.00">
+                                    <span class="text-red-500 text-xs error-message" id="error-price"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status <span class="text-red-500">*</span></label>
+                                <select id="serviceStatus" name="status" required
+                                    class="form-select w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                                <span class="text-red-500 text-xs error-message" id="error-status"></span>
+                            </div>
+
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
+                                <textarea id="serviceDescription" name="description" rows="3"
+                                    class="form-textarea w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                                    placeholder="Service description..."></textarea>
+                                <span class="text-red-500 text-xs error-message" id="error-description"></span>
+                            </div>
+
+                            <!-- Modal Footer -->
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" id="cancelBtn" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg">
+                                    Cancel
+                                </button>
+                                <button type="submit" id="submitBtn" class="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg">
+                                    Save Service
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if(session('success'))
+        <div class="mb-4 p-4 bg-green-100 dark:bg-green-900/20 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-400 rounded-lg">
+            {{ session('success') }}
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="mb-4 p-4 bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 rounded-lg">
+            {{ session('error') }}
+        </div>
+        @endif
+    </div>
+
+    <input type="hidden" id="authUserId" value="{{ auth()->user()->id }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+            let table;
+            let isEditMode = false;
+            let currentServiceId = null;
+            table = new DataTable('#servicesTable', {
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '{{ route("admin.services.list") }}',
+                    data: function(d) {
+                        d.category = $('#filterCategory').val();
+                        d.status = $('#filterStatus').val();
+                    }
+                },
+                columns: [{
+                        data: 'service_code',
+                        name: 'service_code'
+                    },
+                    {
+                        data: 'name',
+                        name: 'name'
+                    },
+                    {
+                        data: 'category',
+                        name: 'category',
+                        className: 'hidden md:table-cell',
+                        render: function(data) {
+                            return data || '<span class="text-gray-400">N/A</span>';
+                        }
+                    },
+                    {
+                        data: 'price',
+                        name: 'price',
+                        className: 'text-right',
+                        render: function(data) {
+                            return parseFloat(data).toLocaleString('en-US', {
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 0
+                            });
+                        }
+                    },
+                    {
+                        data: 'status',
+                        name: 'status',
+                        className: 'text-center hidden lg:table-cell',
+                        render: function(data) {
+                            if (data === 'Active') {
+                                return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Active</span>';
+                            } else {
+                                return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">Inactive</span>';
+                            }
+                        }
+                    },
+                    {
+                        data: null,
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            return `
+        <div class="flex space-x-2 justify-center">
+            <!-- Edit Button -->
+            <button class="btn-edit px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center space-x-1"
+                    data-id="${row.id}" title="Edit">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                <span>Edit</span>
+            </button>
+
+            <!-- Delete Button -->
+            <button class="btn-delete px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 flex items-center space-x-1"
+                    data-id="${row.id}" title="Delete">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+                <span>Delete</span>
+            </button>
+        </div>
+        `;
+                        }
+                    }
+
+                ],
+                order: [
+                    [0, 'desc']
+                ],
+                responsive: true,
+                pageLength: 10,
+                lengthMenu: [
+                    [10, 25, 50, 100],
+                    [10, 25, 50, 100]
+                ],
+                language: {
+                    emptyTable: "No services found",
+                    zeroRecords: "No matching services found"
+                }
+            });
+
+            // Filter handlers
+            $('#filterCategory, #filterStatus').on('change', function() {
+                table.ajax.reload();
+            });
+
+            $('#resetFilters').on('click', function() {
+                $('#filterCategory, #filterStatus').val('');
+                table.ajax.reload();
+            });
+
+            // Open Add Service Modal
+            $('#addServiceBtn').on('click', function() {
+                console.log('Add Service button clicked');
+                openModal(false);
+            });
+
+            // Edit Service
+            $(document).on('click', '.btn-edit', function() {
+                const serviceId = $(this).data('id');
+                loadServiceData(serviceId);
+            });
+
+            // Delete Service
+            $(document).on('click', '.btn-delete', function() {
+                const serviceId = $(this).data('id');
+
+                Swal.fire({
+                    title: 'Delete Service?',
+                    text: "This action cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `/admin/services/${serviceId}`,
+                            type: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', response.message, 'success');
+                                    table.ajax.reload();
+                                }
+                            },
+                            error: function(xhr) {
+                                Swal.fire('Error!', 'Failed to delete service', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Submit Form
+            $('#serviceForm').on('submit', function(e) {
+                e.preventDefault();
+                clearErrors();
+
+                const formData = {
+                    service_code: $('#serviceCode').val(),
+                    name: $('#serviceName').val(),
+                    category: $('#serviceCategory').val(),
+                    price: $('#servicePrice').val(),
+                    description: $('#serviceDescription').val(),
+                    status: $('#serviceStatus').val()
+                };
+
+                const url = isEditMode ? `/admin/services/${currentServiceId}` : '{{ route("admin.services.store") }}';
+                const method = isEditMode ? 'PUT' : 'POST';
+
+                $.ajax({
+                    url: url,
+                    type: method,
+                    data: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            closeModal();
+                            showNotification('success', response.message);
+                            table.ajax.reload();
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 422) {
+                            const errors = xhr.responseJSON.errors;
+                            displayErrors(errors);
+                        } else {
+                            showNotification('error', 'An error occurred. Please try again.');
+                        }
+                    }
+                });
+            });
+
+            // Close Modal handlers
+            $('#closeModal, #cancelBtn').on('click', function(e) {
+                e.preventDefault();
+                closeModal();
+            });
+
+            // Close modal on outside click
+            $('#serviceModal').on('click', function(e) {
+                if (e.target.id === 'serviceModal') {
+                    closeModal();
+                }
+            });
+
+            // Helper Functions
+            function openModal(editMode = false) {
+                isEditMode = editMode;
+                $('#modalTitle').text(editMode ? 'Edit Service' : 'Add Service');
+                $('#submitBtn').text(editMode ? 'Update Service' : 'Save Service');
+
+                const modal = document.getElementById('serviceModal');
+                modal.classList.remove('hidden');
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+
+                if (!editMode) {
+                    $('#serviceForm')[0].reset();
+                    currentServiceId = null;
+                }
+            }
+
+            function closeModal() {
+                const modal = document.getElementById('serviceModal');
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+
+                $('#serviceForm')[0].reset();
+                clearErrors();
+                isEditMode = false;
+                currentServiceId = null;
+            }
+
+            function loadServiceData(serviceId) {
+                $.ajax({
+                    url: `/admin/services/${serviceId}`,
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            const service = response.data;
+                            currentServiceId = service.id;
+
+                            $('#serviceCode').val(service.service_code);
+                            $('#serviceName').val(service.name);
+                            $('#serviceCategory').val(service.category);
+                            $('#servicePrice').val(service.price);
+                            $('#serviceDescription').val(service.description);
+                            $('#serviceStatus').val(service.status);
+
+                            openModal(true);
+                        }
+                    },
+                    error: function() {
+                        showNotification('error', 'Failed to load service data');
+                    }
+                });
+            }
+
+            function displayErrors(errors) {
+                $.each(errors, function(field, messages) {
+                    $(`#error-${field}`).text(messages[0]);
+                });
+            }
+
+            function clearErrors() {
+                $('.error-message').text('');
+            }
+
+            function showNotification(type, message) {
+                const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+                const notification = $(`
+            <div class="fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 notification">
+                ${message}
+            </div>
+        `);
+
+                $('body').append(notification);
+
+                setTimeout(function() {
+                    notification.fadeOut(function() {
+                        $(this).remove();
+                    });
+                }, 3000);
+            }
+        });
+    </script>
+</x-app-layout>

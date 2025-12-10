@@ -44,4 +44,11 @@ class Transaction extends Model
     {
         return $this->belongsTo(User::class, 'recorded_by', 'id');
     }
+
+    // Relationship to Service (if applicable)
+    // Note: service_description stores the service name, not an ID
+    public function service()
+    {
+        return $this->belongsTo(Service::class, 'service_description', 'id');
+    }
 }

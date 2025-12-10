@@ -245,13 +245,18 @@
                     </a>
                     <a href="{{ route('settings.management') }}"
                         class="block px-3 py-2 text-sm rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                        User Management
+                        Employees
                     </a>
 
                     @if (Auth::user()?->isAdmin())
                     <a href="{{ route('admin.users.index') }}"
                         class="block px-3 py-2 text-sm rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50">
                         System Users
+                    </a>
+
+                    <a href="{{ route('admin.services.index') }}"
+                        class="block px-3 py-2 text-sm rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        Services Offered
                     </a>
                     @endif
 

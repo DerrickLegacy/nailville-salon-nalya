@@ -50,15 +50,18 @@ class TransactionController extends Controller
             return response()->json(['message' => 'Invalid request'], 400);
         }
 
+        // join transaction with services
         $query = Transaction::with([
             'employee:employee_id,first_name,last_name',
-            'recordedBy:id,name'
-        ])->orderBy('id', 'desc'); // 'desc' should be a string
+            'recordedBy:id,name',
+            'service:id,name as service_name,price,category' // Add any other fields you need from services
+
+        ])->orderBy('id', 'desc');
 
         // 🔹 Ordering
         $columns = [
             0 => 'date',
-            1 => 'service_description',
+            1 => 'service_name', //issue:use sevice name from service table
             2 => 'receipt_id',
             3 => 'employee_id',
             4 => 'customer_name',
@@ -79,8 +82,7 @@ class TransactionController extends Controller
         if ($request->filled('searchTerm')) {
             $searchTerm = $request->input('searchTerm');
             $query->where(function ($q) use ($searchTerm) {
-                $q->orWhere('customer_name', 'like', "%{$searchTerm}%")
-                    ->orWhere('transaction_type', 'like', "%{$searchTerm}%")
+                $q->orWhere('transaction_type', 'like', "%{$searchTerm}%")
                     ->orWhere('payment_method', 'like', "%{$searchTerm}%")
                     ->orWhere('service_description', 'like', "%{$searchTerm}%")
                     ->orWhere('receipt_id', 'like', "%{$searchTerm}%")
@@ -100,6 +102,13 @@ class TransactionController extends Controller
 
                 $q->orWhereHas('recordedBy', function ($userQuery) use ($searchTerm) {
                     $userQuery->where('name', 'like', "%{$searchTerm}%");
+                });
+
+                // Search in related service table
+                $q->orWhereHas('service', function ($serviceQuery) use ($searchTerm) {
+                    $serviceQuery->where('name', 'like', "%{$searchTerm}%")
+                        ->orWhere('service_code', 'like', "%{$searchTerm}%")
+                        ->orWhere('category', 'like', "%{$searchTerm}%");
                 });
             });
         }
@@ -158,8 +167,6 @@ class TransactionController extends Controller
         ]);
     }
 
-
-
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -173,6 +180,7 @@ class TransactionController extends Controller
             'expense_type'      => 'nullable|string|max:255',
             'notes'             => 'nullable|string',
             'date'              => 'nullable|date',
+            'service_id'       => 'required|exists:services,id',
         ]);
 
         // Generate a unique transaction_id
@@ -188,7 +196,7 @@ class TransactionController extends Controller
             'transaction_type'   => $validated['transaction_type'],
             'payment_method'     => $validated['payment_method'],
             'service_description' => $validated['transaction_type'] === 'Income'
-                ? ($validated['service_offered'] ?? null)
+                ? ($validated['service_id'] ?? null)
                 : ($validated['expense_type'] ?? null),
             'notes'              => $validated['notes'] ?? null,
             'date'         => DATE('Y-m-d', strtotime($validated['date'])) ?? now(),
@@ -216,11 +224,22 @@ class TransactionController extends Controller
     public function edit($id)
     {
         // dd($id);
-        $employees = Employee::all(); // keep as objects
+        $employees = Employee::all();
+        $services = Service::where('status', 'Active')->orderBy('name')->get();
+
+        // dd($services);
 
         $transaction = Transaction::with(['employee', 'recordedBy'])->find($id);
-        return view('pages.transactions.edit', compact('transaction', 'employees'));
+        return  response()->view(
+            'pages.transactions.edit',
+            [
+                'transaction'            => $transaction,
+                'employees'       => $employees,
+                'services'        => $services,
+            ]
+        );
     }
+
     public function update(Request $request, $id)
     {
         $validated = $request->validate([

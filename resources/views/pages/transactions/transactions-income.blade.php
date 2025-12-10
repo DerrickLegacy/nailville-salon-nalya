@@ -5,17 +5,17 @@
             <div>
                 <nav class="flex mb-2" aria-label="Breadcrumb">
                     <ol class="flex items-center space-x-2 text-sm">
-                        <li><a href="#" class="text-gray-500 hover:text-blue-600">Transactions</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-purple-600">Transactions</a></li>
                         <li class="flex items-center">
                             <span class="text-gray-400 mx-2">›</span>
                             <a href="{{ route('transactions.' . strtolower($transactionType)) }}"
-                                class="text-gray-500 hover:text-blue-600">
+                                class="text-gray-500 hover:text-purple-600">
                                 {{ $transactionType }} Transactions
                             </a>
                         </li>
                         <li class="flex items-center">
                             <span class="text-gray-400 mx-2">›</span>
-                            <a href="" class="text-gray-500 hover:text-blue-600">List</a>
+                            <a href="" class="text-gray-500 hover:text-purple-600">List</a>
                         </li>
                     </ol>
                 </nav>
@@ -29,234 +29,239 @@
                 <h1 class="text-2xl font-bold text-gray-900">{{ $transactionType }} Transactions</h1>
             </div>
 
-
-            @if ($errors->any())
-            <div class="p-2 bg-red-100 text-red-800 rounded mb-2">
-                <ul class="list-disc pl-4">
-                    @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-            @endif
-
             <!-- Right: Actions -->
             <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
                 <!-- Datepicker built with flatpickr -->
                 <x-datepicker />
 
-                <x-simple-modal title="{{ $transactionType }} Transactions">
-                    @slot('trigger')
-                    <button x-on:click="modalIsOpen = true"
-                        class="btn bg-blue-700 text-gray-100 hover:bg-blue-800 dark:bg-blue-100 dark:text-blue-800 dark:hover:bg-white">
+                <div x-data="{ modalIsOpen: false }" class="relative">
+
+                    <!-- Trigger Button -->
+                    <button
+                        @click="modalIsOpen = true"
+                        class="px-4 py-2 bg-purple-700 text-white rounded hover:bg-purple-800 dark:bg-purple-100 dark:text-purple-800 dark:hover:bg-white">
                         Add Transaction
                     </button>
-                    @endslot
 
-                    <!-- Form with x-ref -->
-                    <form x-ref="transactionForm" action="{{ route('transactions.store') }}" method="POST"
-                        class="space-y-2">
-                        @csrf
-                        <input type="hidden" name="transaction_type" value="{{ $transactionType }}">
-
-                        <!-- Customer Name -->
-                        <div>
-                            <label for="customer_name"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Customer Name</label>
-                            <input type="text" name="customer_name" id="customer_name" value="Walkin Client"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
-
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-                            <!-- Receipt ID -->
-                            <div>
-                                <label for="receipt_id"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Receipt
-                                    ID</label>
-                                <input type="text" name="receipt_id" id="receipt_id"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
-                            </div>
-
-                            <!-- Transaction Type (disabled) -->
-                            <div>
-                                <label for="transaction_type"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Transaction
-                                    Type</label>
-                                <input name="transaction_type" id="transaction_type" disabled
-                                    value="{{ $transactionType }}"
-                                    class="mt-1 block w-full bg-gray-100 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
-                            </div>
-
-                            <!-- Income or Expense select -->
-                            @if ($transactionType === 'Income')
-                            <div>
-                                <label for="service_offered"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Service Offered
-                                </label>
-                                <select name="service_offered" id="service_offered" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                                    <option value="">-- Select Service --</option>
-                                    @foreach ($services as $service)
-                                    <option value="{{ $service->name }}">{{ $service->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            @else
-                            <div>
-                                <label for="expense_type"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Expense
-                                    Category</label>
-                                <select name="expense_type" id="expense_type" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                                    <option value="">-- Select Expense --</option>
-                                    <option value="Rent">Rent / Lease</option>
-                                    <option value="Salaries">Salaries & Wages</option>
-                                    <option value="Allowances">Allowances / Bonuses</option>
-                                    <option value="Training">Staff Training / Workshops</option>
-                                    <option value="Utilities">Utilities (Electricity, Water, Internet)</option>
-                                    <option value="BeautyProducts">Beauty Products</option>
-                                    <option value="HairSupplies">Hair Supplies</option>
-                                    <option value="NailSupplies">Nail Supplies</option>
-                                    <option value="Cleaning">Cleaning Supplies / Laundry</option>
-                                    <option value="FurnitureEquipment">Furniture & Equipment Purchase</option>
-                                    <option value="Maintenance">Equipment Maintenance & Repairs</option>
-                                    <option value="Marketing">Marketing & Advertising</option>
-                                    <option value="Transport">Transport / Delivery Costs</option>
-                                    <option value="Licenses">Licenses, Permits & Insurance</option>
-                                    <option value="Miscellaneous">Miscellaneous / Other</option>
-                                </select>
-                            </div>
-                            @endif
-
-                            <!-- Amount -->
-                            <div>
-                                <label for="amount"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Amount</label>
-                                <input type="number" name="amount" id="amount" step="0.01" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
-                            </div>
-
-                            <!-- Payment Method -->
-                            <div>
-                                <label for="payment_method"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment
-                                    Method</label>
-                                <select name="payment_method" id="payment_method"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                                    <option value="Cash">Cash</option>
-                                    <option value="MobileMoney">MobileMoney</option>
-                                    <option value="Card">Card</option>
-                                    <option value="Bank">Bank</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-
-                            <!-- Date -->
-                            <div>
-                                <label for="date"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
-                                <input type="date" name="date" id="date" required
-                                    value="{{ old('date', now()->format('Y-m-d')) }}"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
-                            </div>
-
-
-                            <!-- Employee -->
-                            <div>
-                                <label for="employee_id"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Worked on
-                                    By</label>
-                                <select name="employee_id" id="employee_id" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                                    <option value="">-- Select Employee --</option>
-                                    @foreach ($employees as $employee)
-                                    <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <!-- Notes -->
-                            <div>
-                                <label for="notes"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
-                                <textarea name="notes" id="notes" rows="3"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"></textarea>
-                            </div>
-
-                            <!-- Recorded by -->
-                            <div>
-                                <label for="recorded_by_display"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Recorded
-                                    By</label>
-                                <input type="text" id="recorded_by_display" value="{{ Auth::user()->name }}"
-                                    disabled
-                                    class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
-                                <input type="hidden" name="recorded_by" value="{{ Auth::id() }}">
-                            </div>
-                        </div>
-                    </form>
-
-                    @slot('footer')
-                    <div x-data="{ isSubmitting: false }" class="flex space-x-2">
-                        <!-- Cancel Button -->
-                        <button
-                            x-on:click="
-                                        if(!isSubmitting) {
-                                            modalIsOpen = false;
-                                        } else {
-                                            Swal.fire({
-                                                icon: 'info',
-                                                title: 'Please wait',
-                                                text: 'Cancelling in progress !',
-                                                timer: 2000,
-                                                showConfirmButton: false
-                                            });
-                                        }
-                                    "
-                            :disabled="isSubmitting"
-                            class="px-4 py-2 bg-red-700 text-white rounded cursor-pointer disabled:opacity-50">
-                            Cancel
-                        </button>
-
-                        <!-- Save Button -->
-                        <button
-                            x-on:click="
-                                if(!isSubmitting && $refs.transactionForm) {
-                                    isSubmitting = true;
-
-                                    Swal.fire({
-                                        icon: 'info',
-                                        title: 'Submitting...',
-                                        text: 'Please wait while the transaction is being processed.',
-                                        allowOutsideClick: false,
-                                        showConfirmButton: false,
-                                        didOpen: () => {
-                                            Swal.showLoading();
-                                        }
-                                    });
-
-                                    $refs.transactionForm.submit(); // Let the form submit naturally (or via AJAX)
-                                } else {
-                                    Swal.fire({
-                                        icon: 'info',
-                                        title: 'Please wait',
-                                        text: 'The system is still submitting the transaction...',
-                                        timer: 2000,
-                                        showConfirmButton: false
-                                    });
-                                }
-                            "
-                            :disabled="isSubmitting"
-                            class="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer disabled:opacity-50">
-                            Save
-                        </button>
-
+                    <!-- Modal backdrop -->
+                    <div
+                        x-show="modalIsOpen"
+                        x-transition.opacity
+                        class="fixed inset-0  drop-shadow-xl/50 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
                     </div>
-                    @endslot
 
-                </x-simple-modal>
+                    <!-- Modal panel -->
+                    <div
+                        x-show="modalIsOpen"
+                        x-transition
+                        @keydown.escape.window="modalIsOpen = false"
+                        class="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto px-4 py-6  border-purple-500 border-2 border-solid">
+
+                        <div
+                            x-show="modalIsOpen"
+                            x-transition
+                            @click.away="modalIsOpen = false"
+                            class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto  dark:border-gray-700 p-6  border-purple-400 border-2 border-solid">
+
+                            <!-- Modal header -->
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                                    {{ $transactionType }} Transactions
+                                </h2>
+                                <button @click="modalIsOpen = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Modal Form -->
+                            <form x-ref="transactionForm" action="{{ route('transactions.store') }}" method="POST" class="space-y-4">
+                                @csrf
+                                <input type="hidden" name="transaction_type" value="{{ $transactionType }}">
+
+                                <!-- Customer Name -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Customer Name</label>
+                                    <input type="text" name="customer_name" value="Walkin Client"
+                                        class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100" required>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                                    <!-- Receipt ID -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Receipt ID</label>
+                                        <input type="text" name="receipt_id"
+                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100" required>
+                                    </div>
+
+                                    <!-- Transaction Type -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Transaction Type</label>
+                                        <input disabled value="{{ $transactionType }}"
+                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full bg-gray-100 dark:bg-gray-700 rounded-md border-purple-300 dark:border-purple-600 dark:text-gray-100">
+                                    </div>
+
+                                    <!-- Income / Expense -->
+                                    <!-- <?php echo $services ?> -->
+                                    @if ($transactionType === 'Income')
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Service Offered</label>
+                                        <select name="service_offered" id="service_offered"
+                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100" required>
+                                            <option value="">-- Select Service --</option>
+                                            @foreach ($services as $service)
+                                            <option value="{{ $service->name }}" data-price="{{ $service->price }}" data-service-id="{{ $service->id }}">
+                                                {{ $service->name }}
+                                            </option>
+
+                                            @endforeach
+                                        </select>
+                                        <input type="hidden" name="service_id" id="service_id" required />
+                                    </div>
+                                    @else
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Expense Category</label>
+                                        <select name="expense_type"
+                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100" required>
+                                            <option value="">-- Select Expense --</option>
+                                            <option value="Rent">Rent / Lease</option>
+                                            <option value="Salaries">Salaries & Wages</option>
+                                            <option value="Allowances">Allowances / Bonuses</option>
+                                            <option value="Training">Staff Training / Workshops</option>
+                                            <option value="Utilities">Utilities</option>
+                                            <option value="BeautyProducts">Beauty Products</option>
+                                            <option value="HairSupplies">Hair Supplies</option>
+                                            <option value="NailSupplies">Nail Supplies</option>
+                                            <option value="Cleaning">Cleaning Supplies</option>
+                                            <option value="FurnitureEquipment">Furniture & Equipment</option>
+                                            <option value="Maintenance">Maintenance</option>
+                                            <option value="Marketing">Marketing & Advertising</option>
+                                            <option value="Transport">Transport / Delivery</option>
+                                            <option value="Licenses">Licenses / Insurance</option>
+                                            <option value="Miscellaneous">Miscellaneous</option>
+                                        </select>
+                                    </div>
+                                    @endif
+
+                                    <!-- Amount -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Amount</label>
+                                        <input type="text" id="amount_display"
+                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100" required>
+                                        <input type="hidden" id="amount" name="amount">
+                                    </div>
+
+                                    <!-- Payment Method -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Method</label>
+                                        <select name="payment_method"
+                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100" required>
+                                            <option value="Cash">Cash</option>
+                                            <option value="MobileMoney">MobileMoney</option>
+                                            <option value="Card">Card</option>
+                                            <option value="Bank">Bank</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Date -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
+                                        <input type="date" name="date" value="{{ old('date', now()->format('Y-m-d')) }}"
+                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100" required>
+                                    </div>
+
+                                    <!-- Employee -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Worked On By</label>
+                                        <select name="employee_id"
+                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100" required>
+                                            <option value="">-- Select Employee --</option>
+                                            @foreach ($employees as $employee)
+                                            <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <!-- Notes -->
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
+                                        <textarea name="notes" rows="2"
+                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100">Service payments have been made.</textarea>
+                                    </div>
+
+                                    <!-- Recorded By -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Recorded By</label>
+                                        <input type="text" value="{{ Auth::user()->name }}" disabled
+                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md bg-gray-100 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100">
+                                        <input type="hidden" name="recorded_by" value="{{ Auth::id() }}">
+                                    </div>
+
+                                </div>
+
+                                <!-- Modal footer -->
+                                <div class="flex justify-end space-x-3 mt-4">
+                                    <button type="button" @click="modalIsOpen = false" class="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800">Cancel</button>
+                                    <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- jQuery for service price -->
+                <script>
+                    $(document).ready(function() {
+                        $('#service_offered').on('change', function() {
+                            let selectedOption = $(this).find('option:selected');
+                            let rawPrice = selectedOption.data('price');
+                            let service_id = selectedOption.data('service-id'); // use data-service-id
+                            console.log("service_id : ", service_id)
+                            if (rawPrice) {
+                                let formatted = Number(rawPrice).toLocaleString('en-US');
+                                $('#amount_display').val(formatted);
+                                $('#amount').val(rawPrice);
+                                $('#service_id').val(service_id);
+                            } else {
+                                $('#amount_display').val('');
+                                $('#service_id').val('');
+                                $('#amount').val('');
+                            }
+                        });
+
+                        $('#amount_display').on('input', function() {
+                            let inputVal = $(this).val().replace(/,/g, '');
+                            if (!isNaN(inputVal) && inputVal.trim() !== '') {
+                                $('#amount').val(parseFloat(inputVal));
+                            } else {
+                                $('#amount').val('');
+                            }
+                        });
+                    });
+                </script>
+
+
+                <!-- Price Auto-fill Script -->
+                <script>
+                    $(document).ready(function() {
+                        $('#service_offered').on('change', function() {
+                            let opt = $(this).find('option:selected');
+                            let raw = opt.data('price');
+
+                            if (raw) {
+                                $('#amount_display').val(Number(raw).toLocaleString('en-US'));
+                                $('#amount').val(raw);
+                            } else {
+                                $('#amount_display').val('');
+                                $('#amount').val('');
+                            }
+                        });
+                    });
+                </script>
+
             </div>
         </div>
         <div class="py-4">
@@ -361,7 +366,7 @@
                                             <th class="px-4 py-3">Service </th>
                                             <th class="px-4 py-3">Receipt ID</th>
                                             <th class="px-4 py-3">Serviced By</th>
-                                            <th class="px-4 py-3">Customer Name</th>
+                                            <!-- <th class="px-4 py-3">Customer Name</th> -->
                                             <th class="px-4 py-3">Payment Method</th>
                                             <th class="px-4 py-3">Amount</th>
                                             <th class="px-4 py-3 text-center">Actions</th>
@@ -374,7 +379,7 @@
                                     <tfoot>
                                         <tr>
                                             <th class="px-2 py-3">Total</th>
-                                            <th class="px-4 py-3" colspan="5"></th>
+                                            <th class="px-4 py-3" colspan="4"></th>
                                             <th class="px-2 py-3" id="totalPageAmount"></th>
                                             <th class="px-2 py-3"></th>
                                         </tr>
@@ -432,6 +437,8 @@
                     order: [
                         [0, 'desc']
                     ],
+
+
                     ajax: {
                         url: "{{ route('transactions.getRecords') }}",
                         data: {
@@ -460,6 +467,7 @@
                                     maximumFractionDigits: 0
                                 })
                             );
+                            console.log("Total Records:", response.data);
 
                             return response.data;
                         },
@@ -473,39 +481,47 @@
 
                     // Update the columns configuration to dynamically handle both Income and Expense
                     columns: [{
-                            data: "date",
+                            data: "created_at",
                             render: function(data) {
                                 if (!data) return 'N/A';
 
                                 const date = new Date(data);
 
-                                // Format date part only (no time)
+                                // Format date part
                                 const datePart = date.toLocaleDateString('en-GB', {
                                     day: '2-digit',
                                     month: 'short',
                                     year: 'numeric'
                                 });
 
-                                return datePart;
+                                // Format time part
+                                const timePart = date.toLocaleTimeString('en-GB', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false
+                                });
+
+                                return `${datePart}, ${timePart}`;
                             }
                         },
                         {
-                            data: "service_description",
-                            defaultContent: "N/A"
+                            data: null,
+                            render: function(data, type, row) {
+                                // Try to get service name from relationship first, then fallback to service_description
+                                if (row.service && row.service.service_name) {
+                                    return row.service.service_name;
+                                } else if (row.service_description) {
+                                    return row.service_description;
+                                }
+                                return "N/A";
+                            }
                         },
                         {
                             data: "receipt_id",
                             defaultContent: "N/A"
                         },
+
                         {
-                            data: null,
-                            render: function(row) {
-                                return (row.employee && row.employee.first_name && row.employee
-                                        .last_name) ?
-                                    `${row.employee.first_name} ${row.employee.last_name}` :
-                                    'N/A';
-                            }
-                        }, {
                             data: "customer_name",
                             defaultContent: "Walkin Client",
                             render: function(data) {
@@ -537,7 +553,7 @@
                                         <div class="flex space-x-2 justify-center">
                                             <!-- View (Eye icon) -->
                                             <a href="${detailsUrl}"
-                                            class="p-2 rounded-md bg-blue-500 text-white hover:bg-blue-600"
+                                            class="p-2 rounded-md bg-purple-500 text-white hover:bg-purple-600"
                                             title="View">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -638,7 +654,7 @@
                 let id = $(this).data("id");
                 const swalWithBootstrapButtons = Swal.mixin({
                     customClass: {
-                        confirmButton: "btn btn-success bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 m-1 rounded",
+                        confirmButton: "btn btn-success bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 m-1 rounded",
                         cancelButton: "btn btn-danger bg-red-600 text-white hover:bg-red-700 px-4 py-2 m-1 rounded"
                     },
                     buttonsStyling: false
@@ -694,8 +710,6 @@
                     fromDate = val.trim();
                 }
 
-                console.log("From....:", fromDate);
-                console.log("To..........:", toDate);
                 loadTransactions();
             });
 
