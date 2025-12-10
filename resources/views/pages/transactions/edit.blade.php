@@ -232,5 +232,14 @@
             }
         });
 
+        $('#amount_display').on('input', function() {
+            let inputVal = $(this).val().replace(/,/g, '');
+            if (!isNaN(inputVal) && inputVal.trim() !== '') {
+                $('#amount').val(parseFloat(inputVal));
+            } else {
+                $('#amount').val('');
+            }
+        });
+
     });
 </script>
