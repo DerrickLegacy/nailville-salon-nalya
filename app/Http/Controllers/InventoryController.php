@@ -59,12 +59,9 @@ class InventoryController extends Controller
             'product_name' => 'required|string|max:100',
             'category' => 'required|string|max:50',
             'brand' => 'nullable|string|max:50',
-            'unit' => 'nullable|string|max:20',
             'quantity_in_stock' => 'nullable|integer|min:0',
             'reorder_level' => 'nullable|integer|min:0',
             'purchase_price' => 'nullable|numeric|min:0',
-            'selling_price' => 'nullable|numeric|min:0',
-            'supplier' => 'nullable|string|max:100',
         ], [
             'product_name.required' => 'Product name is required',
             'category.required' => 'Category is required',
@@ -89,12 +86,9 @@ class InventoryController extends Controller
             'sku' => $sku,
             'category' => $request->category,
             'brand' => $request->brand,
-            'unit' => $request->unit,
             'quantity_in_stock' => $request->quantity_in_stock ?? 0,
             'reorder_level' => $request->reorder_level ?? 5,
             'purchase_price' => $request->purchase_price,
-            'selling_price' => $request->selling_price,
-            'supplier' => $request->supplier,
         ]);
         return redirect()->route('inventory.manage')->with('success', 'Inventory product created successfully.');
     }
@@ -114,12 +108,9 @@ class InventoryController extends Controller
             'product_name' => 'required|string|max:100',
             'category' => 'required|string|max:50',
             'brand' => 'nullable|string|max:50',
-            'unit' => 'nullable|string|max:20',
             'quantity_in_stock' => 'nullable|integer|min:0',
             'reorder_level' => 'nullable|integer|min:0',
             'purchase_price' => 'nullable|numeric|min:0',
-            'selling_price' => 'nullable|numeric|min:0',
-            'supplier' => 'nullable|string|max:100',
         ]);
 
         // Regenerate SKU if product name or category changed
@@ -137,12 +128,9 @@ class InventoryController extends Controller
             'sku' => $sku,
             'category' => $request->category,
             'brand' => $request->brand,
-            'unit' => $request->unit,
             'quantity_in_stock' => $request->quantity_in_stock ?? 0,
             'reorder_level' => $request->reorder_level ?? 5,
             'purchase_price' => $request->purchase_price,
-            'selling_price' => $request->selling_price,
-            'supplier' => $request->supplier,
         ]);
 
         return redirect()->route('inventory.manage')

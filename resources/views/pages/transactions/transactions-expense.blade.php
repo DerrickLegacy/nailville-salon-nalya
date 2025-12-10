@@ -5,17 +5,17 @@
             <div>
                 <nav class="flex mb-2" aria-label="Breadcrumb">
                     <ol class="flex items-center space-x-2 text-sm">
-                        <li><a href="#" class="text-gray-500 hover:text-blue-600">Transactions</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-purple-600">Transactions</a></li>
                         <li class="flex items-center">
                             <span class="text-gray-400 mx-2">›</span>
                             <a href="{{ route('transactions.' . strtolower($transactionType)) }}"
-                                class="text-gray-500 hover:text-blue-600">
+                                class="text-gray-500 hover:text-purple-600">
                                 {{ $transactionType }} Transactions
                             </a>
                         </li>
                         <li class="flex items-center">
                             <span class="text-gray-400 mx-2">›</span>
-                            <a href="" class="text-gray-500 hover:text-blue-600">List</a>
+                            <a href="" class="text-gray-500 hover:text-purple-600">List</a>
                         </li>
                     </ol>
                 </nav>
@@ -29,7 +29,7 @@
                 <h1 class="text-2xl font-bold text-gray-900">{{ $transactionType }} Transactions</h1>
             </div>
 
-            @if ($errors->any())
+            <!-- @if ($errors->any())
             <div class="p-2 bg-red-100 text-red-800 rounded mb-2">
                 <ul class="list-disc pl-4">
                     @foreach ($errors->all() as $error)
@@ -37,7 +37,7 @@
                     @endforeach
                 </ul>
             </div>
-            @endif
+            @endif -->
 
             <!-- Right: Actions -->
             <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
@@ -46,7 +46,7 @@
                 <x-simple-modal title="{{ $transactionType }} Transactions">
                     @slot('trigger')
                     <button x-on:click="modalIsOpen = true"
-                        class="btn bg-blue-700 text-gray-100 hover:bg-blue-800 dark:bg-blue-100 dark:text-blue-800 dark:hover:bg-white">
+                        class="btn bg-purple-700 text-gray-100 hover:bg-purple-800 dark:bg-purple-100 dark:text-purple-800 dark:hover:bg-white">
                         Add Transaction
                     </button>
                     @endslot
@@ -61,7 +61,7 @@
                             <label for="customer_name"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300">Customer Name</label>
                             <input type="text" name="customer_name" id="customer_name" value="Walkin Client"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
 
                         </div>
 
@@ -71,8 +71,11 @@
                                 <label for="receipt_id"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Receipt
                                     ID</label>
-                                <input type="text" name="receipt_id" id="receipt_id"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
+                                <input type="text"
+                                    name="receipt_id"
+                                    id="receipt_id"
+                                    value="{{ $transactionType === 'Expense' ? $exp_transaction_id : '' }}"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
                             </div>
 
                             <!-- Transaction Type (disabled) -->
@@ -82,7 +85,7 @@
                                     Type</label>
                                 <input name="transaction_type" id="transaction_type" disabled
                                     value="{{ $transactionType }}"
-                                    class="mt-1 block w-full bg-gray-100 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
+                                    class="mt-1 block w-full bg-gray-100 rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
                             </div>
 
                             <!-- Income or Expense select -->
@@ -92,7 +95,7 @@
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Service
                                     Offered</label>
                                 <select name="service_offered" id="service_offered" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
                                     <option value="">-- Select Service --</option>
                                     <option value="HairCut">Hair Cut</option>
                                     <option value="BraidalPackage">Braidal Package</option>
@@ -114,7 +117,7 @@
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Expense
                                     Category</label>
                                 <select name="expense_type" id="expense_type" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
                                     <option value="">-- Select Expense --</option>
                                     <option value="Rent">Rent / Lease</option>
                                     <option value="Salaries">Salaries & Wages</option>
@@ -140,7 +143,7 @@
                                 <label for="amount"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Amount</label>
                                 <input type="number" name="amount" id="amount" step="0.01" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
                             </div>
 
                             <!-- Payment Method -->
@@ -149,7 +152,7 @@
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment
                                     Method</label>
                                 <select name="payment_method" id="payment_method"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
                                     <option value="Cash">Cash</option>
                                     <option value="MobileMoney">MobileMoney</option>
                                     <option value="Card">Card</option>
@@ -163,7 +166,7 @@
                                 <label for="date"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
                                 <input type="date" name="date" id="date" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
                             </div> --}}
 
                             <div>
@@ -171,29 +174,7 @@
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
                                 <input type="date" name="date" id="date" required
                                     value="{{ old('date', now()->format('Y-m-d')) }}"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
-                            </div>
-
-                            <!-- Employee -->
-                            <div>
-                                <label for="employee_id"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Worked on
-                                    By</label>
-                                <select name="employee_id" id="employee_id" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                                    <option value="">-- Select Employee --</option>
-                                    @foreach ($employees as $employee)
-                                    <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <!-- Notes -->
-                            <div>
-                                <label for="notes"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
-                                <textarea name="notes" id="notes" rows="3"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"></textarea>
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
                             </div>
 
                             <!-- Recorded by -->
@@ -203,8 +184,16 @@
                                     By</label>
                                 <input type="text" id="recorded_by_display" value="{{ Auth::user()->name }}"
                                     disabled
-                                    class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
+                                    class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
                                 <input type="hidden" name="recorded_by" value="{{ Auth::id() }}">
+                            </div>
+
+                            <!-- Notes -->
+                            <div>
+                                <label for="notes"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
+                                <textarea name="notes" id="notes" rows="3"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"></textarea>
                             </div>
                         </div>
                     </form>
@@ -214,7 +203,7 @@
                         class="px-4 py-2 bg-red-700 text-white rounded">Cancel</button>
 
                     <button x-on:click="$refs.transactionForm && $refs.transactionForm.submit()"
-                        class="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
+                        class="px-4 py-2 bg-purple-600 text-white rounded">Save</button>
                     @endslot
                 </x-simple-modal>
             </div>
@@ -507,7 +496,7 @@
                                     <div class="flex space-x-2 justify-center">
                                         <!-- View (Eye icon) -->
                                         <a href="${detailsUrl}"
-                                        class="p-2 rounded-md bg-blue-500 text-white hover:bg-blue-600"
+                                        class="p-2 rounded-md bg-purple-500 text-white hover:bg-purple-600"
                                         title="View">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -609,7 +598,7 @@
                 let id = $(this).data("id");
                 const swalWithBootstrapButtons = Swal.mixin({
                     customClass: {
-                        confirmButton: "btn btn-success bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 m-1 rounded",
+                        confirmButton: "btn btn-success bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 m-1 rounded",
                         cancelButton: "btn btn-danger bg-red-600 text-white hover:bg-red-700 px-4 py-2 m-1 rounded"
                     },
                     buttonsStyling: false
