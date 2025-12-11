@@ -501,7 +501,7 @@
                                     hour12: false
                                 });
 
-                                return `${datePart}, ${timePart}`;
+                                return `${datePart}`;
                             }
                         },
                         {
