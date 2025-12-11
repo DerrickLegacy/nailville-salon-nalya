@@ -75,10 +75,10 @@
 
                     <x-simple-modal title="Inventory Product">
                         @slot('trigger')
-                            <button x-on:click="modalIsOpen = true"
-                                class="btn bg-purple-500 text-gray-100 hover:bg-purple-800 dark:bg-blue-100 dark:text-blue-800 dark:hover:bg-white">
-                                Add Product
-                            </button>
+                        <button x-on:click="modalIsOpen = true"
+                            class="btn bg-purple-500 text-gray-100 hover:bg-purple-800 dark:bg-blue-100 dark:text-blue-800 dark:hover:bg-white">
+                            Add Product
+                        </button>
                         @endslot
 
                         <form x-ref="transactionForm" action="{{ route('inventory.product.store') }}" method="POST"
@@ -104,16 +104,16 @@
                                     <input type="text" id="brand" name="brand"
                                         class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
                                 </div>
-                                <div>
+                                <!-- <div>
                                     <label class="block text-gray-700 font-medium mb-2" for="unit">Unit</label>
                                     <input type="text" id="unit" name="unit"
                                         class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                                </div>
-                                <div>
+                                </div> -->
+                                <!-- <div>
                                     <label class="block text-gray-700 font-medium mb-2" for="supplier">Supplier</label>
                                     <input type="text" id="supplier" name="supplier"
                                         class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                                </div>
+                                </div> -->
                             </div>
 
                             <!-- Stock & Pricing -->
@@ -137,21 +137,21 @@
                                     <input type="number" step="0.01" id="purchase_price" name="purchase_price"
                                         class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
                                 </div>
-                                <div>
+                                <!-- <div>
                                     <label class="block text-gray-700 font-medium mb-2" for="selling_price">Selling
                                         Price</label>
                                     <input type="number" step="0.01" id="selling_price" name="selling_price"
                                         class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                                </div>
+                                </div> -->
                             </div>
                         </form>
 
                         @slot('footer')
-                            <button x-on:click="modalIsOpen = false"
-                                class="px-4 py-2 bg-red-700 text-white rounded">Cancel</button>
+                        <button x-on:click="modalIsOpen = false"
+                            class="px-4 py-2 bg-red-700 text-white rounded">Cancel</button>
 
-                            <button x-on:click="$refs.transactionForm && $refs.transactionForm.submit()"
-                                class="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
+                        <button x-on:click="$refs.transactionForm && $refs.transactionForm.submit()"
+                            class="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
                         @endslot
                     </x-simple-modal>
                 </div>

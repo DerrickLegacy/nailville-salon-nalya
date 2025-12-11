@@ -22,27 +22,40 @@ class TransactionController extends Controller
         $loggedInUser = Auth::user()->name;
 
         $employees = Employee::all()->map(fn($e) => [
-            'id' => $e->employee_id,
+            'id'   => $e->employee_id,
             'name' => $e->full_name,
         ]);
 
         $services = Service::where('status', 'Active')->orderBy('name')->get();
 
-        // Prefer route() param, fallback to query param
-        $transactionType = $request->route('transaction_type') ?? $request->get('transaction_type', 'Income');
+        $latestExpenseId = Transaction::where('transaction_type', 'Expense')
+            ->selectRaw('CAST(SUBSTRING(receipt_id, 5) AS UNSIGNED) as numeric_id')
+            ->orderByDesc('numeric_id')
+            ->value('numeric_id');
 
-        // Pick view dynamically
+        $nextNumeric = $latestExpenseId ? (int)$latestExpenseId + 1 : 1;
+        $formattedExpenseId = "EXP-" . str_pad($nextNumeric, 4, "0", STR_PAD_LEFT);
+
+        // dd($formattedExpenseId);
+
+
+        $transactionType = $request->route('transaction_type')
+            ?? $request->get('transaction_type', 'Income');
+
         $view = $transactionType === 'Income'
             ? 'pages.transactions.transactions-income'
             : 'pages.transactions.transactions-expense';
 
         return response()->view($view, [
-            'transactionType' => $transactionType,
-            'name'            => $loggedInUser,
-            'employees'       => $employees,
-            'services'        => $services,
+            'transactionType'       => $transactionType,
+            'name'                  => $loggedInUser,
+            'employees'             => $employees,
+            'services'              => $services,
+            'exp_transaction_id'    => $formattedExpenseId,
+            'exp_transaction_raw'   => $nextNumeric,
         ]);
     }
+
 
     public function getRecords(Request $request)
     {
@@ -170,24 +183,24 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'transaction_type'  => 'required|in:Income,Expense',
+            'employee_id'       => 'required_if:transaction_type,Income|nullable|exists:employees,employee_id',
+            'service_id'        => 'required_if:transaction_type,Income|nullable|exists:services,id',
             'receipt_id'        => 'nullable|string|max:100',
-            'employee_id'       => 'required|exists:employees,employee_id',
             'customer_name'     => 'nullable|string|max:150',
             'amount'            => 'required|numeric|min:0',
-            'transaction_type'  => 'required|in:Income,Expense',
             'payment_method'    => 'required|in:Cash,MobileMoney,Card,Bank,Other',
             'service_offered'   => 'nullable|string|max:255',
             'expense_type'      => 'nullable|string|max:255',
             'notes'             => 'nullable|string',
             'date'              => 'nullable|date',
-            'service_id'       => 'required|exists:services,id',
         ]);
 
         // Generate a unique transaction_id
         $transactionId = strtoupper(Str::random(10));
 
         $transaction = Transaction::create([
-            'employee_id'        =>  $validated['employee_id'],
+            'employee_id'        => $validated['employee_id'] ?? null,
             'recorded_by'        => Auth::id(),
             'transaction_id'     => $transactionId,
             'receipt_id'         => $validated['receipt_id'] ?? null,
@@ -199,7 +212,7 @@ class TransactionController extends Controller
                 ? ($validated['service_id'] ?? null)
                 : ($validated['expense_type'] ?? null),
             'notes'              => $validated['notes'] ?? null,
-            'date'         => DATE('Y-m-d', strtotime($validated['date'])) ?? now(),
+            'date'               => isset($validated['date']) ? date('Y-m-d', strtotime($validated['date'])) : now(),
         ]);
 
         return redirect()->back()->with('success', 'Transaction saved successfully!');
