@@ -104,7 +104,6 @@
                                     </div>
 
                                     <!-- Income / Expense -->
-                                    <!-- <?php echo $services ?> -->
                                     @if ($transactionType === 'Income')
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Service Offered</label>
