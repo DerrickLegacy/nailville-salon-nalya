@@ -148,7 +148,6 @@
                     </div>
 
                     <!-- Date -->
-                    <?php echo $transaction ?>
                     <div>
                         <label for="date"
                             class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
@@ -216,6 +215,8 @@
 </x-app-layout>
 <script>
     $(document).ready(function() {
+                $('#amount').val(parseFloat($('#amount_display').val().replace(/,/g, '')));
+
 
         $('#service_offered').on('change', function() {
 

@@ -214,11 +214,12 @@
                 <!-- jQuery for service price -->
                 <script>
                     $(document).ready(function() {
+                        $('#amount').val(parseFloat($('#amount_display').val().replace(/,/g, '')));
+
                         $('#service_offered').on('change', function() {
                             let selectedOption = $(this).find('option:selected');
                             let rawPrice = selectedOption.data('price');
                             let service_id = selectedOption.data('service-id'); // use data-service-id
-                            console.log("service_id : ", service_id)
                             if (rawPrice) {
                                 let formatted = Number(rawPrice).toLocaleString('en-US');
                                 $('#amount_display').val(formatted);
@@ -406,7 +407,6 @@
             let cashTypeFilter = '';
             let recordCountTotal = '';
             var transaction_type = $('#transaction_type').val();
-            console.log("Transaction Type:", transaction_type);
             var defaultText = ''
             if (transaction_type !== "Income") {
                 defaultText = "-";
@@ -466,7 +466,6 @@
                                     maximumFractionDigits: 0
                                 })
                             );
-                            console.log("Total Records:", response.data);
 
                             return response.data;
                         },
