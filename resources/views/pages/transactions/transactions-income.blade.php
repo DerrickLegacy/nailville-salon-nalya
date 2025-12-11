@@ -481,7 +481,7 @@
 
                     // Update the columns configuration to dynamically handle both Income and Expense
                     columns: [{
-                            data: "created_at",
+                            data: "date",
                             render: function(data) {
                                 if (!data) return 'N/A';
 
