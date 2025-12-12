@@ -208,9 +208,6 @@
                                         <tr>
                                             <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date
                                             </th>
-                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                Transaction ID
-                                            </th>
                                             <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Service
                                             </th>
                                             <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -337,32 +334,54 @@
         return `${year}-${month}-${day} ${hours}:${minutes}`;
     }
 
-    function renderTable(data) {
-        let rows = '';
-        data.forEach(trx => {
-            rows += `
+ function renderTable(data, type = "income") {
+    let rows = '';
+
+    data.forEach(trx => {
+        console.log(trx);
+        var service_or_desc = '';
+        
+        // These specific employeeFirstName/LastName variables aren't used in the final template anymore, you can remove them if you like:
+        // const employeeFirstName = trx.employee?.first_name ?? '';
+        // const employeeLastName = trx.employee?.last_name ?? '-'; 
+
+        if (type === 'income') {
+            // Corrected: Wrapped the template literal in backticks
+            service_or_desc = `${trx.service?.name ?? '-'}`;
+        } else {
+            service_or_desc = trx.service_description;
+        }
+
+        rows += `
             <tr class="hover:bg-purple-50 dark:hover:bg-gray-700 transition-colors">
                 <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap">${formatDate(trx.created_at)}</td>
-                <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100">${trx.transaction_id}</td>
-                <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100">${trx.service_description ?? '-'}</td>
-                <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100">${trx.employee.first_name} ${trx.employee.last_name}</td>
+                
+                <!-- Use the service_or_desc variable we set above -->
+                <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100">${service_or_desc}</td>
+                
+                <!-- Employee name display (using optional chaining safely) -->
+                <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100">
+                    ${trx.employee ? `${trx.employee?.first_name} ${trx.employee?.last_name}` : 'N/A'}
+                </td>                
+                
                 <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100">${trx.payment_method}</td>
                 <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">${Number(trx.amount).toLocaleString()}</td>
             </tr>
         `;
-        });
-        document.getElementById('transactions-body').innerHTML = rows;
-    }
+    });
+    document.getElementById('transactions-body').innerHTML = rows;
+}
+
 
 
     function showCategory(type) {
         // Render the right table data
         if (type === 'income') {
-            renderTable(incomeTransactions);
+            renderTable(incomeTransactions,type);
             $('#recent_transactions').text('Most Recent Income Transactions')
 
         } else {
-            renderTable(expenseTransactions);
+            renderTable(expenseTransactions,type);
             $('#recent_transactions').text('Most Recent Expense Transactions')
         }
 

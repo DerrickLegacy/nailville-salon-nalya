@@ -215,7 +215,6 @@
                 <script>
                     $(document).ready(function() {
                         $('#amount').val(parseFloat($('#amount_display').val().replace(/,/g, '')));
-
                         $('#service_offered').on('change', function() {
                             let selectedOption = $(this).find('option:selected');
                             let rawPrice = selectedOption.data('price');
