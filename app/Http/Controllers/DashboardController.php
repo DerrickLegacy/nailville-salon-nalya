@@ -35,7 +35,7 @@ class DashboardController extends Controller
     public function topTransactions()
     {
         // Fetch top 10 highest income transactions, most recent first
-        $transactions = Transaction::with('employee')
+        $transactions = Transaction::with(['employee','service'])
             ->where('transaction_type', 'Income') // ensure correct column name
             ->orderBy('date', 'desc')      // most recent first
             ->orderBy('amount', 'desc')          // highest amounts first
@@ -48,7 +48,7 @@ class DashboardController extends Controller
     public function topExpenseTransactions()
     {
         // Fetch top 10 highest income transactions, most recent first
-        $transactions = Transaction::with('employee')
+        $transactions = Transaction::with(['employee','service'])
             ->where('transaction_type', 'Expense') // ensure correct column name
             ->orderBy('date', 'desc')      // most recent first
             ->orderBy('amount', 'desc')          // highest amounts first
