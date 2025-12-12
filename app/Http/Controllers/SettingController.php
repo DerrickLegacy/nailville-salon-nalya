@@ -24,11 +24,16 @@ class SettingController extends Controller
      */
     public function getList()
     {
-        $employees = Employee::all(); // Fetch all employees
+        // Fetch all employees with their work status
+        $employees = Employee::all();
+
+        // Calculate total salary for active employees only
+        $totalActiveSalary = Employee::where('work_status', 'Active')->sum('salary');
 
         return response()->json([
             'status' => 'success',
-            'data' => $employees
+            'data' => $employees,
+            'totalActiveSalary' => $totalActiveSalary
         ]);
     }
 
@@ -128,12 +133,28 @@ class SettingController extends Controller
      *
      * @param int $id
      */
-    public function deleteEmployee($id)
+    public function toggleEmployeeStatus($id)
     {
         $employee = Employee::findOrFail($id);
-        $employee->delete();
 
-        return redirect()->back()->with('success', 'Employee deleted successfully!');
+        // Toggle between Active and Terminated
+        if ($employee->work_status === 'Active') {
+            $employee->work_status = 'Terminated';
+            $message = 'Employee deactivated successfully! They will no longer be counted in salary calculations.';
+        } else {
+            $employee->work_status = 'Active';
+            $message = 'Employee activated successfully! They are now included in salary calculations.';
+        }
+
+        $employee->save();
+
+        return redirect()->back()->with('success', $message);
+    }
+
+    // Keep the old method for backward compatibility but make it deactivate instead
+    public function deleteEmployee($id)
+    {
+        return $this->toggleEmployeeStatus($id);
     }
 
 
