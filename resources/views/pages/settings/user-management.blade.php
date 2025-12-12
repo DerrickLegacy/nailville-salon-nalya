@@ -41,9 +41,7 @@
             <div class="overflow-x-auto bg-white shadow-md rounded-lg p-4">
                 <table id="employersTable" class="min-w-full divide-y divide-gray-200 table-auto">
                     <thead class="bg-gray-50">
-
                         <tr>
-
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Name</th>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -59,16 +57,23 @@
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Phone</th>
                         </tr>
-
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-
                     </tbody>
+                    <tfoot  class="bg-gray-50">
+                        <tr>
+                            <th colspan="4" class="px-4 py-2 text-left text-lg font-medium text-gray-500 uppercase tracking-wider">Total
+                                </th>
+                            <th class="px-4 py-2 text-left text-lg font-medium text-gray-500 uppercase tracking-wider">
+                            </th>
+                            <th colspan="2" class="px-4 py-2 text-left text-lg font-medium text-gray-500 uppercase tracking-wider">
+                                </th>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
     </div>
-
 </x-app-layout>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -76,8 +81,8 @@
     $(document).ready(function() {
         const table = new DataTable('#employersTable', {
             responsive: true,
-            pageLength: 10,
-            lengthMenu: [10, 25, 50, 100],
+            pageLength: 25,
+            lengthMenu: [25, 50, 100],
             ajax: {
                 url: "{{ route('settings.list') }}",
                 dataSrc: 'data',
@@ -156,7 +161,24 @@
                                         `;
                     }
                 }
-            ]
+            ],footerCallback: function(row, data, start, end, display) {
+                var api = this.api();
+                // Calculate total salary
+                var totalSalary = api
+                    .column(4, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        var salaryA = parseFloat(a) || 0;
+                        var salaryB = parseFloat(b) || 0;
+                        return salaryA + salaryB;
+                    }, 0);
+                // Update footer
+                $(api.column(4).footer()).html(
+                    totalSalary.toLocaleString()
+                );
+            }
         });
     });
 
