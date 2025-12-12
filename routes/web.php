@@ -115,6 +115,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         ->name('settings.edit.employer')->defaults('pageType', 'edit');
     Route::get('/settings/user-management/delete-employer/{id}', [SettingController::class, 'deleteEmployee'])
         ->name('settings.delete.employer');
+    Route::get('/settings/user-management/toggle-status/{id}', [SettingController::class, 'toggleEmployeeStatus'])
+        ->name('settings.toggle.employer.status');
     Route::put('/settings/user-management/update-employer/{id}', [SettingController::class, 'updateEmployee'])
         ->name('settings.update.employer');
     Route::get('/settings/user-management/create-new-employer/', [SettingController::class, 'createNewEmployee'])
