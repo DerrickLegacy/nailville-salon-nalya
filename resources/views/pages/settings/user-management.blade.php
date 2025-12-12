@@ -41,9 +41,7 @@
             <div class="overflow-x-auto bg-white shadow-md rounded-lg p-4">
                 <table id="employersTable" class="min-w-full divide-y divide-gray-200 table-auto">
                     <thead class="bg-gray-50">
-
                         <tr>
-
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Name</th>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -59,10 +57,8 @@
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Phone</th>
                         </tr>
-
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-
                     </tbody>
                     <tfoot  class="bg-gray-50">
                         <tr>
@@ -78,7 +74,6 @@
             </div>
         </div>
     </div>
-
 </x-app-layout>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
