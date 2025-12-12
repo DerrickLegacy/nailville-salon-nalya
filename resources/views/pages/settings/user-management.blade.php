@@ -36,100 +36,103 @@
 
     </div>
 
+    <div class="px-4 sm:px-6 lg:px-8 pb-8 w-full max-w-full mx-auto">
+        <div class="bg-white shadow-lg rounded-xl">
+            <div class="overflow-x-auto bg-white shadow-md rounded-lg p-4">
+                <table id="employersTable" class="min-w-full divide-y divide-gray-200 table-auto">
+                    <thead class="bg-gray-50">
 
+                        <tr>
 
-    <div class="bg-white shadow-lg rounded-xl">
-        <div class="overflow-x-auto bg-white shadow-md rounded-lg p-4">
-            <table id="employersTable" class="min-w-full divide-y divide-gray-200 table-auto">
-                <thead class="bg-gray-50">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Name</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Job Title</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Department</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Hire Date</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Salary</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Email</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Phone</th>
+                        </tr>
 
-                    <tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
 
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Name</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Job Title</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Department</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Hire Date</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Salary</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Email</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Phone</th>
-                    </tr>
-
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
+    </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script>
-            $(document).ready(function() {
-                const table = new DataTable('#employersTable', {
-                    responsive: true,
-                    pageLength: 10,
-                    lengthMenu: [10, 25, 50, 100],
-                    ajax: {
-                        url: "{{ route('settings.list') }}",
-                        dataSrc: 'data',
-                        error: function(xhr, status, error) {
-                            console.error('Error:', status, error);
-                        }
-                    },
-                    columns: [{
-                            data: null,
-                            title: 'Name',
-                            render: function(data, type, row) {
-                                return `${row.first_name ?? ''} ${row.last_name ?? ''}`;
-                            }
-                        },
-                        {
-                            data: 'job_title',
-                            title: 'Job Title'
-                        },
-                        {
-                            data: 'department',
-                            title: 'Department'
-                        },
-                        {
-                            data: 'hire_date',
-                            title: 'Hire Date'
-                        },
-                        {
-                            data: 'salary',
-                            title: 'Salary',
-                            render: function(data) {
-                                return data ? `$${data}` : '-';
-                            }
-                        },
-                        {
-                            data: 'email',
-                            title: 'Email',
-                            defaultContent: '-'
-                        },
-                        {
-                            data: 'phone_number',
-                            title: 'Phone',
-                            defaultContent: '-'
-                        },
-                        {
-                            data: null,
-                            title: 'Actions',
-                            orderable: false,
-                            searchable: false,
-                            render: function(data, type, row) {
-                                const viewUrl =
-                                    `/settings/user-management/employee-details/${row.employee_id}`;
-                                const editUrl =
-                                    `/settings/user-management/edit-employer/${row.employee_id}`;
+</x-app-layout>
 
-                                return `
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function() {
+        const table = new DataTable('#employersTable', {
+            responsive: true,
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            ajax: {
+                url: "{{ route('settings.list') }}",
+                dataSrc: 'data',
+                error: function(xhr, status, error) {
+                    console.error('Error:', status, error);
+                }
+            },
+            columns: [{
+                    data: null,
+                    title: 'Name',
+                    render: function(data, type, row) {
+                        return `${row.first_name ?? ''} ${row.last_name ?? ''}`;
+                    }
+                },
+                {
+                    data: 'job_title',
+                    title: 'Job Title'
+                },
+                {
+                    data: 'department',
+                    title: 'Department'
+                },
+                {
+                    data: 'hire_date',
+                    title: 'Hire Date'
+                },
+                {
+                    data: 'salary',
+                    title: 'Salary',
+                    render: function(data) {
+                        return data ? `${Number(data).toLocaleString()}` : '-';
+                    }
+                },
+                {
+                    data: 'email',
+                    title: 'Email',
+                    defaultContent: '-'
+                },
+                {
+                    data: 'phone_number',
+                    title: 'Phone',
+                    defaultContent: '-'
+                },
+                {
+                    data: null,
+                    title: 'Actions',
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, row) {
+                        const viewUrl =
+                            `/settings/user-management/employee-details/${row.employee_id}`;
+                        const editUrl =
+                            `/settings/user-management/edit-employer/${row.employee_id}`;
+
+                        return `
                                         <div class="flex space-x-2">
                                             <a href="${viewUrl}" class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center space-x-1">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -151,32 +154,28 @@
                                             </button>
                                         </div>
                                         `;
-                            }
-                        }
-                    ]
-                });
-            });
-
-            // SweetAlert confirmation
-            function confirmDelete(employeeId) {
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This action cannot be undone!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Redirect to delete route or make an AJAX request
-                        window.location.href = `/settings/user-management/delete-employer/${employeeId}`;
                     }
-                });
-            }
-        </script>
-    </div>
-    </div>
+                }
+            ]
+        });
+    });
 
-</x-app-layout>
+    // SweetAlert confirmation
+    function confirmDelete(employeeId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This action cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Redirect to delete route or make an AJAX request
+                window.location.href = `/settings/user-management/delete-employer/${employeeId}`;
+            }
+        });
+    }
+</script>
