@@ -69,7 +69,7 @@ class TransactionController extends Controller
             'recordedBy:id,name',
             'service:id,name as service_name,price,category' // Add any other fields you need from services
 
-        ])->orderBy('id', 'desc');
+        ])->orderBy('date', 'desc');
 
         // 🔹 Ordering
         $columns = [
