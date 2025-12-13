@@ -453,7 +453,6 @@
                             $('#totalRecordsCount, #totaLRecordsReturned').text(totalRecords);
                             $('#totalAllPagesAmountRet').text(Number(response.totalAmountAllPages || 0)
                                 .toLocaleString())
-                            // Update total based on transaction type
                             let totalValue = 0;
                             if (transaction_type === 'Expense') {
                                 totalValue = Number(response.totalExpense || 0);
@@ -472,7 +471,7 @@
                             $('#transactions-spinner').addClass('hidden');
                         },
                         error: function(xhr, status, error) {
-                            console.error('DataTable AJAX error:', status, error);
+                            window.alert('DataTable AJAX error:', status, error);
                         }
                     },
 
@@ -519,10 +518,11 @@
                         },
 
                         {
-                            data: "customer_name",
+                            data: null,
                             defaultContent: "Walkin Client",
                             render: function(data) {
-                                return data || defaultText;
+
+                                return data.employee.first_name +" "+ data.employee.last_name || defaultText;
                             }
                         },
                         {
@@ -632,10 +632,6 @@
 
                         // Show all pages total (add a new element in your HTML if needed)
                         $("#currnetPage").text(totalAll.toLocaleString());
-
-                        console.log(totalCurrent, '--', totalAll)
-
-                        // Hide spinner after draw
                         $('#transactions-spinner').addClass('hidden');
                     },
 
@@ -695,8 +691,6 @@
 
             $("#dateSelect").on("change", function() {
                 let val = $(this).val();
-                console.log("Raw value:", val);
-
                 if (val.includes(" - ")) {
                     // range mode
                     let parts = val.split(" - ");
@@ -730,16 +724,11 @@
 
             // Export button functionality
             $(document).on("click", "#export-button", function() {
-                console.log("Exporting to PDF...");
-
                 // Create a temporary element for PDF generation
                 const element = document.createElement('div');
 
                 let now = new Date();
                 let currentDate = now.toLocaleString('en-US');
-                // console.log(formattedDateTime);
-
-
                 // Create a styled version of the table for PDF
                 // In the export button click handler, update the table structure:
                 element.innerHTML = `
