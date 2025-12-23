@@ -67,7 +67,7 @@ class TransactionController extends Controller
         $query = Transaction::with([
             'employee:employee_id,first_name,last_name',
             'recordedBy:id,name',
-            'service:id,name as service_name,price,category' // Add any other fields you need from services
+            'service:id,name as service_name,price,category'
 
         ])->orderBy('date', 'desc');
 

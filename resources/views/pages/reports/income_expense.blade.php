@@ -548,8 +548,8 @@
 
                             total_Income_recorded = total_income;
                             const chartData = Object.entries(data.grouped).map(([label, value]) => ({
-                                label: label,
-                                value: value
+                                label: value.service_name,
+                                value: value.total_amount
                             }));
 
                             $('#todays-income-chart-progress').empty();
@@ -605,6 +605,7 @@
                             const tbody = $('#service_table tbody');
                             tbody.empty();
                             let total = 0;
+                            console.log("DATA: _  ",chartData);
                             chartData.forEach(item => {
                                 total += item.value;
                                 tbody.append(`

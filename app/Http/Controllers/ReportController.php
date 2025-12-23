@@ -195,11 +195,22 @@ class ReportController extends Controller
                 ->map(fn($g) => $g->sum('amount'));
         }
 
-        // Response payload
         $data = [
             'range_label' => $rangeLabel,
             'total_income' => $total_income,
-            'grouped' => $incomes->groupBy('service_description')->map->sum('amount'),
+            // 'grouped' => $incomes->groupBy('service_description')->map->sum('amount'),//link to service table  where transaction.service_description == services.id and return the service details
+            'grouped' => $incomes
+                ->groupBy('service_description')
+                ->map(function ($transactions, $service_id) {
+                    $service = \App\Models\Service::find($service_id); // get service details
+                    return [
+                        'service_id'   => $service->id ?? $service_id,
+                        'service_name' => $service->name ?? 'Unknown',
+                        'service_code' => $service->service_code ?? null,
+                        'category'     => $service->category ?? null,
+                        'total_amount' => $transactions->sum('amount'),
+                    ];
+                }),
             'grouped_by_period' => $grouped_by_period,
             'daily_goal' => $daily_goal_total,
             'daily_percentage' => round($daily_percentage, 0),
