@@ -483,19 +483,11 @@
 
                                 const date = new Date(data);
 
-                                // Format date part
                                 const datePart = date.toLocaleDateString('en-GB', {
                                     day: '2-digit',
                                     month: 'short',
                                     year: 'numeric'
                                 });
-
-                                // Format time part
-                                // const timePart = date.toLocaleTimeString('en-GB', {
-                                //     hour: '2-digit',
-                                //     minute: '2-digit',
-                                //     hour12: false
-                                // });
 
                                 return `${datePart}`;
                             }
@@ -503,7 +495,6 @@
                         {
                             data: null,
                             render: function(data, type, row) {
-                                // Try to get service name from relationship first, then fallback to service_description
                                 if (row.service && row.service.service_name) {
                                     return row.service.service_name;
                                 } else if (row.service_description) {
@@ -522,7 +513,7 @@
                             defaultContent: "Walkin Client",
                             render: function(data) {
 
-                                return data.employee.first_name +" "+ data.employee.last_name || defaultText;
+                                return data.employee.first_name + " " + data.employee.last_name || defaultText;
                             }
                         },
                         {
@@ -566,11 +557,6 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5m-7-7l7 7m0 0v4m0-4h-4"/>
                                 </svg>
                                 </a>
-
-
-
-
-
                                             <!-- Delete (Trash icon) -->
                                             <button type="button"
                                             class="action-link delete-link p-2 rounded-md bg-red-500 text-white hover:bg-red-600"

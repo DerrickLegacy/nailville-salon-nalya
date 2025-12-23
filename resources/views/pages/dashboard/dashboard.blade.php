@@ -334,25 +334,25 @@
         return `${year}-${month}-${day} ${hours}:${minutes}`;
     }
 
- function renderTable(data, type = "income") {
-    let rows = '';
+    function renderTable(data, type = "income") {
+        let rows = '';
 
-    data.forEach(trx => {
-        console.log(trx);
-        var service_or_desc = '';
-        
-        // These specific employeeFirstName/LastName variables aren't used in the final template anymore, you can remove them if you like:
-        // const employeeFirstName = trx.employee?.first_name ?? '';
-        // const employeeLastName = trx.employee?.last_name ?? '-'; 
+        data.forEach(trx => {
+            console.log(trx);
+            var service_or_desc = '';
 
-        if (type === 'income') {
-            // Corrected: Wrapped the template literal in backticks
-            service_or_desc = `${trx.service?.name ?? '-'}`;
-        } else {
-            service_or_desc = trx.service_description;
-        }
+            // These specific employeeFirstName/LastName variables aren't used in the final template anymore, you can remove them if you like:
+            // const employeeFirstName = trx.employee?.first_name ?? '';
+            // const employeeLastName = trx.employee?.last_name ?? '-'; 
 
-        rows += `
+            if (type === 'income') {
+                // Corrected: Wrapped the template literal in backticks
+                service_or_desc = `${trx.service?.name ?? '-'}`;
+            } else {
+                service_or_desc = trx.service_description;
+            }
+
+            rows += `
             <tr class="hover:bg-purple-50 dark:hover:bg-gray-700 transition-colors">
                 <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap">${formatDate(trx.created_at)}</td>
                 
@@ -368,20 +368,18 @@
                 <td class="px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">${Number(trx.amount).toLocaleString()}</td>
             </tr>
         `;
-    });
-    document.getElementById('transactions-body').innerHTML = rows;
-}
-
-
+        });
+        document.getElementById('transactions-body').innerHTML = rows;
+    }
 
     function showCategory(type) {
         // Render the right table data
         if (type === 'income') {
-            renderTable(incomeTransactions,type);
+            renderTable(incomeTransactions, type);
             $('#recent_transactions').text('Most Recent Income Transactions')
 
         } else {
-            renderTable(expenseTransactions,type);
+            renderTable(expenseTransactions, type);
             $('#recent_transactions').text('Most Recent Expense Transactions')
         }
 
