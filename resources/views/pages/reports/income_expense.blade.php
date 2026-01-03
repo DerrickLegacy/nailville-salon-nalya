@@ -24,6 +24,7 @@
                     <?php echo $report_type; ?> Report</h1>
             </div>
         </div>
+
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-6">
             <h5 class="font-semibold dark:text-white my-2 text-2xl text-center">
                 <?php echo $report_type; ?> Performance Report</h5>
@@ -36,7 +37,7 @@
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Filters:</h2>
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div x-data="{ active: 'Today' }" class="flex flex-wrap items-center gap-2">
-                    @foreach (['Today', 'This Week', 'This Month', 'This Year'] as $label)
+                    @foreach (['Today', 'This Week', 'This Month', 'This Year', 'All Time'] as $label)
                     <button type="button" @click="active = '{{ $label }}'"
                         :class="active === '{{ $label }}'
                                 ?
@@ -75,104 +76,108 @@
                     </button>
                 </div>
             </div>
-            <div class="mt-10"> {{-- <hr> --}}
-                <div id="todays-income-container" class="flex flex-col lg:flex-row gap-6">
-                    <!-- Left Column -->
-                    <div class="flex flex-col lg:flex-row lg:space-x-6 w-full">
-                        <!-- Main Content Column -->
-                        <div class="flex-1 lg:w-2/3">
+            <input type="hidden" id="report_type" name="report_type" value="<?php echo $report_type; ?>">
+        </div>
+        <div class="mt-10">
+            <div id="todays-income-container" class="flex flex-col lg:flex-row gap-6">
+                <!-- Left Column -->
+                <div class="flex flex-col lg:flex-row lg:space-x-6 w-full">
+                    <!-- Main Content Column -->
+                    <div class="flex-1 lg:w-2/3">
 
-                            <!-- Selected Employer Section -->
-                            <div id="employee_table_wrapper" class="mb-6 hidden">
-                                <h5 id="employee_table_heading" class="text-xl font-semibold dark:text-white mb-4">
-                                    Selected Employer <?php echo $report_type; ?> Details
-                                </h5>
-                                <!-- <p class="heading text-center"></p> -->
+                        <!-- Selected Employer Section -->
+                        <div id="employee_table_wrapper" class="mb-6 hidden">
+                            <h5 id="employee_table_heading" class="text-xl font-semibold dark:text-white mb-4">
+                                Selected Employer <?php echo $report_type; ?> Details
+                            </h5>
+                            <!-- <p class="heading text-center"></p> -->
 
-                                <!-- Cards Row -->
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                                    <div
-                                        class="bg-white dark:bg-[#8200DB] border border-[#c180ed] dark:border-[#9b4dff] rounded-lg shadow-md p-4 flex items-center space-x-4 transition-transform transform hover:scale-105">
-                                        <div class="flex-shrink-0">
-                                            <img src="{{ asset('images/profit_7107544.png') }}" alt="Profit Icon"
-                                                class="w-12 h-12 md:w-16 md:h-16 object-contain">
-                                        </div>
-                                        <div class="flex-1 text-center sm:text-left">
-                                            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1">
-                                                Total {{ $report_type }}</h3>
-                                            <p id="total_income_card"
-                                                class="text-xl font-bold text-gray-900 dark:text-white">Shs. 0</p>
-                                        </div>
+                            <!-- Cards Row -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                                <div
+                                    class="bg-white dark:bg-[#8200DB] border border-[#c180ed] dark:border-[#9b4dff] rounded-lg shadow-md p-4 flex items-center space-x-4 transition-transform transform hover:scale-105">
+                                    <div class="flex-shrink-0">
+                                        <img src="{{ asset('images/profit_7107544.png') }}" alt="Profit Icon"
+                                            class="w-12 h-12 md:w-16 md:h-16 object-contain">
                                     </div>
-
-                                    <!-- Employee Contribution Card -->
-                                    <div
-                                        class="bg-white dark:bg-[#8200DB] border border-[#c180ed] dark:border-[#9b4dff] rounded-lg shadow-md p-4 flex items-center space-x-4 transition-transform transform hover:scale-105">
-                                        <div class="flex-shrink-0">
-                                            <img src="{{ asset('images/earning_16136294.png') }}"
-                                                alt="Contribution Icon"
-                                                class="w-12 h-12 md:w-16 md:h-16 object-contain">
-                                        </div>
-                                        <div class="flex-1 text-center sm:text-left">
-                                            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1">
-                                                Employee Contribution</h3>
-                                            <p class="text-xl font-bold text-gray-900 dark:text-white"><span
-                                                    id="total_emp_contribution_card"></span>%</p>
-                                        </div>
+                                    <div class="flex-1 text-center sm:text-left">
+                                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1">
+                                            Total {{ $report_type }}</h3>
+                                        <p id="total_income_card"
+                                            class="text-xl font-bold text-gray-900 dark:text-white">Shs. 0</p>
                                     </div>
                                 </div>
 
-                                <!-- Employee Info Table -->
-                                <div class="overflow-x-auto rounded-lg shadow ring-1 ring-black/5">
-                                    <table
-                                        class="min-w-full bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                        <thead class="bg-gray-100 dark:bg-gray-700">
-                                            <tr>
-                                                <th
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Attribute</th>
-                                                <th
-                                                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Value</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                            <tr>
-                                                <td class="px-6 py-3">Name</td>
-                                                <td class="px-6 py-3 text-right" id="emp_name"></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="px-6 py-3">Expertise Section</td>
-                                                <td class="px-6 py-3 text-right" id="emp_expertise"></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="px-6 py-3">Total Transactions</td>
-                                                <td class="px-6 py-3 text-right" id="transactions_registered"></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="px-6 py-3">Rank</td>
-                                                <td class="px-6 py-3 text-right" id="rank_position"></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="px-6 py-3">Contribution Per Total</td>
-                                                <td class="px-6 py-3 text-right" id="contri_per_total"></td>
-                                            </tr>
-                                        </tbody>
-                                        <tfoot class="bg-gray-50 dark:bg-gray-700">
-                                            <tr>
-                                                <td class="px-6 py-3 font-semibold">Total</td>
-                                                <td class="px-6 py-3 text-right font-semibold" id="emp_total_income">
-                                                </td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
+                                <!-- Employee Contribution Card -->
+                                <div
+                                    class="bg-white dark:bg-[#8200DB] border border-[#c180ed] dark:border-[#9b4dff] rounded-lg shadow-md p-4 flex items-center space-x-4 transition-transform transform hover:scale-105">
+                                    <div class="flex-shrink-0">
+                                        <img src="{{ asset('images/earning_16136294.png') }}"
+                                            alt="Contribution Icon"
+                                            class="w-12 h-12 md:w-16 md:h-16 object-contain">
+                                    </div>
+                                    <div class="flex-1 text-center sm:text-left">
+                                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1">
+                                            Employee Contribution</h3>
+                                        <p class="text-xl font-bold text-gray-900 dark:text-white"><span
+                                                id="total_emp_contribution_card"></span>%</p>
+                                    </div>
                                 </div>
                             </div>
 
+                            <!-- Employee Info Table -->
+                            <div class="overflow-x-auto rounded-lg shadow ring-1 ring-black/5">
+                                <table
+                                    class="min-w-full bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead class="bg-gray-100 dark:bg-gray-700">
+                                        <tr>
+                                            <th
+                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                Attribute</th>
+                                            <th
+                                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                        <tr>
+                                            <td class="px-6 py-3">Name</td>
+                                            <td class="px-6 py-3 text-right" id="emp_name"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-3">Expertise Section</td>
+                                            <td class="px-6 py-3 text-right" id="emp_expertise"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-3">Total Transactions</td>
+                                            <td class="px-6 py-3 text-right" id="transactions_registered"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-3">Rank</td>
+                                            <td class="px-6 py-3 text-right" id="rank_position"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-3">Contribution Per Total</td>
+                                            <td class="px-6 py-3 text-right" id="contri_per_total"></td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot class="bg-gray-50 dark:bg-gray-700">
+                                        <tr>
+                                            <td class="px-6 py-3 font-semibold">Total</td>
+                                            <td class="px-6 py-3 text-right font-semibold" id="emp_total_income">
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-6">
                             <!-- Performance by Service Section -->
                             <h5 class="text-xl font-semibold dark:text-white my-6">Performance By Service
                                 <span class="heading">Today</span>
                             </h5>
+
                             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
                                 <form class="flex w-full sm:w-1/2">
                                     <label for="service-search" class="sr-only">Search</label>
@@ -192,6 +197,7 @@
                                     </div>
                                 </form>
                             </div>
+
                             <div class="overflow-x-auto rounded-lg shadow-md mb-6">
                                 <table id="service_table"
                                     class="min-w-full bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -217,6 +223,8 @@
                                     </tfoot>
                                 </table>
                             </div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-6">
 
                             <h5 class="text-xl font-semibold dark:text-white my-6">Performance Within <span
                                     class="heading">Today</span>'s Time Period</h5>
@@ -245,6 +253,10 @@
                                     </tfoot>
                                 </table>
                             </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-6">
+
 
                             <h5 class="text-xl font-semibold dark:text-white my-6">Employer Income Trend Within <span
                                     class="heading">Today</span>'s Time Period</h5>
@@ -273,82 +285,80 @@
                                     </tfoot>
                                 </table>
                             </div>
+                        </div>
+                    </div>
+                </div>
 
+                <div
+                    class="lg:w-1/3 flex flex-col gap-6 border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 p-4">
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 transition-all">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 text-center mb-6">💼
+                            Business <?php echo $report_type; ?> Goals</h3>
+
+                        <div class="text-center text-sm text-gray-500 dark:text-gray-400 mb-4">
+                            <span class="heading">Today</span>
+
+                        </div>
+                        <div class="space-y-3">
+                            <div
+                                class="flex items-center justify-between bg-purple-50 dark:bg-purple-900/30 rounded-xl px-4 py-3">
+                                <div class="text-gray-700 dark:text-gray-300 font-medium">Projected
+                                    <?php echo $report_type; ?>
+                                </div>
+                                <div id="expected_income"
+                                    class="text-gray-900 dark:text-white font-semibold text-lg"></div>
+                            </div>
+
+                            <div
+                                class="flex items-center justify-between bg-purple-50 dark:bg-purple-900/30 rounded-xl px-4 py-3">
+                                <div class="text-gray-700 dark:text-gray-300 font-medium">Achieved
+                                    <?php echo $report_type; ?>
+                                </div>
+                                <div id="achieved_income"
+                                    class="font-bold text-green-600 dark:text-green-400 text-lg"></div>
+                            </div>
+
+                            <div
+                                class="flex items-center justify-between bg-purple-50 dark:bg-purple-900/30 rounded-xl px-4 py-3">
+                                <div class="text-gray-700 dark:text-gray-300 font-medium">Percentage Achievement
+                                </div>
+                                <div class="font-bold text-purple-600 dark:text-purple-400 text-lg">
+                                    <span id="percentage_improvement"></span>%
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div
-                        class="lg:w-1/3 flex flex-col gap-6 border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 p-4">
-                        <div
-                            class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 transition-all">
-                            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 text-center mb-6">💼
-                                Business <?php echo $report_type; ?> Goals</h3>
+                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-all">
+                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 text-center">
+                            Service
+                            Breakdown As Of
+                            <p class="heading">Today</p>
+                        </h3>
+                        <div id="todays-income-chart-progress" class="w-full h-64"></div>
+                    </div>
 
-                            <div class="text-center text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                <span class="heading">Today</span>
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-all">
+                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 text-center">
 
-                            </div>
-                            <div class="space-y-3">
-                                <div
-                                    class="flex items-center justify-between bg-purple-50 dark:bg-purple-900/30 rounded-xl px-4 py-3">
-                                    <div class="text-gray-700 dark:text-gray-300 font-medium">Projected
-                                        <?php echo $report_type; ?>
-                                    </div>
-                                    <div id="expected_income"
-                                        class="text-gray-900 dark:text-white font-semibold text-lg"></div>
-                                </div>
+                            <?php echo $report_type; ?> Summary
+                            <p class="heading">Today</p>
+                        </h3>
+                        <div id="todays-income-performance-progress" class="w-full h-64"></div>
+                    </div>
 
-                                <div
-                                    class="flex items-center justify-between bg-purple-50 dark:bg-purple-900/30 rounded-xl px-4 py-3">
-                                    <div class="text-gray-700 dark:text-gray-300 font-medium">Achieved
-                                        <?php echo $report_type; ?>
-                                    </div>
-                                    <div id="achieved_income"
-                                        class="font-bold text-green-600 dark:text-green-400 text-lg"></div>
-                                </div>
-
-                                <div
-                                    class="flex items-center justify-between bg-purple-50 dark:bg-purple-900/30 rounded-xl px-4 py-3">
-                                    <div class="text-gray-700 dark:text-gray-300 font-medium">Percentage Achievement
-                                    </div>
-                                    <div class="font-bold text-purple-600 dark:text-purple-400 text-lg">
-                                        <span id="percentage_improvement"></span>%
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-all">
-                            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 text-center">
-                                Service
-                                Breakdown As Of
-                                <p class="heading">Today</p>
-                            </h3>
-                            <div id="todays-income-chart-progress" class="w-full h-64"></div>
-                        </div>
-
-                        <div
-                            class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-all">
-                            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 text-center">
-
-                                <?php echo $report_type; ?> Summary
-                                <p class="heading">Today</p>
-                            </h3>
-                            <div id="todays-income-performance-progress" class="w-full h-64"></div>
-                        </div>
-
-                        <div
-                            class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-all">
-                            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 text-center">Income
-                                Trend</h3>
-                            <p class="heading text-center">Today</p>
-                            <div id="income-chart" class="w-full h-64"></div>
-                        </div>
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-all">
+                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 text-center">Income
+                            Trend</h3>
+                        <p class="heading text-center">Today</p>
+                        <div id="income-chart" class="w-full h-64"></div>
                     </div>
                 </div>
             </div>
-            <input type="hidden" id="report_type" name="report_type" value="<?php echo $report_type; ?>">
         </div>
         <script>
             $(document).ready(function() {
@@ -454,7 +464,6 @@
                                 // Add to running total
                                 totalIncomeSum += income;
 
-                                // Append row
                                 const tr = `<tr class="border-b border-gray-200 dark:border-gray-700">
                                     <td class="px-4 py-2">${row.Employee}</td>
                                     <td class="px-4 py-2">${row.Invoices}</td>
@@ -551,6 +560,7 @@
                             let chartData; // declare once
 
                             if (report_type.toLowerCase() === 'income') {
+                                console.log("DATA GROUPED: ", data);
                                 chartData = Object.entries(data.grouped).map(([label, value]) => ({
                                     label: value.service_name,
                                     value: value.total_amount
@@ -561,12 +571,7 @@
                                     value: value.total_amount
                                 }));
                             }
-
-                            // Now chartData can be used below without errors
-                            console.log(chartData);
-
-
-
+                            // Clear previous charts
                             $('#todays-income-chart-progress').empty();
                             $('#todays-income-performance-progress').empty();
                             $('#todays-income-chart-progress').empty();
