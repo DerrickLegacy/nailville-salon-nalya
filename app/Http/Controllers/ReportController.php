@@ -140,15 +140,15 @@ class ReportController extends Controller
         $baseQuery->whereBetween('date', [$start, $end]);
 
         /* -------------------------------------------------
-     | 5. Fetch transactions
-     -------------------------------------------------*/
+        | 5. Fetch transactions
+        -------------------------------------------------*/
         $transactions = (clone $baseQuery)
             ->orderBy('date', 'desc')
             ->get();
 
         /* -------------------------------------------------
-     | 6. Totals & goals
-     -------------------------------------------------*/
+        | 6. Totals & goals
+        -------------------------------------------------*/
         $dailyGoal = (float) ApplicationConfigurationSetting::get('daily_expected_income', 800000);
         $dailyGoalTotal = $dailyGoal * $totalDays;
         $totalIncome = $transactions->sum('amount');
@@ -158,8 +158,8 @@ class ReportController extends Controller
             : 0;
 
         /* -------------------------------------------------
-     | 7. Grouping
-     -------------------------------------------------*/
+        | 7. Grouping
+        -------------------------------------------------*/
         if (in_array($range, ['This Year', 'All Time'])) {
             $groupedByPeriod = $transactions
                 ->groupBy(fn($t) => Carbon::parse($t->date)->format('Y-M'))
@@ -169,7 +169,7 @@ class ReportController extends Controller
                 ->groupBy(fn($t) => Carbon::parse($t->date)->format('Y-m-d'))
                 ->map(fn($g) => $g->sum('amount'));
         }
-        
+
         $groupedByService = $transactions
             ->groupBy('service_description')
             ->map(function ($items, $serviceId) {
@@ -234,50 +234,76 @@ class ReportController extends Controller
 
     public function EmployerContribution(Request $request)
     {
-        $range = $request->input('range', 'Today');
+        $range       = $request->input('range', 'Today');
         $employee_id = $request->input('employee_id', null);
         $report_type = $request->input('report_type', 'Income');
 
-        $query = Transaction::query()
+        /*
+        |--------------------------------------------------------------------------
+        | Base Query (Single Source of Truth)
+        |--------------------------------------------------------------------------
+        */
+        $baseQuery = Transaction::query()
             ->where('transaction_type', $report_type);
 
-        $rangeLabel = '';
+        /*
+        |--------------------------------------------------------------------------
+        | Resolve Date Range
+        |--------------------------------------------------------------------------
+        */
+        $rangeLabel = 'Today';
 
         switch ($range) {
+
             case 'This Week':
-                $startDate = Carbon::now()->startOfWeek()->startOfDay();
-                $endDate   = Carbon::now()->endOfWeek()->endOfDay();
+                $startDate  = Carbon::now()->startOfWeek()->startOfDay();
+                $endDate    = Carbon::now()->endOfWeek()->endOfDay();
                 $rangeLabel = 'This Week';
                 break;
 
             case 'This Month':
-                $startDate = Carbon::now()->startOfMonth()->startOfDay();
-                $endDate   = Carbon::now()->endOfMonth()->endOfDay();
+                $startDate  = Carbon::now()->startOfMonth()->startOfDay();
+                $endDate    = Carbon::now()->endOfMonth()->endOfDay();
                 $rangeLabel = 'This Month';
                 break;
 
             case 'This Year':
-                $startDate = Carbon::now()->startOfYear()->startOfDay();
-                $endDate   = Carbon::now()->endOfYear()->endOfDay();
+                $startDate  = Carbon::now()->startOfYear()->startOfDay();
+                $endDate    = Carbon::now()->endOfYear()->endOfDay();
                 $rangeLabel = 'This Year';
                 break;
 
+            case 'All Time':
+                // Get earliest transaction date (employee-aware)
+                $firstQuery = clone $baseQuery;
+
+                if ($employee_id) {
+                    $firstQuery->where('employee_id', $employee_id);
+                }
+
+                $firstDate = $firstQuery->min('date');
+
+                if ($firstDate) {
+                    $startDate = Carbon::parse($firstDate)->startOfDay();
+                } else {
+                    $startDate = Carbon::today()->startOfDay();
+                }
+
+                $endDate    = Carbon::now()->endOfDay();
+                $rangeLabel = 'Since Business Started';
+                break;
+
             case 'Filter':
-                $start_input = $request->input('start_date');
-                $end_input   = $request->input('end_date');
+                $startInput = $request->input('start_date');
+                $endInput   = $request->input('end_date');
 
-                if ($start_input && $end_input) {
-                    try {
-                        $startDate = Carbon::createFromFormat('Y-m-d', $start_input)->startOfDay();
-                        $endDate   = Carbon::createFromFormat('Y-m-d', $end_input)->endOfDay();
-                    } catch (\Exception $e) {
-                        $startDate = Carbon::parse($start_input)->startOfDay();
-                        $endDate   = Carbon::parse($end_input)->endOfDay();
-                    }
-
+                if ($startInput && $endInput) {
+                    $startDate = Carbon::parse($startInput)->startOfDay();
+                    $endDate   = Carbon::parse($endInput)->endOfDay();
                     $rangeLabel = $startDate->format('M j, Y') . ' - ' . $endDate->format('M j, Y');
                 } else {
-                    $startDate = $endDate = Carbon::today();
+                    $startDate = Carbon::today()->startOfDay();
+                    $endDate   = Carbon::today()->endOfDay();
                     $rangeLabel = 'Today';
                 }
                 break;
@@ -289,41 +315,65 @@ class ReportController extends Controller
                 break;
         }
 
-        // Apply report_type filter
-        $query->whereBetween('transactions.date', [$startDate, $endDate]);
+        /*
+    |--------------------------------------------------------------------------
+    | Apply Filters (IMPORTANT: BEFORE JOIN)
+    |--------------------------------------------------------------------------
+    */
+        $baseQuery->whereBetween('date', [$startDate, $endDate]);
 
-        // Optional filter by employee
         if ($employee_id) {
-            $query->where('transactions.employee_id', $employee_id);
+            $baseQuery->where('employee_id', $employee_id);
         }
 
-        // Aggregate top employers
-        $topEmployers = $query->join('employees', 'transactions.employee_id', '=', 'employees.employee_id')
+        /*
+    |--------------------------------------------------------------------------
+    | Aggregate Employer Contributions
+    |--------------------------------------------------------------------------
+    */
+        $topEmployers = $baseQuery
+            ->join('employees', 'transactions.employee_id', '=', 'employees.employee_id')
             ->select(
-                DB::raw("CONCAT(employees.first_name, ' ', employees.last_name) as label"),
-                DB::raw('COUNT(transactions.id) as invoice_count'),
-                DB::raw('SUM(transactions.amount) as total_amount')
+                DB::raw("CONCAT(employees.first_name, ' ', employees.last_name) AS label"),
+                DB::raw('COUNT(transactions.id) AS invoice_count'),
+                DB::raw('SUM(transactions.amount) AS total_amount')
             )
-            ->groupBy('transactions.employee_id', 'employees.first_name', 'employees.last_name')
+            ->groupBy(
+                'transactions.employee_id',
+                'employees.first_name',
+                'employees.last_name'
+            )
             ->orderByDesc('total_amount')
             ->limit(10)
             ->get();
 
-        // Format for table
-        $formatted = $topEmployers->map(function ($row) {
+        /*
+    |--------------------------------------------------------------------------
+    | Format Response
+    |--------------------------------------------------------------------------
+    */
+        $data = $topEmployers->map(function ($row) {
             return [
-                'Employee' => $row->label,
-                'Invoices' => (int) $row->invoice_count,
-                'totalIncome' => number_format((float) $row->total_amount, 2), // formatted with comma
+                'Employee'    => $row->label,
+                'Invoices'    => (int) $row->invoice_count,
+                'totalIncome' => number_format((float) $row->total_amount, 2),
             ];
         });
 
-        // Return JSON response
+        /*
+    |--------------------------------------------------------------------------
+    | JSON Response
+    |--------------------------------------------------------------------------
+    */
         return response()->json([
+            'status'      => 'success',
             'range_label' => $rangeLabel,
-            'data' => $formatted
+            'start_date'  => $startDate->toDateString(),
+            'end_date'    => $endDate->toDateString(),
+            'data'        => $data,
         ]);
     }
+
 
     public function expense()
     {
@@ -342,6 +392,8 @@ class ReportController extends Controller
         $report_type =  "Net Income";
         return view('pages.reports.netincome', compact('report_type'));
     }
+
+
     public function getNetIncomeData(Request $request)
     {
         $selectedPeriod = $request->input('selectedPeriod', 'Today');
