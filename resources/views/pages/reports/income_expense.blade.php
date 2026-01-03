@@ -273,7 +273,6 @@
                                     </tfoot>
                                 </table>
                             </div>
-
                         </div>
                     </div>
 
@@ -454,7 +453,6 @@
                                 // Add to running total
                                 totalIncomeSum += income;
 
-                                // Append row
                                 const tr = `<tr class="border-b border-gray-200 dark:border-gray-700">
                                     <td class="px-4 py-2">${row.Employee}</td>
                                     <td class="px-4 py-2">${row.Invoices}</td>
@@ -551,6 +549,7 @@
                             let chartData; // declare once
 
                             if (report_type.toLowerCase() === 'income') {
+                                console.log("DATA GROUPED: ", data);
                                 chartData = Object.entries(data.grouped).map(([label, value]) => ({
                                     label: value.service_name,
                                     value: value.total_amount
@@ -561,12 +560,7 @@
                                     value: value.total_amount
                                 }));
                             }
-
-                            // Now chartData can be used below without errors
-                            console.log(chartData);
-
-
-
+                            // Clear previous charts
                             $('#todays-income-chart-progress').empty();
                             $('#todays-income-performance-progress').empty();
                             $('#todays-income-chart-progress').empty();
