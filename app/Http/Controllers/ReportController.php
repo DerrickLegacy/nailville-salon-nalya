@@ -27,12 +27,6 @@ class ReportController extends Controller
         return view('pages.reports.income_expense', compact('services', 'employees', 'report_type'));
     }
 
-    //   <?php
-
-    // use Carbon\Carbon;
-    // use Illuminate\Http\Request;
-    // use Illuminate\Support\Facades\DB;
-
     public function ajax_data(Request $request)
     {
         /* -------------------------------------------------
@@ -175,8 +169,7 @@ class ReportController extends Controller
                 ->groupBy(fn($t) => Carbon::parse($t->date)->format('Y-m-d'))
                 ->map(fn($g) => $g->sum('amount'));
         }
-
-
+        
         $groupedByService = $transactions
             ->groupBy('service_description')
             ->map(function ($items, $serviceId) {

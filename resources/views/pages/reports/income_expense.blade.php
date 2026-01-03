@@ -290,7 +290,7 @@
                 </div>
 
                 <div
-                    class="lg:w-1/3 flex flex-col gap-6 border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 p-4">
+                    class="lg:w-1/3 flex flex-col gap-6 border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 px-4">
                     <div
                         class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 transition-all">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 text-center mb-6">💼
@@ -324,7 +324,7 @@
                                 <div class="text-gray-700 dark:text-gray-300 font-medium">Percentage Achievement
                                 </div>
                                 <div class="font-bold text-purple-600 dark:text-purple-400 text-lg">
-                                    <span id="percentage_improvement"></span>%
+                                    <span id="percentage_improvement"></span>
                                 </div>
                             </div>
                         </div>
@@ -414,25 +414,50 @@
                 });
 
                 function rollSlots(amount, element, duration = 2000, intervalTime = 50) {
+
                     const slots = document.querySelectorAll('#' + element);
+
                     slots.forEach(slot => {
-                        const finalValue = Math.floor(amount) || 0;
+
+                        // Detect percentage values
+                        const isPercentage = element.includes('percentage') || element.includes('contri');
+
+                        // Determine decimals
+                        const decimals = isPercentage ?
+                            (amount < 1 ? 2 : 0) :
+                            0;
+
+                        const finalValue = Number(amount) || 0;
                         let elapsed = 0;
 
                         const interval = setInterval(() => {
-                            const randomValue = Math.floor(Math.random() * (finalValue + 1));
-                            slot.textContent = randomValue.toLocaleString();
+
+                            let randomValue;
+
+                            if (isPercentage) {
+                                randomValue = Math.random() * finalValue;
+                                slot.textContent = randomValue.toFixed(decimals) + '%';
+                            } else {
+                                randomValue = Math.floor(Math.random() * (finalValue + 1));
+                                slot.textContent = randomValue.toLocaleString();
+                            }
 
                             elapsed += intervalTime;
 
                             if (elapsed >= duration) {
                                 clearInterval(interval);
-                                slot.textContent = finalValue
-                                    .toLocaleString();
+
+                                if (isPercentage) {
+                                    slot.textContent = finalValue.toFixed(decimals) + '%';
+                                } else {
+                                    slot.textContent = finalValue.toLocaleString();
+                                }
                             }
+
                         }, intervalTime);
                     });
                 }
+
 
                 function fetchEmployerContribution(range = 'Today', employee_id = null, start_date = null, end_date =
                     null) {
@@ -503,100 +528,132 @@
 
                         dataType: "json",
                         success: function(data) {
-                            employeData = data.selectedEmpData;
+
+                            /* ===============================
+                             * 1. EMPLOYEE DATA
+                             =============================== */
+                            let employeData = data.selectedEmpData;
+                            let employer_contribution = 0;
+
                             if (employeData && employeData.employee_id) {
-                                $('#employee_table_div').removeClass('hidden');
-                                $('#employee_table_heading').removeClass('hidden');
+                                $('#employee_table_div, #employee_table_heading, #employee_table_wrapper')
+                                    .removeClass('hidden');
+
                                 document.getElementById('emp_name').textContent = employeData.name;
-                                document.getElementById('rank_position').textContent = employeData.rank;
-                                document.getElementById('emp_expertise').textContent = employeData
-                                    .expertise;
-                                document.getElementById('transactions_registered').textContent = employeData
-                                    .performance_positions;
-                                document.getElementById('emp_total_income').textContent = employeData
-                                    .total_income
-                                    .toLocaleString();
-                                employer_contribution = employeData.total_income;
+                                document.getElementById('rank_position').textContent = employeData.rank ?? '-';
+                                document.getElementById('emp_expertise').textContent = employeData.expertise;
+                                document.getElementById('transactions_registered').textContent =
+                                    employeData.performance_positions;
+
+                                document.getElementById('emp_total_income').textContent =
+                                    Number(employeData.total_income).toLocaleString();
+
+                                employer_contribution = Number(employeData.total_income);
                             }
+
+                            /* ===============================
+                             * 2. INCOME TABLE & TOTAL
+                             =============================== */
                             const income_tbody = $('#income_table tbody');
                             income_tbody.empty();
+
                             let total_income = 0;
-                            const groupedData = Object.entries(data.grouped_by_period).map(([label,
-                                value
-                            ]) => ({
-                                label,
-                                value
-                            }));
-                            incomeChartData = groupedData;
+
+                            const groupedData = Object.entries(data.grouped_by_period).map(
+                                ([label, value]) => ({
+                                    label,
+                                    value: Number(value)
+                                })
+                            );
+
                             groupedData.sort((a, b) => new Date(a.label) - new Date(b.label));
+
                             groupedData.forEach(item => {
                                 total_income += item.value;
                                 income_tbody.append(`
-                                <tr>
-                                    <td class="px-6 py-3">${item.label}</td>
-                                    <td class="text-right px-6 py-3">${item.value.toLocaleString()}</td>
-                                </tr>
-                            `);
+            <tr>
+                <td class="px-6 py-3">${item.label}</td>
+                <td class="text-right px-6 py-3">${item.value.toLocaleString()}</td>
+            </tr>
+        `);
                             });
+
                             $('#income_table tfoot td:last').text(total_income.toLocaleString());
 
+                            /* ===============================
+                             * 3. ROLLING COUNTERS
+                             =============================== */
+                            rollSlots(data.expected_income_target, 'expected_income', 1000, 100);
+                            rollSlots(total_income, 'achieved_income', 1000, 100);
+
                             if (employeData && employeData.employee_id) {
-                                $('#employee_table_wrapper').removeClass('hidden')
                                 rollSlots(total_income, 'total_income_card', 1500, 100);
                             }
-                            rollSlots(data
-                                .expected_income_target, 'expected_income', 2000, 100);
-                            rollSlots(total_income, 'achieved_income', 2000, 100);
-                            const percentageAchievement = data.expected_income_target === 0 ?
-                                0 :
-                                Math.floor((total_income / data.expected_income_target) *
-                                    100);
 
-                            rollSlots(percentageAchievement, 'percentage_improvement', 2000, 100);
+                            /* ===============================
+                             * 4. PERCENTAGE ACHIEVEMENT (FIXED)
+                             =============================== */
+                            let percentageAchievement = 0;
 
-
-                            total_Income_recorded = total_income;
-
-                            let chartData; // declare once
-
-                            if (report_type.toLowerCase() === 'income') {
-                                console.log("DATA GROUPED: ", data);
-                                chartData = Object.entries(data.grouped).map(([label, value]) => ({
-                                    label: value.service_name,
-                                    value: value.total_amount
-                                }));
-                            } else {
-                                chartData = Object.entries(data.grouped).map(([label, value]) => ({
-                                    label: label,
-                                    value: value.total_amount
-                                }));
+                            if (data.expected_income_target > 0 && total_income > 0) {
+                                percentageAchievement =
+                                    (total_income / data.expected_income_target) * 100;
                             }
-                            // Clear previous charts
-                            $('#todays-income-chart-progress').empty();
+
+                            // Display logic
+                            let percentageAchievementNumeric =
+                                percentageAchievement < 1 ?
+                                Number(percentageAchievement.toFixed(2)) :
+                                Number(percentageAchievement.toFixed(2));
+
+                            // Optional UX minimum visibility
+                            if (percentageAchievementNumeric > 0 && percentageAchievementNumeric < 0.1) {
+                                percentageAchievementNumeric = 0.1;
+                            }
+
+                            rollSlots(
+                                percentageAchievementNumeric,
+                                'percentage_improvement',
+                                1000,
+                                100
+                            );
+
+                            console.log('Total Income:', total_income);
+                            console.log('Expected Target:', data.expected_income_target);
+                            console.log('Percentage Achievement:', percentageAchievementNumeric);
+
+                            /* ===============================
+                             * 5. PERFORMANCE DONUT
+                             =============================== */
                             $('#todays-income-performance-progress').empty();
-                            $('#todays-income-chart-progress').empty();
-                            $('#income-chart').empty();
+
+                            const remainingPercentage = Math.max(
+                                0,
+                                100 - percentageAchievementNumeric
+                            );
+
                             Morris.Donut({
                                 element: 'todays-income-performance-progress',
                                 data: [{
                                         label: 'Achieved',
-                                        value: percentageAchievement
+                                        value: percentageAchievementNumeric
                                     },
                                     {
                                         label: 'Remaining',
-                                        value: 100 - percentageAchievement < 0 ? 0 : 100 -
-                                            percentageAchievement
+                                        value: remainingPercentage
                                     }
                                 ],
                                 colors: ['#CC0066', '#E5E5E5'],
                                 resize: true,
                                 redraw: true,
-                                formatter: function(y, data) {
-                                    return y.toFixed(2) + '%';
-                                }
+                                formatter: y => y.toFixed(2) + '%'
                             });
 
-                            // Morris.js line chart
+                            /* ===============================
+                             * 6. LINE CHART
+                             =============================== */
+                            $('#income-chart').empty();
+
                             new Morris.Line({
                                 element: 'income-chart',
                                 data: groupedData.map(d => ({
@@ -606,42 +663,78 @@
                                 xkey: 'date',
                                 ykeys: ['income'],
                                 labels: ['Income'],
-                                lineColors: ['#1e88e5'],
                                 parseTime: false,
-                                resize: true
+                                resize: true,
+                                lineColors: ['#1e88e5']
                             });
+
+                            /* ===============================
+                             * 7. SERVICE DONUT
+                             =============================== */
+                            let chartData;
+
+                            if (report_type.toLowerCase() === 'income') {
+                                chartData = Object.values(data.grouped).map(item => ({
+                                    label: item.service_name,
+                                    value: Number(item.total_amount)
+                                }));
+                            } else {
+                                chartData = Object.entries(data.grouped).map(([label, item]) => ({
+                                    label,
+                                    value: Number(item.total_amount)
+                                }));
+                            }
+
+                            $('#todays-income-chart-progress').empty();
 
                             Morris.Donut({
                                 element: 'todays-income-chart-progress',
                                 data: chartData,
-                                colors: ['#8200DB', '#D90082', '#00DB82', '#DB8200', '#0066CC',
-                                    '#CC0066', '#00CC66', '#CC6600', '#6600CC', '#CC0066',
-                                    '#00CCCC', '#CCCC00'
+                                colors: [
+                                    '#8200DB', '#D90082', '#00DB82', '#DB8200',
+                                    '#0066CC', '#CC0066', '#00CC66', '#CC6600'
                                 ],
                                 resize: true,
                                 redraw: true
                             });
 
+                            /* ===============================
+                             * 8. SERVICE TABLE
+                             =============================== */
                             const tbody = $('#service_table tbody');
                             tbody.empty();
-                            let total = 0;
-                            console.log("DATA: _  ", chartData);
+
+                            let serviceTotal = 0;
+
                             chartData.forEach(item => {
-                                total += item.value;
+                                serviceTotal += item.value;
                                 tbody.append(`
-                                    <tr>
-                                        <td class="px-6 py-3">${item.label}</td>
-                                        <td class="text-right px-6 py-3">${item.value.toLocaleString()}</td>
-                                    </tr>
-                                `);
+                                <tr>
+                                    <td class="px-6 py-3">${item.label}</td>
+                                    <td class="text-right px-6 py-3">${item.value.toLocaleString()}</td>
+                                </tr>
+                            `);
                             });
-                            $('#service_table tfoot td:last').text(total.toLocaleString());
-                            employer_contribution_percentage = employer_contribution /
-                                total_Income_recorded * 100
-                            rollSlots(employer_contribution / total_Income_recorded * 100,
-                                'total_emp_contribution_card', 1500, 100);
-                            document.getElementById('contri_per_total').textContent = Number(
-                                employer_contribution_percentage).toFixed(2);
+
+                            $('#service_table tfoot td:last').text(serviceTotal.toLocaleString());
+
+                            /* ===============================
+                             * 9. EMPLOYEE CONTRIBUTION
+                             =============================== */
+                            if (total_income > 0 && employer_contribution > 0) {
+                                const employerContributionPercentage =
+                                    (employer_contribution / total_income) * 100;
+
+                                rollSlots(
+                                    employerContributionPercentage,
+                                    'total_emp_contribution_card',
+                                    1500,
+                                    100
+                                );
+
+                                document.getElementById('contri_per_total').textContent =
+                                    employerContributionPercentage.toFixed(2);
+                            }
                         },
                         error: function(xhr, status, error) {
                             alert("Error loading chart data:", error);
