@@ -93,6 +93,30 @@ class ReportController extends Controller
                 $rangeLabel = 'This Year';
                 $expectedTarget = $monthlyTarget * 12;
                 break;
+            case 'All Time':
+                // earliest transaction date
+                $firstTransactionDate = Transaction::where('transaction_type', $reportType)
+                    ->min('date');
+
+                if ($firstTransactionDate) {
+                    $start = Carbon::parse($firstTransactionDate)->startOfDay();
+                    $end   = Carbon::now()->endOfDay();
+
+                    $totalDays = $start->diffInDays($end) + 1;
+                    $rangeLabel = 'Since Business Started';
+
+                    // Expected target based on number of months passed
+                    $months = max(1, $start->diffInMonths($end));
+                    $expectedTarget = $monthlyTarget * $months;
+                } else {
+                    // No data fallback
+                    $start = Carbon::today();
+                    $end = Carbon::today();
+                    $totalDays = 1;
+                    $rangeLabel = 'Since Business Started';
+                    $expectedTarget = 0;
+                }
+                break;
 
             case 'Filter':
                 if ($request->filled('start_date') && $request->filled('end_date')) {
@@ -142,11 +166,16 @@ class ReportController extends Controller
         /* -------------------------------------------------
      | 7. Grouping
      -------------------------------------------------*/
-        $groupedByPeriod = $range === 'This Year'
-            ? $transactions->groupBy(fn($t) => Carbon::parse($t->date)->format('M'))
-            ->map(fn($g) => $g->sum('amount'))
-            : $transactions->groupBy(fn($t) => Carbon::parse($t->date)->format('Y-m-d'))
-            ->map(fn($g) => $g->sum('amount'));
+        if (in_array($range, ['This Year', 'All Time'])) {
+            $groupedByPeriod = $transactions
+                ->groupBy(fn($t) => Carbon::parse($t->date)->format('Y-M'))
+                ->map(fn($g) => $g->sum('amount'));
+        } else {
+            $groupedByPeriod = $transactions
+                ->groupBy(fn($t) => Carbon::parse($t->date)->format('Y-m-d'))
+                ->map(fn($g) => $g->sum('amount'));
+        }
+
 
         $groupedByService = $transactions
             ->groupBy('service_description')
@@ -162,8 +191,8 @@ class ReportController extends Controller
             });
 
         /* -------------------------------------------------
-     | 8. Employee analytics (optional)
-     -------------------------------------------------*/
+            | 8. Employee analytics (optional)
+            -------------------------------------------------*/
         $selectedEmpData = null;
 
         if ($employeeId) {
