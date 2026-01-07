@@ -20,11 +20,42 @@
         <div class="sm:flex sm:justify-between sm:items-center mb-2 fade-in">
             <!-- Left: Title -->
             <div class="mb-4 sm:mb-0">
-                <h1 class="text-2xl font-bold text-gray-900">
+                <h1 class="text-sm  md:text-2xl  font-semibold text-gray-900">
                     <?php echo $report_type; ?> Report</h1>
             </div>
         </div>
+        @if($report_type=='Income')
+        <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-[#8200DB] p-4 mb-6">
+            <div class="flex">
+                <svg class="h-5 w-5 text-[#8200DB] mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                    <p class="text-sm  text-[#8200DB] dark:text-blue-300">
+                        <strong>Note:</strong> This is a report focuses on only business income. For expenditure, go to <span>
+                            <a href="{{ route('reports.expense') }}" class="text-[#8200DB] dark:text-blue-300 hover:underline italic font-bold">expense report</a>
+                        </span>.
+                    </p>
+                </div>
+            </div>
+        </div>
+        @else
 
+        <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-[#8200DB] p-4 mb-6">
+            <div class="flex">
+                <svg class="h-5 w-5 text-blue-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                    <p class="text-sm text-[#8200DB] dark:text-blue-300">
+                        <strong>Note:</strong> This is a report focuses on only business expenses. For income, go to <span>
+                            <a href="{{ route('reports.income') }}" class="text-[#8200DB] dark:text-blue-300 hover:underline italic font-bold">income report</a>
+                        </span>.
+                    </p>
+                </div>
+            </div>
+        </div>
+        @endif
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-6">
             <h5 class="font-semibold dark:text-white my-2 text-2xl text-center">
                 <?php echo $report_type; ?> Performance Report</h5>
@@ -35,47 +66,96 @@
             </p>
 
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Filters:</h2>
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div x-data="{ active: 'Today' }" class="flex flex-wrap items-center gap-2">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+
+                <!-- LEFT: Period Filters -->
+                <div
+                    x-data="{ active: 'Today' }"
+                    class="flex flex-row flex-nowrap items-center gap-2
+               overflow-x-auto sm:overflow-visible">
+
                     @foreach (['Today', 'This Week', 'This Month', 'This Year', 'All Time'] as $label)
-                    <button type="button" @click="active = '{{ $label }}'"
+                    <button
+                        type="button"
+                        @click="active = '{{ $label }}'"
                         :class="active === '{{ $label }}'
-                                ?
-                                'bg-[#8200DB] text-white border-[#8200DB]' :
-                                'border border-[#8200DB] text-[#8200DB] hover:bg-purple-500 hover:text-white'"
-                        class="solid-filter-btns px-4 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-150">
+                    ? 'bg-[#8200DB] text-white border-[#8200DB]'
+                    : 'border border-[#8200DB] text-[#8200DB] hover:bg-[#8200DB] hover:text-white'"
+                        class="solid-filter-btns
+                       whitespace-nowrap
+                       rounded-md
+                       border
+                       px-3 py-1.5
+                       text-xs sm:text-sm lg:text-base
+                       font-medium
+                       transition
+                       focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
                         {{ $label }}
                     </button>
                     @endforeach
                 </div>
-                <div class="flex items-center gap-2">
-                    <label for="datepicker"
-                        class="text-sm font-medium text-gray-700 dark:text-gray-300 hidden sm:inline">Date
-                        Range:</label>
-                    <x-datepicker />
-                </div>
-                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                    <select name="employee_id" id="employee_id"
-                        class="block w-full sm:w-48 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                        <option value="">-- Select Employee --</option>
-                        @foreach ($employees as $employee)
-                        <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
-                        @endforeach
-                    </select>
 
-                    {{-- Filter Submit Button --}}
-                    <button type="submit"
-                        class="filter-btn btn px-2.5 bg-white dark:bg-purple-800 border-purple-400 hover:border-purple-400 hover:bg-purple-400  dark:border-purple-700/60 dark:hover:border-purple-600 text-purple-400 dark:text-purple-500"
-                        aria-haspopup="true" @click.prevent="open = !open">
-                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
-                            class="h-4 w-4 mr-2 text-black border-black" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0
-                         01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
-                        </svg>
-                        <span class="text-black">Filter</span>
-                    </button>
+                <!-- RIGHT: Date + Employee + Filter -->
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+
+                    <!-- Datepicker -->
+                    <div class="w-full sm:w-auto">
+                        <x-datepicker class="text-[#8200DB] w-full sm:w-auto" />
+                    </div>
+
+                    <!-- Employee + Button -->
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <select
+                            name="employee_id"
+                            id="employee_id"
+                            class="w-full sm:w-48
+                       rounded-lg border border-[#8200DB]
+                       bg-white dark:bg-gray-700
+                       text-xs sm:text-sm lg:text-base
+                       text-[#8200DB] dark:text-[#8200DB]
+                       shadow-sm
+                       focus:ring-[#8200DB] focus:border-[#8200DB]">
+                            <option value="">Select Employee</option>
+                            @foreach ($employees as $employee)
+                            <option value="{{ $employee['id'] }}">
+                                {{ $employee['name'] }}
+                            </option>
+                            @endforeach
+                        </select>
+
+                        <button
+                            type="submit"
+                            class="inline-flex items-center justify-center gap-2
+                       rounded-lg border border-[#8200DB]
+                       px-4 py-2
+                       text-xs sm:text-sm lg:text-base
+                       font-medium
+                       text-[#8200DB] bg-white
+                       hover:bg-[#8200DB] hover:text-white
+                       transition">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4"
+                                viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M3 3a1 1 0 011-1h12a1 1 0
+                             011 1v3a1 1 0
+                             01-.293.707L12
+                             11.414V15a1 1 0
+                             01-.293.707l-2
+                             2A1 1 0 018
+                             17v-5.586L3.293
+                             6.707A1 1 0
+                             013 6V3z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            Filter
+                        </button>
+                    </div>
                 </div>
+
             </div>
+
             <input type="hidden" id="report_type" name="report_type" value="<?php echo $report_type; ?>">
         </div>
         <div class="mt-10">
@@ -90,7 +170,6 @@
                             <h5 id="employee_table_heading" class="text-xl font-semibold dark:text-white mb-4">
                                 Selected Employer <?php echo $report_type; ?> Details
                             </h5>
-                            <!-- <p class="heading text-center"></p> -->
 
                             <!-- Cards Row -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
@@ -173,7 +252,6 @@
                         </div>
 
                         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-6">
-                            <!-- Performance by Service Section -->
                             <h5 class="text-xl font-semibold dark:text-white my-6">Performance By Service
                                 <span class="heading">Today</span>
                             </h5>
@@ -198,31 +276,30 @@
                                 </form>
                             </div>
 
-                            <div class="overflow-x-auto rounded-lg shadow-md mb-6">
-                                <table id="service_table"
-                                    class="min-w-full bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    <thead class="bg-gray-100 dark:bg-gray-700">
-                                        <tr>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                Service</th>
-                                            <th
-                                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                Total Income (UGX)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
-                                    <tfoot class="bg-gray-50 dark:bg-gray-700">
-                                        <tr>
-                                            <td class="px-6 py-3 font-semibold text-gray-800 dark:text-gray-200">Total
-                                            </td>
-                                            <td
-                                                class="px-6 py-3 slot font-semibold text-right text-gray-800 dark:text-gray-200">
-                                            </td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
+                            <table id="service_table"
+                                class="min-w-full bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead class="bg-gray-100 dark:bg-gray-700">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Service</th>
+                                        <th
+                                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Total Income (UGX)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
+                                <tfoot class="bg-gray-50 dark:bg-gray-700">
+                                    <tr>
+                                        <td class="px-6 py-3 font-semibold text-gray-800 dark:text-gray-200">Total
+                                        </td>
+                                        <td
+                                            class="px-6 py-3 slot font-semibold text-right text-gray-800 dark:text-gray-200">
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
                         </div>
                         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-6">
 
@@ -256,10 +333,9 @@
                         </div>
 
                         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-6">
-
-
-                            <h5 class="text-xl font-semibold dark:text-white my-6">Employer Income Trend Within <span
-                                    class="heading">Today</span>'s Time Period</h5>
+                            <h5 class="text-xl font-semibold dark:text-white my-6">Employer Income Trend Within
+                                <span class="heading">Today</span>'s Time Period
+                            </h5>
                             <div class="max-h-96 overflow-y-auto shadow ring-1 ring-black/5 rounded-lg mb-6">
                                 <table id="employer-table"
                                     class="min-w-full text-sm text-left rtl:text-right bg-white dark:bg-gray-800 rounded-lg shadow-md">
@@ -290,9 +366,9 @@
                 </div>
 
                 <div
-                    class="lg:w-1/3 flex flex-col gap-6 border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 px-4">
+                    class="lg:w-1/3 flex flex-col gap-6 px-0  ">
                     <div
-                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 transition-all">
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-100 dark:border-gray-700 transition-all">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 text-center mb-6">💼
                             Business <?php echo $report_type; ?> Goals</h3>
 
@@ -331,7 +407,7 @@
                     </div>
 
                     <div
-                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-all">
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-all">
                         <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 text-center">
                             Service
                             Breakdown As Of
@@ -341,7 +417,7 @@
                     </div>
 
                     <div
-                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-all">
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-all">
                         <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 text-center">
 
                             <?php echo $report_type; ?> Summary
@@ -351,7 +427,7 @@
                     </div>
 
                     <div
-                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-all">
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 border border-gray-100 dark:border-gray-700 transition-all">
                         <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 text-center">Income
                             Trend</h3>
                         <p class="heading text-center">Today</p>
@@ -490,10 +566,10 @@
                                 totalIncomeSum += income;
 
                                 const tr = `<tr class="border-b border-gray-200 dark:border-gray-700">
-                                    <td class="px-4 py-2">${row.Employee}</td>
-                                    <td class="px-4 py-2">${row.Invoices}</td>
-                                    <td class="px-6 py-2 text-right">${income.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</td>
-                                </tr>`;
+                                        <td class="px-4 py-2">${row.Employee}</td>
+                                        <td class="px-4 py-2">${row.Invoices}</td>
+                                        <td class="px-6 py-2 text-right">${income.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</td>
+                                    </tr>`;
 
                                 tbody.append(tr);
                             });
@@ -571,11 +647,11 @@
                             groupedData.forEach(item => {
                                 total_income += item.value;
                                 income_tbody.append(`
-            <tr>
-                <td class="px-6 py-3">${item.label}</td>
-                <td class="text-right px-6 py-3">${item.value.toLocaleString()}</td>
-            </tr>
-        `);
+                <tr>
+                    <td class="px-6 py-3">${item.label}</td>
+                    <td class="text-right px-6 py-3">${item.value.toLocaleString()}</td>
+                </tr>
+            `);
                             });
 
                             $('#income_table tfoot td:last').text(total_income.toLocaleString());
