@@ -20,8 +20,9 @@
         <div class="sm:flex sm:justify-between sm:items-center mb-2 fade-in">
             <!-- Left: Title -->
             <div class="mb-4 sm:mb-0">
-                <h1 class="text-sm  md:text-2xl  font-semibold text-gray-900">
-                    <?php echo $report_type; ?> Report</h1>
+                <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100"> <?php echo $report_type; ?> Report</h1>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Get to know your day-to-day income salon insights.</p>
+
             </div>
         </div>
         @if($report_type=='Income')
@@ -96,66 +97,78 @@
                 </div>
 
                 <!-- RIGHT: Date + Employee + Filter -->
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end w-full">
 
                     <!-- Datepicker -->
-                    <div class="w-full sm:w-auto">
-                        <x-datepicker class="text-[#8200DB] w-full sm:w-auto" />
-                    </div>
-
-                    <!-- Employee + Button -->
-                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-                        <x-datepicker class="text-[#8200DB] w-full sm:w-auto" />
-
-                        <select
-                            name="employee_id"
-                            id="employee_id"
-                            class="w-full sm:w-48
-                       rounded-lg border border-[#8200DB]
-                       bg-white dark:bg-gray-700
-                       text-xs sm:text-sm lg:text-base
-                       text-[#8200DB] dark:text-[#8200DB]
-                       shadow-sm
-                       focus:ring-[#8200DB] focus:border-[#8200DB]">
-                            <option value="">Select Employee</option>
-                            @foreach ($employees as $employee)
-                            <option value="{{ $employee['id'] }}">
-                                {{ $employee['name'] }}
-                            </option>
-                            @endforeach
-                        </select>
-
-                        <button
-                            type="submit"
-                            class="inline-flex items-center justify-center gap-2
-                       rounded-lg border border-[#8200DB]
-                       px-4 py-2
-                       text-xs sm:text-sm lg:text-base
-                       font-medium
-                       text-[#8200DB] bg-white
-                       hover:bg-[#8200DB] hover:text-white
-                       transition">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-4 w-4"
-                                viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path fill-rule="evenodd"
-                                    d="M3 3a1 1 0 011-1h12a1 1 0
-                             011 1v3a1 1 0
-                             01-.293.707L12
-                             11.414V15a1 1 0
-                             01-.293.707l-2
-                             2A1 1 0 018
-                             17v-5.586L3.293
-                             6.707A1 1 0
-                             013 6V3z"
-                                    clip-rule="evenodd" />
+                    <div class="relative w-full sm:w-1/3">
+                        <input
+                            type="text"
+                            class="datepicker form-input pl-10 w-full
+                                dark:bg-[#8200DB] text-[#8200DB]
+                                border border-purple-400 rounded-lg
+                                hover:text-[#8200DB] hover:bg-purple-200
+                                dark:text-gray-300 dark:hover:text-[#8200DB]
+                                font-medium
+                                text-xs sm:text-sm lg:text-base
+                                focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
+                            placeholder="Select date range"
+                            id="dateSelect"
+                            name="dateSelect"
+                            data-class="flatpickr-right" />
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg class="fill-current text-gray-400 dark:text-gray-500 w-4 h-4" viewBox="0 0 16 16">
+                                <path d="M5 4a1 1 0 0 0 0 2h6a1 1 0 1 0 0-2H5Z" />
+                                <path d="M4 0a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4H4ZM2 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4Z" />
                             </svg>
-                            Filter
-                        </button>
+                        </div>
                     </div>
-                </div>
 
+                    <!-- Employee Select -->
+                    <select
+                        name="employee_id"
+                        id="employee_id"
+                        class="w-full sm:w-48
+                            rounded-lg border border-[#8200DB]
+                            bg-white dark:bg-gray-700
+                            text-xs sm:text-sm lg:text-base
+                            text-[#8200DB] dark:text-[#8200DB]
+                            shadow-sm
+                            focus:ring-[#8200DB] focus:border-[#8200DB]
+                            transition">
+                        <option value="">Select Employee</option>
+                        @foreach ($employees as $employee)
+                        <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
+                        @endforeach
+                    </select>
+
+                    <!-- Filter Button -->
+                    <button
+                        type="submit"
+                        class="filter-btn inline-flex items-center justify-center gap-2
+                            w-full sm:w-auto
+                            px-4 py-2 rounded-lg
+                            border border-[#8200DB]
+                            text-xs sm:text-sm lg:text-base
+                            font-medium 
+                            text-[#8200DB] bg-white
+                            hover:bg-[#8200DB] hover:text-white
+                            transition" @click.prevent="open = !open">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M3 3a1 1 0 011-1h12a1 1 0
+                                011 1v3a1 1 0
+                                01-.293.707L12
+                                11.414V15a1 1 0
+                                01-.293.707l-2
+                                2A1 1 0 08
+                                17v-5.586L3.293
+                                6.707A1 1 0
+                                013 6V3z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Filter
+                    </button>
+                </div>
             </div>
 
             <input type="hidden" id="report_type" name="report_type" value="<?php echo $report_type; ?>">
@@ -164,16 +177,11 @@
             <div id="todays-income-container" class="flex flex-col lg:flex-row gap-6">
                 <!-- Left Column -->
                 <div class="flex flex-col lg:flex-row lg:space-x-6 w-full">
-                    <!-- Main Content Column -->
                     <div class="flex-1 lg:w-2/3">
-
-                        <!-- Selected Employer Section -->
                         <div id="employee_table_wrapper" class="mb-6 hidden">
                             <h5 id="employee_table_heading" class="text-xl font-semibold dark:text-white mb-4">
                                 Selected Employer <?php echo $report_type; ?> Details
                             </h5>
-
-                            <!-- Cards Row -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                                 <div
                                     class="bg-white dark:bg-[#8200DB] border border-[#c180ed] dark:border-[#9b4dff] rounded-lg shadow-md p-4 flex items-center space-x-4 transition-transform transform hover:scale-105">
@@ -189,7 +197,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Employee Contribution Card -->
                                 <div
                                     class="bg-white dark:bg-[#8200DB] border border-[#c180ed] dark:border-[#9b4dff] rounded-lg shadow-md p-4 flex items-center space-x-4 transition-transform transform hover:scale-105">
                                     <div class="flex-shrink-0">
@@ -261,10 +268,10 @@
                             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
                                 <form class="flex w-full sm:w-1/2">
                                     <label for="service-search" class="sr-only">Search</label>
-                                    <div class="relative w-full">
+                                    <div class="relbative w-full">
                                         <div
                                             class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                            <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
+                                            <svg aria-hidden="true" class="w-5 h-5 text-[#8200DB] dark:text-gray-400"
                                                 fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd"
                                                     d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
@@ -272,10 +279,29 @@
                                             </svg>
                                         </div>
                                         <input type="text" id="service-search" name="service-search"
-                                            placeholder="Search service"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+                                            placeholder="Search for a service..."
+                                            class="bg-gray-50 border border-[#8200DB] text-[#8200DB]     text-sm rounded-lg focus:ring-[#8200DB] focus:border-[#8200DB] block w-full pl-10 p-2 dark:bg-gray-700 dark:border-[#8200DB]  dark:placeholder-[#8200DB]  dark:text-white">
                                     </div>
+
                                 </form>
+                                <!-- View by: Default / Category Toggle -->
+                                <div class="w-full flex justify-end items-center mb-4">
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <span class="select-none text-sm font-medium text-heading">Default</span>
+
+                                        <input type="checkbox" value="" class="sr-only peer">
+
+                                        <div class="relative mx-3 w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full 
+                                        peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-purple-500
+                                        peer-checked:bg-purple-600 after:content-[''] after:absolute after:top-[2px] 
+                                        after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 
+                                        after:transition-all peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full">
+                                        </div>
+
+                                        <span class="select-none text-sm font-medium text-heading">Category</span>
+                                    </label>
+                                </div>
+
                             </div>
 
                             <table id="service_table"

@@ -13,10 +13,11 @@ class Service extends Model
     protected $fillable = [
         'service_code',
         'name',
-        'category',
+        'category_id',
+        'section_id',
         'price',
         'description',
-        'status',
+        'status'
     ];
 
     /**
@@ -41,5 +42,16 @@ class Service extends Model
     public function getFormattedPriceAttribute()
     {
         return number_format($this->price, 2);
+    }
+
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
     }
 }
