@@ -105,6 +105,8 @@
 
                     <!-- Employee + Button -->
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <x-datepicker class="text-[#8200DB] w-full sm:w-auto" />
+
                         <select
                             name="employee_id"
                             id="employee_id"
