@@ -77,102 +77,101 @@
         </div>
 
         <div class="grid grid-cols-12 gap-0 fade-in">
-            <div class="col-span-full xl:col-span-12 bg-white dark:bg-gray-800 shadow-xs rounded-xl p-3">
-                <div class="bg-white dark:bg-gray-800 mt-3 relative shadow-md sm:rounded-lg overflow-hidden">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4 p-4">
-                        <!-- Left: Search + Datepicker -->
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full md:w-1/2">
-                            <!-- Search -->
-                            <div class="flex-1 relative w-full">
-                                <label for="simple-search" class="sr-only">Search</label>
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
-                                        fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <input type="text" id="simple-search" name="simple-search"
-                                    class="w-full pl-10 p-2 text-sm sm:text-base rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                    placeholder="Search" required>
-                            </div>
-
-                            <!-- Datepicker -->
-                            <x-datepicker />
-                        </div>
-
-                        <!-- Right: Buttons (Export + Filter) -->
-                        <div class="grid grid-cols-2 sm:flex sm:items-center sm:gap-3 w-full md:w-auto gap-2">
-                            <!-- Export Button -->
-                            <button type="button"
-                                class="w-full sm:w-auto flex items-center justify-center px-3 py-2 text-sm sm:text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-primary-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700">
-                                <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+            <div class="col-span-full xl:col-span-12 bg-white dark:bg-gray-800 shadow-xs rounded-t-lg p-3">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4 p-4">
+                    <!-- Left: Search + Datepicker -->
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full md:w-1/2">
+                        <!-- Search -->
+                        <div class="flex-1 relative w-full">
+                            <label for="simple-search" class="sr-only">Search</label>
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
+                                    fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                        clip-rule="evenodd" />
                                 </svg>
-                                Export PDF
-                            </button>
-
-                            <!-- Income Filter Dropdown -->
-                            <x-dropdown-income-filter align="right" type="income" :filterPageCount="false" :showActions="false"
-                                class="w-full sm:w-auto" />
+                            </div>
+                            <input type="text" id="simple-search" name="simple-search"
+                                class="w-full pl-10 p-2 text-sm sm:text-base rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                placeholder="Search" required>
                         </div>
+
+                        <!-- Datepicker -->
+                        <x-datepicker />
                     </div>
 
+                    <!-- Right: Buttons (Export + Filter) -->
+                    <div class="grid grid-cols-2 sm:flex sm:items-center sm:gap-3 w-full md:w-auto gap-2">
+                        <!-- Export Button -->
+                        <button type="button"
+                            class="w-full sm:w-auto flex items-center justify-center px-3 py-2 text-sm sm:text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-primary-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700">
+                            <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                            </svg>
+                            Export PDF
+                        </button>
 
-                    <div class="relative text-sm sm:text-sm">
-                        <div id="transactions-spinner"
-                            class="absolute inset-1 flex items-center justify-center bg-white/70 dark:bg-gray-800/70 z-50 ">
-                            <div role="status">
-                                <svg aria-hidden="true"
-                                    class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-yellow-400"
-                                    viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                        fill="currentColor" />
-                                    <path
-                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                        fill="currentFill" />
-                                </svg>
-                                <span class="sr-only">Loading...</span>
-                            </div>
-                        </div>
-                        <div
-                            class="overflow-x-auto min-h-[200px] sm:min-h-[300px] lg:min-h-[400px] bg-white dark:bg-gray-800 rounded-md shadow">
-                            <div id="transactions-export-wrapper">
-                                <table id="transactions-table"
-                                    class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                    <thead>
-                                        <tr>
-                                            <th class="px-2 py-3">Date</th>
-                                            <th class="px-4 py-3">Service </th>
-                                            <th class="px-4 py-3">Receipt ID</th>
-                                            <th class="px-4 py-3">Serviced By</th>
-                                            <!-- <th class="px-4 py-3">Customer Name</th> -->
-                                            <th class="px-4 py-3">Payment Method</th>
-                                            <th class="px-4 py-3">Amount</th>
-                                            <th class="px-4 py-3 text-center">Actions</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody id="transactions-wrapper">
-                                        <!-- DataTables will fill rows here -->
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th class="px-2 py-3">Total</th>
-                                            <th class="px-4 py-3" colspan="4"></th>
-                                            <th class="px-2 py-3" id="totalPageAmount"></th>
-                                            <th class="px-2 py-3"></th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                        </div>
+                        <!-- Income Filter Dropdown -->
+                        <x-dropdown-income-filter align="right" type="income" :filterPageCount="false" :showActions="false"
+                            class="w-full sm:w-auto" />
                     </div>
                 </div>
+
+
+                <div class="relative text-sm sm:text-sm">
+                    <div id="transactions-spinner"
+                        class="absolute inset-1 flex items-center justify-center bg-white/70 dark:bg-gray-800/70 z-50 ">
+                        <div role="status">
+                            <svg aria-hidden="true"
+                                class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-yellow-400"
+                                viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                    fill="currentColor" />
+                                <path
+                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                    fill="currentFill" />
+                            </svg>
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div
+            class="overflow-x-auto min-h-[200px] sm:min-h-[300px] lg:min-h-[400px] bg-white dark:bg-gray-800 rounded-md px-3 shadow">
+            <div id="transactions-export-wrapper">
+                <table id="transactions-table"
+                    class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead>
+                        <tr>
+                            <th class="px-2 py-3">Date</th>
+                            <th class="px-4 py-3">Service </th>
+                            <th class="px-4 py-3">Receipt ID</th>
+                            <th class="px-4 py-3">Serviced By</th>
+                            <!-- <th class="px-4 py-3">Customer Name</th> -->
+                            <th class="px-4 py-3">Payment Method</th>
+                            <th class="px-4 py-3">Amount</th>
+                            <th class="px-4 py-3 text-center">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="transactions-wrapper">
+                        <!-- DataTables will fill rows here -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th class="px-2 py-3">Total</th>
+                            <th class="px-4 py-3" colspan="4"></th>
+                            <th class="px-2 py-3" id="totalPageAmount"></th>
+                            <th class="px-2 py-3"></th>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
         </div>
 
