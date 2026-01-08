@@ -182,8 +182,6 @@
             </div>
 
             <input type="hidden" id="report_type" name="report_type" value="<?php echo $report_type; ?>">
-
-
         </div>
         <div class="mt-10">
             <div id="todays-income-container" class="flex flex-col lg:flex-row gap-6">
@@ -276,26 +274,36 @@
                             <h5 class="text-xl font-semibold dark:text-white my-6">Performance By Service
                                 <span class="heading">Today</span>
                             </h5>
-
                             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
                                 <form class="flex w-full sm:w-1/2">
                                     <label for="service-search" class="sr-only">Search</label>
-                                    <div class="relbative w-full">
-                                        <div
-                                            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                            <svg aria-hidden="true" class="w-5 h-5 text-[#8200DB] dark:text-gray-400"
-                                                fill="currentColor" viewBox="0 0 20 20">
+
+                                    <div class="relative w-full">
+                                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                            <svg aria-hidden="true"
+                                                class="w-5 h-5 text-[#8200DB] dark:text-gray-400"
+                                                fill="currentColor"
+                                                viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd"
                                                     d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
                                                     clip-rule="evenodd" />
                                             </svg>
                                         </div>
-                                        <input type="text" id="service-search" name="service-search"
-                                            placeholder="Search for a service..."
-                                            class="bg-gray-50 border border-[#8200DB] text-[#8200DB]     text-sm rounded-lg focus:ring-[#8200DB] focus:border-[#8200DB] block w-full pl-10 p-2 dark:bg-gray-700 dark:border-[#8200DB]  dark:placeholder-[#8200DB]  dark:text-white">
-                                    </div>
 
+                                        <input
+                                            type="text"
+                                            id="service-search"
+                                            name="service-search"
+                                            placeholder="Search for a service..."
+                                            class="bg-gray-50 border border-[#8200DB] text-[#8200DB]
+                   text-sm rounded-lg
+                   focus:ring-[#8200DB] focus:border-[#8200DB]
+                   block w-full pl-10 p-2
+                   dark:bg-gray-700 dark:border-[#8200DB]
+                   dark:placeholder-[#8200DB] dark:text-white">
+                                    </div>
                                 </form>
+
                             </div>
 
                             <div class="mt-4 flex items-center mb-3">
