@@ -143,10 +143,10 @@
             </div>
         </div>
         <div
-            class="overflow-x-auto min-h-[200px] sm:min-h-[300px] lg:min-h-[400px] bg-white dark:bg-gray-800 rounded-md px-3 shadow">
-            <div id="transactions-export-wrapper mb-2">
+            class="overflow-x-auto min-h-[200px] sm:min-h-[300px] lg:min-h-[400px] bg-white dark:bg-gray-800 py-2 rounded-md px-3 shadow">
+            <div id="transactions-export-wrapper py-4">
                 <table id="transactions-table"
-                    class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    class="w-full text-sm text-left text-gray-500 dark:text-gray-400 mt-2">
                     <thead>
                         <tr>
                             <th class="px-2 py-3">Date</th>
