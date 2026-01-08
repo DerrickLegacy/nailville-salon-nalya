@@ -1,4 +1,31 @@
 <x-app-layout>
+    <style>
+        #weekRangePicker {
+            width: 100%;
+        }
+
+        #weekRangePicker .flatpickr-calendar {
+            width: 100% !important;
+            /* override inline width */
+            max-width: 100% !important;
+            margin: 0 auto !important;
+        }
+
+        #weekRangePicker .flatpickr-days {
+            display: grid !important;
+            grid-template-columns: repeat(7, 1fr) !important;
+            gap: 0 !important;
+        }
+
+        #weekRangePicker .flatpickr-months {
+            width: 100% !important;
+            justify-content: space-between !important;
+        }
+
+        #weekRangePicker .flatpickr-month {
+            width: 48% !important;
+        }
+    </style>
     <div class="px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 w-full max-w-full mx-auto">
 
         <!-- Dashboard actions -->
@@ -200,40 +227,38 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto -mx-3 sm:mx-0">
-                        <div class="inline-block min-w-full align-middle">
-                            <div class="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5 rounded-lg">
-                                <table id="transactions-table" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                    <thead class="bg-gray-50 dark:bg-gray-700">
-                                        <tr>
-                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date
-                                            </th>
-                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Service
-                                            </th>
-                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                Serviced By
-                                            </th>
-                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Payment
-                                                Method
-                                            </th>
-                                            <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="transactions-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                    <!-- Scrollable wrapper -->
+                    <div class="overflow-x-auto w-full rounded-lg shadow ring-1 ring-black/5">
+                        <table id="transactions-table"
+                            class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 table-auto">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Date
+                                    </th>
+                                    <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Service
+                                    </th>
+                                    <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Serviced By
+                                    </th>
+                                    <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Payment Method
+                                    </th>
+                                    <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Amount
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+
             </div>
 
             <div class="lg:col-span-1 space-y-4 sm:space-y-6">
-                <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg sm:rounded-xl p-3 sm:p-4 w-full text-center">
-                    <h2 class="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 mb-2 sm:mb-3">Calendar</h2>
-                    <div id="weekRangePicker" class="w-full max-w-full"></div>
-                </div>
 
                 <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg sm:rounded-xl p-3 sm:p-4">
                     <h3 class="text-sm sm:text-base text-gray-800 dark:text-gray-100 font-semibold mb-2 sm:mb-3 text-center">Employee Performance
@@ -296,29 +321,7 @@
     </div>
 
 </x-app-layout>
-<style>
-    #weekRangePicker .flatpickr-calendar.inline {
-        width: 100% !important;
-        max-width: 100% !important;
-    }
 
-    #weekRangePicker .flatpickr-days {
-        display: grid !important;
-        grid-template-columns: repeat(7, 1fr) !important;
-    }
-
-
-
-    /* Optional: shrink day cells for small screens */
-    @media (max-width: 640px) {
-
-        /* sm breakpoint */
-        #weekRangePicker .flatpickr-day {
-            padding: 0.25rem 0.15rem !important;
-            font-size: 0.7rem !important;
-        }
-    }
-</style>
 
 <script>
     const incomeTransactions = @json($topIncomeTransactions);
@@ -338,7 +341,6 @@
         let rows = '';
 
         data.forEach(trx => {
-            console.log(trx);
             var service_or_desc = '';
 
             // These specific employeeFirstName/LastName variables aren't used in the final template anymore, you can remove them if you like:
@@ -403,7 +405,6 @@
         method: "GET",
         dataType: "json",
         success: function(data) {
-            console.log("Chart:--", data)
             new Morris.Line({
                 element: 'record_count',
                 data: data,
@@ -421,7 +422,7 @@
 
         },
         error: function(xhr, status, error) {
-            console.error("Error loading chart data:", error);
+            window.alert("Error loading chart data:", error);
         }
     });
 
@@ -443,7 +444,7 @@
                     .then(result => {
                         this.items = result; // set items from API
                     })
-                    .catch(err => console.error(err));
+                    .catch(err => window.alert(err));
             },
             // init() runs automatically when Alpine component is initialized
             init() {
@@ -486,8 +487,6 @@
         method: "GET",
         dataType: "json",
         success: function(data) {
-            console.log("this MONTH's Data:", data);
-
             new Morris.Bar({
                 element: 'transactions-bar-chart-month',
                 data: data,
@@ -500,7 +499,7 @@
             });
         },
         error: function(xhr, status, error) {
-            console.error("Error loading chart data:", error);
+            window.alert("Error loading chart data:", error);
         }
     });
 
@@ -511,7 +510,6 @@
         method: "GET",
         dataType: "json",
         success: function(data) {
-            console.log("YEAR : ", data);
             new Morris.Bar({
                 element: 'transactions-bar-chart-year',
                 data: data,
@@ -524,7 +522,7 @@
             });
         },
         error: function(xhr, status, error) {
-            console.error("Error loading chart data:", error);
+            window.alert("Error loading chart data:", error);
         }
     });
 
@@ -557,7 +555,7 @@
             });
         },
         error: function(xhr, status, error) {
-            console.error("Error loading chart data:", error);
+            window.alert("Error loading chart data:", error);
         }
     });
 
@@ -602,7 +600,42 @@
             $("#month_sumary").text(month);
         },
         error: function(xhr, status, error) {
-            console.error("Error loading chart data:", error);
+            window.alert("Error loading chart data:", error);
         }
     });
+
+
+    function initialiseCalendar() {
+        // Inline small weekly calendar
+        const weekPicker = document.getElementById('weekRangeCalendarPicker');
+        if (weekPicker) {
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            const monday = new Date(today);
+            monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+
+            flatpickr(weekPicker, {
+                mode: 'range',
+                dateFormat: 'Y-m-d',
+                defaultDate: [monday, sunday],
+                allowInput: false,
+                inline: true,
+                monthSelectorType: 'static',
+                onReady: (selectedDates, dateStr, instance) => {
+                    if (selectedDates.length === 2) {
+                        const [start, end] = selectedDates;
+                        instance.input.value = `${instance.formatDate(start, 'Y-m-d')} - ${instance.formatDate(end, 'Y-m-d')}`;
+                    }
+                },
+                onChange: (selectedDates, dateStr, instance) => {
+                    if (selectedDates.length === 2) {
+                        const [start, end] = selectedDates;
+                        instance.input.value = `${instance.formatDate(start, 'Y-m-d')} - ${instance.formatDate(end, 'Y-m-d')}`;
+                    }
+                },
+            });
+        }
+    }
 </script>

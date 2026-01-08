@@ -1,3 +1,118 @@
 /opt/lampp/bin/mysqldump -u root -p --no-data u547313549_nailville \
 --socket=/opt/lampp/var/mysql/mysql.sock \
 > nailville_schema.sql
+
+
+
+
+
+category section :
+
+sections  ──┐
+            ├── services
+categories ─┘
+
+
++------------------+        +------------------+
+|   categories     |        |    sections      |
++------------------+        +------------------+
+| id (PK)          |        | id (PK)          |
+| name             |        | name             |
+| description      |        | description      |
++------------------+        +------------------+
+         |                           |
+         |                           |
+         +------------+--------------+
+                      |
+               +--------------+
+               |   services   |
+               +--------------+
+               | id (PK)      |
+               | service_code |
+               | name         |
+               | category_id  |
+               | section_id   |
+               | price        |
+               | status       |
+               +--------------+
+
+
+
+CREATE TABLE `sections` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(100) NOT NULL,
+  `description` VARCHAR(255) DEFAULT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+INSERT INTO sections (id, name, description) VALUES
+(1, 'Men Hair Team', 'Barbers handling men haircuts and beard grooming'),
+(2, 'Women Hair Team', 'Plaiting, styling, treatments for women'),
+(3, 'Nails Team', 'Manicure, pedicure, gel and nail services'),
+(4, 'Spa & Body Team', 'Massage, scrubbing, foot & leg care'),
+(5, 'Makeup & Skin Team', 'Makeup, facials and skincare'),
+(6, 'Packages Team', 'Bridal and combo services');
+
+
+CREATE TABLE `categories` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(100) NOT NULL,
+  `description` VARCHAR(255) DEFAULT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO categories (id, name, description) VALUES
+(1, 'Hair Care & Styling', 'Haircuts, washing, coloring, plaiting and treatments'),
+(2, 'Nails & Hands', 'Manicure, pedicure, gel and nail enhancements'),
+(3, 'Skin & Beauty', 'Facials, makeup and skincare'),
+(4, 'Body & Relaxation', 'Massage, scrubs, waxing and foot care'),
+(5, 'Packages & Specials', 'Bridal and bundled services'),
+(6, 'Other Services', 'Custom or miscellaneous services');
+
+ALTER TABLE services
+ADD COLUMN category_id INT UNSIGNED NULL AFTER name,
+ADD COLUMN section_id INT UNSIGNED NULL AFTER category_id;
+
+UPDATE services
+SET category_id = 1, section_id = 2
+WHERE service_code IN (
+  'BRAIDING', 'COLORING', 'SHAMPOO', 'HAIRTREAT',
+  'HAIRWASH', 'plaiting', 'hair style'
+);
+
+UPDATE services
+SET category_id = 2, section_id = 3
+WHERE service_code IN (
+  'NAILS', 'GELGF', 'NAILCUT', 'GEL-SCRUB', 'NAIL', 'spa'
+);
+
+UPDATE services
+SET category_id = 4, section_id = 4
+WHERE service_code IN (
+  'MASSAGE', 'WAXING', 'FOOT-SCRUB'
+);
+
+UPDATE services
+SET category_id = 3, section_id = 5
+WHERE service_code IN (
+  'FACIAL', 'MAKEUP', 'GEL', 'scrub', 'nel'
+);
+
+UPDATE services
+SET category_id = 5, section_id = 6
+WHERE service_code IN ('BRIDAL', 'PACKAGES');
+
+UPDATE services
+SET category_id = 6, section_id = 6
+WHERE service_code = 'OTHER';
+
+ALTER TABLE services
+ADD CONSTRAINT fk_services_category
+FOREIGN KEY (category_id) REFERENCES categories(id),
+
+ADD CONSTRAINT fk_services_section
+FOREIGN KEY (section_id) REFERENCES sections(id);
+
+ALTER TABLE services DROP COLUMN category;
+

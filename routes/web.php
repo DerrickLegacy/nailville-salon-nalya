@@ -156,5 +156,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::put('/{id}', [App\Http\Controllers\ServiceController::class, 'update'])->name('update');
         Route::delete('/{id}', [App\Http\Controllers\ServiceController::class, 'destroy'])->name('destroy');
         Route::get('/categories/list', [App\Http\Controllers\ServiceController::class, 'getCategories'])->name('categories');
+        Route::get('/categories-and-sections/meta',  [App\Http\Controllers\ServiceController::class, 'meta'])
+            ->name('categories.services.meta');
     });
 });
