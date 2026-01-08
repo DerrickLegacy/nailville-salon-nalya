@@ -249,7 +249,7 @@
 
         <!-- Statistics Cards -->
         <div class="mb-4 sm:mb-6">
-            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
                 <!-- Total Records -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
                     <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">Total Records</span>
