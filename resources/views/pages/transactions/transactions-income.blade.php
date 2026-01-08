@@ -262,11 +262,11 @@
                     <span id="currnetPage" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
                 </div>
 
-                <!-- All Pages Total -->
+                <!-- All Pages Total
                 <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
                     <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">All Pages Total</span>
                     <span id="totalAllPagesAmountRet" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
-                </div>
+                </div> -->
 
                 <!-- Total Income/Expense -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px] col-span-2 sm:col-span-2 lg:col-span-1">
