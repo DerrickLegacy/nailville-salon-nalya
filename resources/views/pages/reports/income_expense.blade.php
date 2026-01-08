@@ -20,6 +20,11 @@
             .rotate-90 {
                 transform: rotate(90deg);
             }
+
+            .accordion-icon {
+                transition: transform 0.2s ease-in-out;
+                display: inline-block;
+            }
         </style>
 
 
@@ -36,6 +41,7 @@
                 @endif
             </div>
         </div>
+        
         @if($report_type=='Income')
         <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-[#8200DB] p-4 mb-6">
             <div class="flex">
@@ -79,11 +85,10 @@
 
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Filters:</h2>
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-
                 <div
                     x-data="{ active: 'Today' }"
                     class="flex flex-row flex-nowrap items-center gap-2
-               overflow-x-auto sm:overflow-visible">
+               overflow-x-auto sm:overflow-visible py-3">
 
                     @foreach (['Today', 'This Week', 'This Month', 'This Year', 'All Time'] as $label)
                     <button
@@ -164,17 +169,7 @@
                             hover:bg-[#8200DB] hover:text-white
                             transition" @click.prevent="open = !open">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M3 3a1 1 0 011-1h12a1 1 0
-                                011 1v3a1 1 0
-                                01-.293.707L12
-                                11.414V15a1 1 0
-                                01-.293.707l-2
-                                2A1 1 0 08
-                                17v-5.586L3.293
-                                6.707A1 1 0
-                                013 6V3z"
-                                clip-rule="evenodd" />
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
                         </svg>
                         Filter
                     </button>
@@ -486,6 +481,20 @@
                 report_period.textContent = `Today's Report`;
                 loadIncomeData('Today');
                 fetchEmployerContribution();
+
+                $(document).on('click', '[data-toggle]', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const sectionId = $(this).data('toggle');
+
+                    const rows = $(`[data-parent="${sectionId}"]`);
+                    const icon = $(this).find('.accordion-icon');
+
+                    rows.toggleClass('hidden');
+                    // Rotate arrow
+                    icon.toggleClass('rotate-90');
+                });
 
                 $('#simple-search').on('input', function() {
                     const query = $(this).val().toLowerCase();
@@ -826,7 +835,6 @@
                                 }
 
                                 if (!Array.isArray(chartData) || chartData.length === 0) {
-                                    console.warn('Skipping donut chart — invalid data', chartData);
                                     $('#todays-income-chart-progress')
                                         .html('<p class="text-center text-sm text-gray-400">No data available</p>');
                                     return;
@@ -862,14 +870,15 @@
 
                                         tbody.append(`
                                             <tr 
-                                                class="bg-gray-100 dark:bg-gray-700 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                                                class="bg-gray-100 dark:bg-gray-700 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                                                 data-toggle="${sectionId}"
+                                                title="Click to expand/collapse services"
                                             >
                                                 <td class="px-6 py-3 flex items-center gap-2">
-                                                    <span class="accordion-icon transition-transform  text-[#8200DB]">▶</span>
-                                                    ${section.section_name}
+                                                    <span class="accordion-icon transition-transform text-[#8200DB] font-bold">▶</span>
+                                                    <span class="">${section.section_name}</span>
                                                 </td>
-                                                <td class="text-right px-6 py-3 text-[#8200DB]">
+                                                <td class="text-right px-6 py-3 text-[#8200DB] font-semibold">
                                                     ${section.total_amount.toLocaleString()}
                                                 </td>
                                             </tr>
@@ -906,17 +915,6 @@
                                     `);
                                     });
                                 }
-
-                                $(document).on('click', '[data-toggle]', function() {
-                                    const sectionId = $(this).data('toggle');
-                                    const rows = $(`[data-parent="${sectionId}"]`);
-                                    const icon = $(this).find('.accordion-icon');
-
-                                    rows.toggleClass('hidden');
-
-                                    // Rotate arrow
-                                    icon.toggleClass('rotate-90');
-                                });
 
                                 $('#service_table tfoot td:last').text(serviceTotal.toLocaleString());
 

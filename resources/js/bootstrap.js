@@ -10,6 +10,22 @@ window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /**
+ * Alpine.js
+ */
+import Alpine from 'alpinejs';
+import persist from '@alpinejs/persist';
+
+// Only initialize Alpine if it hasn't been initialized yet
+if (!window.Alpine) {
+    // Register Alpine plugins
+    Alpine.plugin(persist);
+
+    // Start Alpine
+    window.Alpine = Alpine;
+    Alpine.start();
+}
+
+/**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting
  * allows your team to easily build robust real-time web applications.

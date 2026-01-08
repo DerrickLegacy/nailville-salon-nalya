@@ -21,247 +21,28 @@
                 </nav>
             </div>
         </div>
-
         <!-- Dashboard actions -->
         <div class="sm:flex sm:justify-between sm:items-center mb-2 fade-in">
             <!-- Left: Title -->
             <div class="mb-4 sm:mb-0">
-                <h1 class="text-2xl font-bold text-gray-900">{{ $transactionType }} Transactions</h1>
+                <h1 class=" text-sm, text-base, text-lg, sm:text-base, md:text-lg font-bold text-gray-800 dark:text-gray-100">{{ $transactionType }} Transactions</h1>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Income transactions Records.</p>
             </div>
 
             <!-- Right: Actions -->
-            <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-                <!-- Datepicker built with flatpickr -->
-                <x-datepicker />
-
-                <div x-data="{ modalIsOpen: false }" class="relative">
-
-                    <!-- Trigger Button -->
-                    <button
-                        @click="modalIsOpen = true"
-                        class="px-4 py-2 bg-purple-700 text-white rounded hover:bg-purple-800 dark:bg-purple-100 dark:text-purple-800 dark:hover:bg-white">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-3 w-full">
+                <!-- Add Transaction Modal Trigger -->
+                <div x-data="{ modalIsOpen: false }" class="relative w-full sm:w-auto flex justify-end">
+                    <button @click="modalIsOpen = true"
+                        class="w-1/2 sm:w-auto px-4 py-2 sm:px-5 sm:py-2.5 
+                   bg-purple-700 text-white text-sm sm:text-base md:text-lg 
+                   font-medium rounded-lg hover:bg-purple-800 
+                   dark:bg-purple-100 dark:text-purple-800 dark:hover:bg-white transition">
                         Add Transaction
                     </button>
-
-                    <!-- Modal backdrop -->
-                    <div
-                        x-show="modalIsOpen"
-                        x-transition.opacity
-                        class="fixed inset-0  drop-shadow-xl/50 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
-                    </div>
-
-                    <!-- Modal panel -->
-                    <div
-                        x-show="modalIsOpen"
-                        x-transition
-                        @keydown.escape.window="modalIsOpen = false"
-                        class="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto px-4 py-6  border-purple-500 border-2 border-solid">
-
-                        <div
-                            x-show="modalIsOpen"
-                            x-transition
-                            @click.away="modalIsOpen = false"
-                            class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto  dark:border-gray-700 p-6  border-purple-400 border-2 border-solid">
-
-                            <!-- Modal header -->
-                            <div class="flex justify-between items-center mb-6">
-                                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
-                                    {{ $transactionType }} Transactions
-                                </h2>
-                                <button @click="modalIsOpen = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <!-- Modal Form -->
-                            <form x-ref="transactionForm" action="{{ route('transactions.store') }}" method="POST" class="space-y-4">
-                                @csrf
-                                <input type="hidden" name="transaction_type" value="{{ $transactionType }}">
-
-                                <!-- Customer Name -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Customer Name</label>
-                                    <input type="text" name="customer_name" value="Walkin Client"
-                                        class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100" required>
-                                </div>
-
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                                    <!-- Receipt ID -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Receipt ID</label>
-                                        <input type="text" name="receipt_id"
-                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100" required>
-                                    </div>
-
-                                    <!-- Transaction Type -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Transaction Type</label>
-                                        <input disabled value="{{ $transactionType }}"
-                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full bg-gray-100 dark:bg-gray-700 rounded-md border-purple-300 dark:border-purple-600 dark:text-gray-100">
-                                    </div>
-
-                                    <!-- Income / Expense -->
-                                    @if ($transactionType === 'Income')
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Service Offered</label>
-                                        <select name="service_offered" id="service_offered"
-                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100" required>
-                                            <option value="">-- Select Service --</option>
-                                            @foreach ($services as $service)
-                                            <option value="{{ $service->name }}" data-price="{{ $service->price }}" data-service-id="{{ $service->id }}">
-                                                {{ $service->name }}
-                                            </option>
-
-                                            @endforeach
-                                        </select>
-                                        <input type="hidden" name="service_id" id="service_id" required />
-                                    </div>
-                                    @else
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Expense Category</label>
-                                        <select name="expense_type"
-                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100" required>
-                                            <option value="">-- Select Expense --</option>
-                                            <option value="Rent">Rent / Lease</option>
-                                            <option value="Salaries">Salaries & Wages</option>
-                                            <option value="Allowances">Allowances / Bonuses</option>
-                                            <option value="Training">Staff Training / Workshops</option>
-                                            <option value="Utilities">Utilities</option>
-                                            <option value="BeautyProducts">Beauty Products</option>
-                                            <option value="HairSupplies">Hair Supplies</option>
-                                            <option value="NailSupplies">Nail Supplies</option>
-                                            <option value="Cleaning">Cleaning Supplies</option>
-                                            <option value="FurnitureEquipment">Furniture & Equipment</option>
-                                            <option value="Maintenance">Maintenance</option>
-                                            <option value="Marketing">Marketing & Advertising</option>
-                                            <option value="Transport">Transport / Delivery</option>
-                                            <option value="Licenses">Licenses / Insurance</option>
-                                            <option value="Miscellaneous">Miscellaneous</option>
-                                        </select>
-                                    </div>
-                                    @endif
-
-                                    <!-- Amount -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Amount</label>
-                                        <input type="text" id="amount_display"
-                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100" required>
-                                        <input type="hidden" id="amount" name="amount">
-                                    </div>
-
-                                    <!-- Payment Method -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Method</label>
-                                        <select name="payment_method"
-                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100" required>
-                                            <option value="Cash">Cash</option>
-                                            <option value="MobileMoney">MobileMoney</option>
-                                            <option value="Card">Card</option>
-                                            <option value="Bank">Bank</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Date -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
-                                        <input type="date" name="date" value="{{ old('date', now()->format('Y-m-d')) }}"
-                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100" required>
-                                    </div>
-
-                                    <!-- Employee -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Worked On By</label>
-                                        <select name="employee_id"
-                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100" required>
-                                            <option value="">-- Select Employee --</option>
-                                            @foreach ($employees as $employee)
-                                            <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <!-- Notes -->
-                                    <div class="sm:col-span-2">
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
-                                        <textarea name="notes" rows="2"
-                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md border-purple-300 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100">Service payments have been made.</textarea>
-                                    </div>
-
-                                    <!-- Recorded By -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Recorded By</label>
-                                        <input type="text" value="{{ Auth::user()->name }}" disabled
-                                            class="mt-1  focus:ring-violet-500 focus:border-violet-500 block w-full rounded-md bg-gray-100 dark:bg-gray-700 dark:border-purple-600 dark:text-gray-100">
-                                        <input type="hidden" name="recorded_by" value="{{ Auth::id() }}">
-                                    </div>
-
-                                </div>
-
-                                <!-- Modal footer -->
-                                <div class="flex justify-end space-x-3 mt-4">
-                                    <button type="button" @click="modalIsOpen = false" class="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800">Cancel</button>
-                                    <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">Save</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
                 </div>
-
-                <!-- jQuery for service price -->
-                <script>
-                    $(document).ready(function() {
-                        $('#amount').val(parseFloat($('#amount_display').val().replace(/,/g, '')));
-                        $('#service_offered').on('change', function() {
-                            let selectedOption = $(this).find('option:selected');
-                            let rawPrice = selectedOption.data('price');
-                            let service_id = selectedOption.data('service-id'); // use data-service-id
-                            if (rawPrice) {
-                                let formatted = Number(rawPrice).toLocaleString('en-US');
-                                $('#amount_display').val(formatted);
-                                $('#amount').val(rawPrice);
-                                $('#service_id').val(service_id);
-                            } else {
-                                $('#amount_display').val('');
-                                $('#service_id').val('');
-                                $('#amount').val('');
-                            }
-                        });
-
-                        $('#amount_display').on('input', function() {
-                            let inputVal = $(this).val().replace(/,/g, '');
-                            if (!isNaN(inputVal) && inputVal.trim() !== '') {
-                                $('#amount').val(parseFloat(inputVal));
-                            } else {
-                                $('#amount').val('');
-                            }
-                        });
-                    });
-                </script>
-
-
-                <!-- Price Auto-fill Script -->
-                <script>
-                    $(document).ready(function() {
-                        $('#service_offered').on('change', function() {
-                            let opt = $(this).find('option:selected');
-                            let raw = opt.data('price');
-
-                            if (raw) {
-                                $('#amount_display').val(Number(raw).toLocaleString('en-US'));
-                                $('#amount').val(raw);
-                            } else {
-                                $('#amount_display').val('');
-                                $('#amount').val('');
-                            }
-                        });
-                    });
-                </script>
-
             </div>
+
         </div>
         <div class="py-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -298,46 +79,50 @@
         <div class="grid grid-cols-12 gap-0 fade-in">
             <div class="col-span-full xl:col-span-12 bg-white dark:bg-gray-800 shadow-xs rounded-xl p-3">
                 <div class="bg-white dark:bg-gray-800 mt-3 relative shadow-md sm:rounded-lg overflow-hidden">
-                    <div
-                        class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
-                        <div class="w-full md:w-1/2">
-                            <form class="flex items-center">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4 p-4">
+                        <!-- Left: Search + Datepicker -->
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full md:w-1/2">
+                            <!-- Search -->
+                            <div class="flex-1 relative w-full">
                                 <label for="simple-search" class="sr-only">Search</label>
-                                <div class="relative w-full">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
-                                            fill="currentColor" viewbox="0 0 20 20"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd"
-                                                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-                                    <input type="text" id="simple-search" name="simple-search"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                        placeholder="Search" required="">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
+                                        fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                            clip-rule="evenodd" />
+                                    </svg>
                                 </div>
-                            </form>
+                                <input type="text" id="simple-search" name="simple-search"
+                                    class="w-full pl-10 p-2 text-sm sm:text-base rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    placeholder="Search" required>
+                            </div>
+
+                            <!-- Datepicker -->
+                            <x-datepicker />
                         </div>
-                        <div
-                            class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
+
+                        <!-- Right: Buttons (Export + Filter) -->
+                        <div class="grid grid-cols-2 sm:flex sm:items-center sm:gap-3 w-full md:w-auto gap-2">
                             <!-- Export Button -->
-                            <button type="button" id="export-button"
-                                class="flex items-center justify-center flex-shrink-0 px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                            <button type="button"
+                                class="w-full sm:w-auto flex items-center justify-center px-3 py-2 text-sm sm:text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-primary-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700">
                                 <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                                 </svg>
                                 Export PDF
                             </button>
 
-                            <x-dropdown-income-filter align="right" type="income" :filterPageCount="false"
-                                :showActions="false" />
+                            <!-- Income Filter Dropdown -->
+                            <x-dropdown-income-filter align="right" type="income" :filterPageCount="false" :showActions="false"
+                                class="w-full sm:w-auto" />
                         </div>
                     </div>
 
-                    <div class="relative">
+
+                    <div class="relative text-sm sm:text-sm">
                         <div id="transactions-spinner"
                             class="absolute inset-1 flex items-center justify-center bg-white/70 dark:bg-gray-800/70 z-50 ">
                             <div role="status">
@@ -396,6 +181,56 @@
 
     <!-- Include html2pdf library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- jQuery for service price -->
+    <script>
+        $(document).ready(function() {
+            $('#amount').val(parseFloat($('#amount_display').val().replace(/,/g, '')));
+            $('#service_offered').on('change', function() {
+                let selectedOption = $(this).find('option:selected');
+                let rawPrice = selectedOption.data('price');
+                let service_id = selectedOption.data('service-id'); // use data-service-id
+                if (rawPrice) {
+                    let formatted = Number(rawPrice).toLocaleString('en-US');
+                    $('#amount_display').val(formatted);
+                    $('#amount').val(rawPrice);
+                    $('#service_id').val(service_id);
+                } else {
+                    $('#amount_display').val('');
+                    $('#service_id').val('');
+                    $('#amount').val('');
+                }
+            });
+
+            $('#amount_display').on('input', function() {
+                let inputVal = $(this).val().replace(/,/g, '');
+                if (!isNaN(inputVal) && inputVal.trim() !== '') {
+                    $('#amount').val(parseFloat(inputVal));
+                } else {
+                    $('#amount').val('');
+                }
+            });
+        });
+    </script>
+
+
+    <!-- Price Auto-fill Script -->
+    <script>
+        $(document).ready(function() {
+            $('#service_offered').on('change', function() {
+                let opt = $(this).find('option:selected');
+                let raw = opt.data('price');
+
+                if (raw) {
+                    $('#amount_display').val(Number(raw).toLocaleString('en-US'));
+                    $('#amount').val(raw);
+                } else {
+                    $('#amount_display').val('');
+                    $('#amount').val('');
+                }
+            });
+        });
+    </script>
 
     <script>
         $(document).ready(function() {
