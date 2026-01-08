@@ -239,6 +239,7 @@
                     <div class="shs">Shs.</div>
                     <span id="currnetPage" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
                 </div>
+                
 
                 <!-- All Pages Total -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
