@@ -1,352 +1,343 @@
 <x-app-layout>
-    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
+    <div class="px-2 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 w-full max-w-9xl mx-auto">
         <!-- Page Header -->
-        <div class="mb-2 flex flex-col md:flex-row md:justify-between md:items-center fade-in">
-            <div>
-                <nav class="flex mb-2" aria-label="Breadcrumb">
-                    <ol class="flex items-center space-x-2 text-sm">
-                        <li><a href="#" class="text-gray-500 hover:text-purple-600">Transactions</a></li>
-                        <li class="flex items-center">
-                            <span class="text-gray-400 mx-2">›</span>
-                            <a href="{{ route('transactions.' . strtolower($transactionType)) }}"
-                                class="text-gray-500 hover:text-purple-600">
-                                {{ $transactionType }} Transactions
-                            </a>
-                        </li>
-                        <li class="flex items-center">
-                            <span class="text-gray-400 mx-2">›</span>
-                            <a href="" class="text-gray-500 hover:text-purple-600">List</a>
-                        </li>
-                    </ol>
-                </nav>
+        <div class="mb-4 sm:mb-6 fade-in">
+            <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:justify-between sm:items-start">
+                <div class="flex-1">
+                    <nav class="flex mb-2" aria-label="Breadcrumb">
+                        <ol class="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
+                            <li><a href="#" class="text-gray-500 hover:text-purple-600 truncate">Transactions</a></li>
+                            <li class="flex items-center">
+                                <span class="text-gray-400 mx-1 sm:mx-2">›</span>
+                                <a href="{{ route('transactions.' . strtolower($transactionType)) }}"
+                                    class="text-gray-500 hover:text-purple-600 truncate">
+                                    {{ $transactionType }}
+                                </a>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="text-gray-400 mx-1 sm:mx-2">›</span>
+                                <span class="text-gray-500 truncate">List</span>
+                            </li>
+                        </ol>
+                    </nav>
+                    <h1 class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 dark:text-gray-100">
+                        {{ $transactionType }} Transactions
+                    </h1>
+                    <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Manage your salon's {{ strtolower($transactionType) }} transactions.
+                    </p>
+                </div>
             </div>
         </div>
 
-        <!-- Dashboard actions -->
-        <div class="sm:flex sm:justify-between sm:items-center mb-2 fade-in">
-            <!-- Left: Title -->
-            <div class="mb-4 sm:mb-0">
-                <h1 class="text-2xl font-bold text-gray-900">{{ $transactionType }} Transactions</h1>
-            </div>
+        <!-- Actions Section -->
+        <div class="mb-4 sm:mb-6 fade-in">
+            <div class="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-end">
 
-            <!-- @if ($errors->any())
-            <div class="p-2 bg-red-100 text-red-800 rounded mb-2">
-                <ul class="list-disc pl-4">
-                    @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-            @endif -->
-
-            <!-- Right: Actions -->
-            <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-                <!-- Datepicker built with flatpickr -->
-                <x-datepicker />
-                <x-simple-modal title="{{ $transactionType }} Transactions">
-                    @slot('trigger')
-                    <button x-on:click="modalIsOpen = true"
-                        class="btn bg-purple-700 text-gray-100 hover:bg-purple-800 dark:bg-purple-100 dark:text-purple-800 dark:hover:bg-white">
+                <!-- Add Transaction Button -->
+                <div x-data="{ modalIsOpen: false }" class="w-full sm:w-auto">
+                    <button @click="modalIsOpen = true"
+                        class="w-full sm:w-auto px-4 py-2.5 bg-purple-700 text-white text-sm font-medium rounded-lg hover:bg-purple-800 dark:bg-purple-600 dark:hover:bg-purple-700 transition-colors duration-200 flex items-center justify-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
                         Add Transaction
                     </button>
-                    @endslot
+                    <!-- Modal backdrop -->
+                    <div x-show="modalIsOpen" x-transition.opacity
+                        class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 
-                    <form x-ref="transactionForm" action="{{ route('transactions.store') }}" method="POST"
-                        class="space-y-2">
-                        @csrf
-                        <input type="hidden" name="transaction_type" value="{{ $transactionType }}">
+                        <!-- Modal panel -->
+                        <div x-show="modalIsOpen" x-transition @click.away="modalIsOpen = false"
+                            @keydown.escape.window="modalIsOpen = false"
+                            class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
 
-                        <!-- Customer Name -->
-                        <div>
-                            <label for="customer_name"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Customer Name</label>
-                            <input type="text" name="customer_name" id="customer_name" value="Walkin Client"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
+                            <!-- Modal header -->
+                            <div class="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+                                <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-100">
+                                    Add {{ $transactionType }} Transaction
+                                </h2>
+                                <button @click="modalIsOpen = false"
+                                    class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1">
+                                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
 
+                            <!-- Modal Form -->
+                            <div class="p-4 sm:p-6">
+                                <form x-ref="transactionForm" action="{{ route('transactions.store') }}" method="POST" class="space-y-4 sm:space-y-6">
+                                    @csrf
+                                    <input type="hidden" name="transaction_type" value="{{ $transactionType }}">
+
+                                    <!-- Customer Name -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Customer Name
+                                        </label>
+                                        <input type="text" name="customer_name" value="Walkin Client"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                            required>
+                                    </div>
+
+                                    <!-- Two Column Grid for smaller fields -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                        <!-- Receipt ID -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Receipt ID
+                                            </label>
+                                            <input type="text" name="receipt_id" value="{{ $transactionType === 'Expense' ? $exp_transaction_id : '' }}"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                                required>
+                                        </div>
+
+                                        <!-- Transaction Type -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Transaction Type
+                                            </label>
+                                            <input disabled value="{{ $transactionType }}"
+                                                class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base">
+                                        </div>
+                                    </div>
+                                    <!-- Service/Expense and Amount Grid -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                        <!-- Expense Category -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Expense Category
+                                            </label>
+                                            <select name="expense_type"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                                required>
+                                                <option value="">-- Select Expense --</option>
+                                                <option value="Rent">Rent / Lease</option>
+                                                <option value="Salaries">Salaries & Wages</option>
+                                                <option value="Allowances">Allowances / Bonuses</option>
+                                                <option value="Training">Staff Training / Workshops</option>
+                                                <option value="Utilities">Utilities (Electricity, Water, Internet)</option>
+                                                <option value="BeautyProducts">Beauty Products</option>
+                                                <option value="HairSupplies">Hair Supplies</option>
+                                                <option value="NailSupplies">Nail Supplies</option>
+                                                <option value="Cleaning">Cleaning Supplies / Laundry</option>
+                                                <option value="FurnitureEquipment">Furniture & Equipment Purchase</option>
+                                                <option value="Maintenance">Equipment Maintenance & Repairs</option>
+                                                <option value="Marketing">Marketing & Advertising</option>
+                                                <option value="Transport">Transport / Delivery Costs</option>
+                                                <option value="Licenses">Licenses, Permits & Insurance</option>
+                                                <option value="Miscellaneous">Miscellaneous / Other</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Amount -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Amount
+                                            </label>
+                                            <input type="text" id="amount_display"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                                required>
+                                            <input type="hidden" id="amount" name="amount">
+                                        </div>
+                                    </div>
+
+                                    <!-- Payment Method, Date, Employee Grid -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                                        <!-- Payment Method -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Payment Method
+                                            </label>
+                                            <select name="payment_method"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                                required>
+                                                <option value="Cash">Cash</option>
+                                                <option value="MobileMoney">Mobile Money</option>
+                                                <option value="Card">Card</option>
+                                                <option value="Bank">Bank</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Date -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Date
+                                            </label>
+                                            <input type="date" name="date" value="{{ old('date', now()->format('Y-m-d')) }}"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                                required>
+                                        </div>
+
+                                        <!-- Employee -->
+                                        <div class="sm:col-span-2 lg:col-span-1">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Worked On By
+                                            </label>
+                                            <select name="employee_id"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                                required>
+                                                <option value="">-- Select Employee --</option>
+                                                @foreach ($employees as $employee)
+                                                <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!-- Notes -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Notes
+                                        </label>
+                                        <textarea name="notes" rows="3"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base resize-none">Expense payment has been made.</textarea>
+                                    </div>
+
+                                    <!-- Recorded By -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Recorded By
+                                        </label>
+                                        <input type="text" value="{{ Auth::user()->name }}" disabled
+                                            class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base">
+                                        <input type="hidden" name="recorded_by" value="{{ Auth::id() }}">
+                                    </div>
+
+                                    <!-- Modal footer -->
+                                    <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                        <button type="button" @click="modalIsOpen = false"
+                                            class="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200 text-sm sm:text-base">
+                                            Cancel
+                                        </button>
+                                        <button type="submit"
+                                            class="w-full sm:w-auto px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 text-sm sm:text-base">
+                                            Save Transaction
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-                            <!-- Receipt ID -->
-                            <div>
-                                <label for="receipt_id"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Receipt
-                                    ID</label>
-                                <input type="text"
-                                    name="receipt_id"
-                                    id="receipt_id"
-                                    value="{{ $transactionType === 'Expense' ? $exp_transaction_id : '' }}"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
-                            </div>
-
-                            <!-- Transaction Type (disabled) -->
-                            <div>
-                                <label for="transaction_type"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Transaction
-                                    Type</label>
-                                <input name="transaction_type" id="transaction_type" disabled
-                                    value="{{ $transactionType }}"
-                                    class="mt-1 block w-full bg-gray-100 rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
-                            </div>
-
-                            <!-- Income or Expense select -->
-                            @if ($transactionType === 'Income')
-                            <div>
-                                <label for="service_offered"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Service
-                                    Offered</label>
-                                <select name="service_offered" id="service_offered" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                                    <option value="">-- Select Service --</option>
-                                    <option value="HairCut">Hair Cut</option>
-                                    <option value="BraidalPackage">Braidal Package</option>
-                                    <option value="HairStyling">Hair Styling / Braiding</option>
-                                    <option value="HairColoring">Hair Coloring / Treatment</option>
-                                    <option value="ShampooConditioning">Shampoo & Conditioning</option>
-                                    <option value="Nails">Nail Care (Manicure / Pedicure)</option>
-                                    <option value="Facial">Facial / Skin Care</option>
-                                    <option value="Massage">Massage Therapy</option>
-                                    <option value="Waxing">Waxing / Hair Removal</option>
-                                    <option value="Makeup">Makeup Services</option>
-                                    <option value="Packages">Service Packages (Combo Deals)</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                            @else
-                            <div>
-                                <label for="expense_type"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Expense
-                                    Category</label>
-                                <select name="expense_type" id="expense_type" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                                    <option value="">-- Select Expense --</option>
-                                    <option value="Rent">Rent / Lease</option>
-                                    <option value="Salaries">Salaries & Wages</option>
-                                    <option value="Allowances">Allowances / Bonuses</option>
-                                    <option value="Training">Staff Training / Workshops</option>
-                                    <option value="Utilities">Utilities (Electricity, Water, Internet)</option>
-                                    <option value="BeautyProducts">Beauty Products</option>
-                                    <option value="HairSupplies">Hair Supplies</option>
-                                    <option value="NailSupplies">Nail Supplies</option>
-                                    <option value="Cleaning">Cleaning Supplies / Laundry</option>
-                                    <option value="FurnitureEquipment">Furniture & Equipment Purchase</option>
-                                    <option value="Maintenance">Equipment Maintenance & Repairs</option>
-                                    <option value="Marketing">Marketing & Advertising</option>
-                                    <option value="Transport">Transport / Delivery Costs</option>
-                                    <option value="Licenses">Licenses, Permits & Insurance</option>
-                                    <option value="Miscellaneous">Miscellaneous / Other</option>
-                                </select>
-                            </div>
-                            @endif
-
-                            <!-- Amount -->
-                            <div>
-                                <label for="amount"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Amount</label>
-                                <input type="number" name="amount" id="amount" step="0.01" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
-                            </div>
-
-                            <!-- Payment Method -->
-                            <div>
-                                <label for="payment_method"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment
-                                    Method</label>
-                                <select name="payment_method" id="payment_method"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                                    <option value="Cash">Cash</option>
-                                    <option value="MobileMoney">MobileMoney</option>
-                                    <option value="Card">Card</option>
-                                    <option value="Bank">Bank</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-
-                            {{-- <!-- Date -->
-                            <div>
-                                <label for="date"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
-                                <input type="date" name="date" id="date" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
-                            </div> --}}
-
-                            <div>
-                                <label for="date"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
-                                <input type="date" name="date" id="date" required
-                                    value="{{ old('date', now()->format('Y-m-d')) }}"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
-                            </div>
-
-                            <!-- Recorded by -->
-                            <div>
-                                <label for="recorded_by_display"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Recorded
-                                    By</label>
-                                <input type="text" id="recorded_by_display" value="{{ Auth::user()->name }}"
-                                    disabled
-                                    class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" />
-                                <input type="hidden" name="recorded_by" value="{{ Auth::id() }}">
-                            </div>
-
-                            <!-- Notes -->
-                            <div>
-                                <label for="notes"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
-                                <textarea name="notes" id="notes" rows="3"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"></textarea>
-                            </div>
-                        </div>
-                    </form>
-
-                    @slot('footer')
-                    <button x-on:click="modalIsOpen = false"
-                        class="px-4 py-2 bg-red-700 text-white rounded">Cancel</button>
-
-                    <button x-on:click="$refs.transactionForm && $refs.transactionForm.submit()"
-                        class="px-4 py-2 bg-purple-600 text-white rounded">Save</button>
-                    @endslot
-                </x-simple-modal>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="py-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
+        <!-- Statistics Cards -->
+        <div class="mb-4 sm:mb-6">
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
                 <!-- Total Records -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex flex-col items-center">
-                    <span class="text-gray-500 text-sm">Total Records</span>
-                    <span id="totalRecordsCount" class="text-purple-700 dark:text-white font-bold text-lg"></span>
+                <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
+                    <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">Total Records</span>
+                    <span id="totalRecordsCount" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
                 </div>
 
                 <!-- Current Page -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex flex-col items-center">
-                    <span class="text-gray-500 text-sm">Current Page (Shs)</span>
-                    <span id="currnetPage" class="text-purple-700 dark:text-white font-bold text-lg"></span>
+                <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
+                    <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">Current Page</span>
+                    <div class="shs">Shs.</div>
+                    <span id="currnetPage" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
                 </div>
 
                 <!-- All Pages Total -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex flex-col items-center">
-                    <span class="text-gray-500 text-sm">All Pages(Shs) </span>
-                    <span id="totalAllPagesAmountRet"
-                        class="text-purple-700 dark:text-white font-bold text-lg"></span>
+                <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
+                    <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">All Pages Total</span>
+                    <div class="shs">Shs.</div>
+                    <span id="totalAllPagesAmountRet" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
                 </div>
 
                 <!-- Total Income/Expense -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex flex-col items-center">
-                    <span class="text-gray-500 text-sm">Total {{ $transactionType }} (Shs)</span>
-                    <span id="total{{ $transactionType }}"
-                        class="text-purple-700 dark:text-white font-bold text-lg"></span>
+                <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px] col-span-2 sm:col-span-2 lg:col-span-1">
+                    <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">Total {{ $transactionType }}</span>
+                    <div class="shs">Shs.</div>
+                    <span id="total{{ $transactionType }}" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
                 </div>
-
             </div>
         </div>
-
-        <div class="grid grid-cols-12 gap-0 fade-in">
-            <div class="col-span-full xl:col-span-12 bg-white dark:bg-gray-800 shadow-xs rounded-xl p-3">
-                <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
-                    <div
-                        class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
-
-                        <div class="flex items-center flex-1 space-x-4">
-                            <h5>
-                                <span class="text-gray-500">All Records:</span>
-                                <span class="dark:text-white text-purple-700 font-bold" id="totalRecordsCount">
-                                </span>
-                            </h5>
-                            <h5>
-                                <span class="text-gray-500">Total {{ $transactionType }}:</span>
-                                <span class="dark:text-white text-purple-700 font-bold"
-                                    id="total{{ $transactionType }}"></span>
-                            </h5>
-                        </div>
-                    </div>
-                    <hr>
-                    <div
-                        class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
-                        <div class="w-full md:w-1/2">
-                            <form class="flex items-center">
+        <!-- Main Content Area -->
+        <div class="fade-in">
+            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg sm:rounded-xl overflow-hidden">
+                <!-- Search and Filter Section -->
+                <div class="p-3 sm:p-4 lg:p-6 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex flex-col space-y-3 sm:space-y-4 lg:flex-row lg:space-y-0 lg:items-center lg:justify-between">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <!-- Search -->
+                            <div class="flex-1 lg:max-w-md">
                                 <label for="simple-search" class="sr-only">Search</label>
-                                <div class="relative w-full">
+                                <div class="relative">
                                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
-                                            fill="currentColor" viewbox="0 0 20 20"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd"
-                                                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                                clip-rule="evenodd" />
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                                         </svg>
                                     </div>
                                     <input type="text" id="simple-search" name="simple-search"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                        placeholder="Search" required="">
+                                        class="w-full pl-8 sm:pl-10 pr-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                        placeholder="Search transactions...">
                                 </div>
-                            </form>
+                            </div>
+                            <div class="w-full sm:w-auto sm:flex-1 sm:max-w-xs">
+                                <x-datepicker class="w-full" />
+                            </div>
+
                         </div>
-                        <div
-                            class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
                             <!-- Export Button -->
                             <button type="button" id="export-button"
-                                class="flex items-center justify-center flex-shrink-0 px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                                <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                                class="flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors duration-200">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                Export PDF
+                                <span class="hidden sm:inline">Export PDF</span>
+                                <span class="sm:hidden">Export</span>
                             </button>
 
-                            <x-dropdown-income-filter align="right" type="income" :filterPageCount="false"
-                                :showActions="false" />
+                            <!-- Filter Dropdown -->
+                            <x-dropdown-income-filter align="right" type="expense" :filterPageCount="false" :showActions="false" />
                         </div>
                     </div>
+                </div>
 
-                    <div class="relative">
-                        <div id="transactions-spinner"
-                            class="absolute inset-1 flex items-center justify-center bg-white/70 dark:bg-gray-800/70 z-50 ">
-                            <div role="status">
-                                <svg aria-hidden="true"
-                                    class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-yellow-400"
-                                    viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                        fill="currentColor" />
-                                    <path
-                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                        fill="currentFill" />
-                                </svg>
-                                <span class="sr-only">Loading...</span>
-                            </div>
-                        </div>
-                        <div
-                            class="overflow-x-auto min-h-[200px] sm:min-h-[300px] lg:min-h-[400px] bg-white dark:bg-gray-800 rounded-md shadow">
-                            <div id="transactions-export-wrapper">
-                                <table id="transactions-table"
-                                    class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                    <thead>
-                                        <tr>
-                                            <th class="px-2 py-3">Date</th>
-                                            <th class="px-4 py-3">Service </th>
-                                            <th class="px-4 py-3">Receipt ID</th>
-                                            <th class="px-4 py-3">Serviced By</th>
-                                            <th class="px-4 py-3">Payment Method</th>
-                                            <th class="px-4 py-3">Amount</th>
-                                            <th class="px-4 py-3 text-center">Actions</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody id="transactions-wrapper">
-                                        <!-- DataTables will fill rows here -->
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th class="px-2 py-3">Total</th>
-                                            <th class="px-4 py-3" colspan="4"></th>
-                                            <th class="px-2 py-3" id="totalPageAmount"></th>
-                                            <th class="px-2 py-3"></th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
+                <!-- Loading Spinner -->
+                <div id="transactions-spinner" class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-800/70 z-50 hidden">
+                    <div class="flex items-center space-x-2">
+                        <svg class="animate-spin w-6 h-6 sm:w-8 sm:h-8 text-purple-600" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Loading...</span>
+                    </div>
+                </div>
+                <!-- Table Container -->
+                <div class="relative">
+                    <div class="overflow-x-auto">
+                        <div id="transactions-export-wrapper">
+                            <table id="transactions-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                    <tr>
+                                        <th class="px-2 sm:px-4 py-3 min-w-[100px]">Date</th>
+                                        <th class="px-2 sm:px-4 py-3 min-w-[120px]">Expense</th>
+                                        <th class="px-2 sm:px-4 py-3 min-w-[100px] hidden sm:table-cell">Receipt ID</th>
+                                        <th class="px-2 sm:px-4 py-3 min-w-[120px] hidden md:table-cell">Recorded By</th>
+                                        <th class="px-2 sm:px-4 py-3 min-w-[100px] hidden lg:table-cell">Payment</th>
+                                        <th class="px-2 sm:px-4 py-3 min-w-[100px] text-right">Amount</th>
+                                        <th class="px-2 sm:px-4 py-3 min-w-[100px] text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactions-wrapper" class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                    <!-- DataTables will populate this -->
+                                </tbody>
+                                <tfoot class="bg-gray-50 dark:bg-gray-700">
+                                    <tr class="font-semibold text-gray-900 dark:text-white">
+                                        <th class="px-2 sm:px-4 py-3 text-left">Total</th>
+                                        <th class="px-2 sm:px-4 py-3 hidden sm:table-cell" colspan="3"></th>
+                                        <th class="px-2 sm:px-4 py-3 hidden lg:table-cell"></th>
+                                        <th class="px-2 sm:px-4 py-3 text-right" id="totalPageAmount">0</th>
+                                        <th class="px-2 sm:px-4 py-3"></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -358,7 +349,22 @@
 
     <!-- Include html2pdf library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- jQuery for amount formatting -->
+    <script>
+        $(document).ready(function() {
+            $('#amount').val(parseFloat($('#amount_display').val().replace(/,/g, '')));
 
+            $('#amount_display').on('input', function() {
+                let inputVal = $(this).val().replace(/,/g, '');
+                if (!isNaN(inputVal) && inputVal.trim() !== '') {
+                    $('#amount').val(parseFloat(inputVal));
+                } else {
+                    $('#amount').val('');
+                }
+            });
+        });
+    </script>
+    <!-- Main DataTable Script -->
     <script>
         $(document).ready(function() {
             var perPage = 10;
@@ -368,14 +374,12 @@
             let cashTypeFilter = '';
             let recordCountTotal = '';
             var transaction_type = $('#transaction_type').val();
-            console.log("Transaction Type:", transaction_type);
             var defaultText = ''
             if (transaction_type !== "Income") {
                 defaultText = "-";
             } else {
                 defaultText = "Walkin Client";
             }
-
 
             let fromDate = null;
             let toDate = null;
@@ -393,10 +397,11 @@
                     pageLength: perPage,
                     searching: false,
                     lengthChange: true,
-                    lengthMenu: [10, 25, 50, 100, 500, 1000, 5000, 10000],
+                    lengthMenu: [5, 10, 25, 50, 100, 500, 1000, 5000, 10000],
                     order: [
                         [0, 'desc']
                     ],
+
                     ajax: {
                         url: "{{ route('transactions.getRecords') }}",
                         data: {
@@ -413,8 +418,6 @@
                             $('#totalRecordsCount, #totaLRecordsReturned').text(totalRecords);
                             $('#totalAllPagesAmountRet').text(Number(response.totalAmountAllPages || 0)
                                 .toLocaleString())
-
-                            // Update total based on transaction type
                             let totalValue = 0;
                             if (transaction_type === 'Expense') {
                                 totalValue = Number(response.totalExpense || 0);
@@ -436,6 +439,7 @@
                             console.error('DataTable AJAX error:', status, error);
                         }
                     },
+                    // Update the columns configuration to dynamically handle both Income and Expense
                     columns: [{
                             data: "date",
                             render: function(data) {
@@ -443,19 +447,25 @@
 
                                 const date = new Date(data);
 
-                                // Format date part only (no time)
                                 const datePart = date.toLocaleDateString('en-GB', {
                                     day: '2-digit',
                                     month: 'short',
                                     year: 'numeric'
                                 });
 
-                                return datePart;
+                                return `${datePart}`;
                             }
                         },
                         {
-                            data: "service_description",
-                            defaultContent: "N/A"
+                            data: null,
+                            render: function(data, type, row) {
+                                if (row.service && row.service.service_name) {
+                                    return row.service.service_name;
+                                } else if (row.service_description) {
+                                    return row.service_description;
+                                }
+                                return "N/A";
+                            }
                         },
                         {
                             data: "receipt_id",
@@ -463,11 +473,11 @@
                         },
                         {
                             data: null,
-                            render: function(row) {
-                                return (row.employee && row.employee.first_name && row.employee
-                                        .last_name) ?
-                                    `${row.employee.first_name} ${row.employee.last_name}` :
-                                    'N/A';
+                            defaultContent: "-",
+                            render: function(data) {
+                                return data.employee && data.employee.first_name && data.employee.last_name ?
+                                    data.employee.first_name + " " + data.employee.last_name :
+                                    defaultText;
                             }
                         },
                         {
@@ -486,58 +496,49 @@
                             render: function(row) {
                                 const detailsUrl = "{{ route('transactions.details', ':id') }}"
                                     .replace(':id', row.id);
-                                const editUrl = "{{ route('transactions.edit', ':id') }}"
-                                    .replace(
-                                        ':id', row.id);
-
-
+                                const editUrl = "{{ route('transactions.edit', ':id') }}".replace(
+                                    ':id', row.id);
 
                                 return `
-                                    <div class="flex space-x-2 justify-center">
-                                        <!-- View (Eye icon) -->
-                                        <a href="${detailsUrl}"
-                                        class="p-2 rounded-md bg-purple-500 text-white hover:bg-purple-600"
-                                        title="View">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                        </svg>
-                                        </a>
+                                        <div class="flex space-x-1 sm:space-x-2 justify-center">
+                                            <!-- View (Eye icon) -->
+                                            <a href="${detailsUrl}"
+                                            class="p-1 sm:p-2 rounded-md bg-purple-500 text-white hover:bg-purple-600 transition-colors"
+                                            title="View">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            </a>
 
-                                        <!-- Edit (Pencil icon) -->
-                                    <a href="${editUrl}"
-                            class="p-2 rounded-md bg-green-500 text-white hover:bg-green-600"
-                            title="Edit">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5m-7-7l7 7m0 0v4m0-4h-4"/>
-                            </svg>
-                            </a>
+                                            <!-- Edit (Pencil icon) -->
+                                        <a href="${editUrl}"
+                                class="p-1 sm:p-2 rounded-md bg-green-500 text-white hover:bg-green-600 transition-colors"
+                                title="Edit">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5m-7-7l7 7m0 0v4m0-4h-4"/>
+                                </svg>
+                                </a>
+                                            <!-- Delete (Trash icon) -->
+                                            <button type="button"
+                                            class="action-link delete-link p-1 sm:p-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors"
+                                            data-action="delete" data-id="${row.id}" title="Delete">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a2 2 0 00-2 2v0h8v0a2 2 0 00-2-2m-4 0V5a2 2 0 014 0v0" />
+                                            </svg>
+                                            </button>
 
-
-
-
-
-                                        <!-- Delete (Trash icon) -->
-                                        <button type="button"
-                                        class="action-link delete-link p-2 rounded-md bg-red-500 text-white hover:bg-red-600"
-                                        data-action="delete" data-id="${row.id}" title="Delete">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a2 2 0 00-2 2v0h8v0a2 2 0 00-2-2m-4 0V5a2 2 0 014 0v0" />
-                                        </svg>
-                                        </button>
-
-                                    </div>
-                                `;
+                                        </div>
+                                    `;
                             }
 
                         }
                     ],
-
                     drawCallback: function(settings) {
                         const api = this.api();
 
                         // Sum amounts for current page
-                        const totalCurrent = api.column(6, {
+                        const totalCurrent = api.column(5, {
                                 page: 'current'
                             })
                             .data()
@@ -554,7 +555,7 @@
                             }, 0);
 
                         // Sum amounts for all pages
-                        const totalAll = api.column(6, {
+                        const totalAll = api.column(5, {
                                 page: 'all'
                             })
                             .data()
@@ -579,10 +580,6 @@
 
                         // Show all pages total (add a new element in your HTML if needed)
                         $("#currnetPage").text(totalAll.toLocaleString());
-
-                        console.log(totalCurrent, '--', totalAll)
-
-                        // Hide spinner after draw
                         $('#transactions-spinner').addClass('hidden');
                     },
 
@@ -591,7 +588,6 @@
                     }
                 });
             }
-
 
             $(document).on("click", ".delete-link", function(e) {
                 e.preventDefault();
@@ -631,7 +627,6 @@
                     }
                 });
             });
-
             // Cash type filter
             $(document).on('change', '.cash-type', function() {
                 $('.cash-type').not(this).prop('checked', false);
@@ -642,8 +637,6 @@
 
             $("#dateSelect").on("change", function() {
                 let val = $(this).val();
-                console.log("Raw value:", val);
-
                 if (val.includes(" - ")) {
                     // range mode
                     let parts = val.split(" - ");
@@ -654,8 +647,6 @@
                     fromDate = val.trim();
                 }
 
-                console.log("From:", fromDate);
-                console.log("To:", toDate);
                 loadTransactions();
             });
 
@@ -677,21 +668,15 @@
 
             // Export button functionality
             $(document).on("click", "#export-button", function() {
-                console.log("Exporting to PDF...");
-
                 // Create a temporary element for PDF generation
                 const element = document.createElement('div');
 
                 let now = new Date();
                 let currentDate = now.toLocaleString('en-US');
-                // console.log(formattedDateTime);
-
-
                 // Create a styled version of the table for PDF
-                // In the export button click handler, update the table structure:
                 element.innerHTML = `
                     <div style="font-family: Arial, sans-serif; padding: 20px;">
-                        <h1 style="text-align: center; color: #4F46E5; margin-bottom: 5px;">Kenvies Beauty Salon</h1>
+                        <h1 style="text-align: center; color: #4F46E5; margin-bottom: 5px;">Nailville Beauty Salon</h1>
                         <h2 style="text-align: center; color: #6B7280; margin-top: 0; margin-bottom: 15px;">${transaction_type} Transactions Report</h2>
                         <p style="text-align: center; color: #6B7280; margin-bottom: 20px;">Generated on: ${currentDate}</p>
                         <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
@@ -701,7 +686,6 @@
                                     <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">${transaction_type === 'Income' ? 'Service Description' : 'Expense Category'}</th>
                                     <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Receipt ID</th>
                                     <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">${transaction_type === 'Income' ? 'Service Delivered By' : 'Recorded By'}</th>
-                                    ${transaction_type === 'Income' ? '<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Customer Name</th>' : ''}
                                     <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Payment Method</th>
                                     <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">Amount</th>
                                 </tr>
@@ -710,47 +694,29 @@
                                 ${$('#transactions-table tbody tr').map(function() {
                                     const cells = $(this).find('td');
                                     if (cells.length > 0) {
-                                        let rowHtml = `
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <tr>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(0).text()}</td>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(1).text()}</td>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(2).text()}</td>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(3).text()}</td>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                `;
-
-                                        // Add customer name column only for Income
-                                        if (transaction_type === 'Income') {
-                                            rowHtml += `<td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(4).text()}</td>`;
-                                        }
-
-                                        // Determine the index for payment method and amount based on transaction type
-                                        const paymentMethodIndex = transaction_type === 'Income' ? 5 : 4;
-                                        const amountIndex = transaction_type === 'Income' ? 6 : 5;
-
-                                        rowHtml += ` <
-                    td style = "border: 1px solid #ddd; padding: 8px;" > $ {
-                        cells.eq(paymentMethodIndex).text()
-                    } < /td> <
-                td style = "border: 1px solid #ddd; padding: 8px; text-align: right;" > $ {
-                    cells.eq(amountIndex).text()
-                } < /td> < /
-                tr >
-                    `;
-
-                                        return rowHtml;
+                                        return `
+                                            <tr>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(0).text()}</td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(1).text()}</td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(2).text()}</td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(3).text()}</td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(4).text()}</td>
+                                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${cells.eq(5).text()}</td>
+                                            </tr>
+                                        `;
                                     }
                                     return '';
                                 }).get().join('')}
                             </tbody>
                             <tfoot>
                                 <tr style="background-color: #f9fafb; font-weight: bold;">
-                                    <td style="border: 1px solid #ddd; padding: 8px;" colspan="${transaction_type === 'Income' ? 6 : 5}">Total</td>
+                                    <td style="border: 1px solid #ddd; padding: 8px;" colspan="5">Total</td>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${$('#totalPageAmount').text()}</td>
                                 </tr>
                             </tfoot>
                         </table>
                         <div style="margin-top: 30px; text-align: center; color: #6B7280; font-size: 12px;">
-                            <p>Report generated by Kenvies Beauty Salon Management System</p>
+                            <p>Report generated by Nailville Beauty Salon Management System</p>
                         </div>
                     </div>
                 `;

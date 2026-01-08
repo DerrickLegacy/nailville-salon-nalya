@@ -41,7 +41,7 @@
                 @endif
             </div>
         </div>
-        
+
         @if($report_type=='Income')
         <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-[#8200DB] p-4 mb-6">
             <div class="flex">
@@ -302,14 +302,15 @@
                             </div>
 
                             <div class="mt-4 flex items-center mb-3">
+                                <label for="categorise_services" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">
+                                    Group by Sections (Barbers Team, Hairdressers and Nailist Teams.)
+                                </label>
                                 <input
                                     type="checkbox"
                                     id="categorise_services"
                                     name="categorise_services"
-                                    class="h-4 w-4 text-[#8200DB] focus:ring-[#8200DB] border-gray-300 rounded">
-                                <label for="categorise_services" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">
-                                    Group by Sections (Barbers Team, Hairdressers and Nailist Teams.)
-                                </label>
+                                    class="h-4 w-4 text-[#8200DB] focus:ring-[#8200DB] ring-[#8200DB] border-[#8200DB]  rounded">
+
                             </div>
 
                             <table id="service_table"
