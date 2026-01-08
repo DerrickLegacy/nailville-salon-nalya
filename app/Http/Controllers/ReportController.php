@@ -29,20 +29,15 @@ class ReportController extends Controller
 
     public function ajax_data(Request $request)
     {
-        /* -------------------------------------------------
-     | 1. Read inputs & defaults
-     -------------------------------------------------*/
         $reportType  = $request->get('report_type', 'Income');
         $range       = $request->get('range', 'Today');
         $employeeId  = $request->get('employee_id');
+        $categoriseToSections = $request->get('categorise_services', false);
 
         $totalDays   = 1;
         $rangeLabel  = 'Today';
         $expectedTarget = 0;
 
-        /* -------------------------------------------------
-     | 2. Monthly target
-     -------------------------------------------------*/
         $monthlyTarget = (float) AppSetting::where(
             'key',
             $reportType === 'Income'
@@ -50,18 +45,12 @@ class ReportController extends Controller
                 : 'monthly_expenses_target'
         )->value('value');
 
-        /* -------------------------------------------------
-     | 3. Base query (SINGLE source of truth)
-     -------------------------------------------------*/
         $baseQuery = Transaction::where('transaction_type', $reportType);
 
         if ($employeeId) {
             $baseQuery->where('employee_id', $employeeId);
         }
 
-        /* -------------------------------------------------
-     | 4. Date range handling
-     -------------------------------------------------*/
         switch ($range) {
 
             case 'This Week':
@@ -88,7 +77,6 @@ class ReportController extends Controller
                 $expectedTarget = $monthlyTarget * 12;
                 break;
             case 'All Time':
-                // earliest transaction date
                 $firstTransactionDate = Transaction::where('transaction_type', $reportType)
                     ->min('date');
 
@@ -99,11 +87,9 @@ class ReportController extends Controller
                     $totalDays = $start->diffInDays($end) + 1;
                     $rangeLabel = 'Since Business Started';
 
-                    // Expected target based on number of months passed
                     $months = max(1, $start->diffInMonths($end));
                     $expectedTarget = $monthlyTarget * $months;
                 } else {
-                    // No data fallback
                     $start = Carbon::today();
                     $end = Carbon::today();
                     $totalDays = 1;
@@ -136,19 +122,11 @@ class ReportController extends Controller
                 break;
         }
 
-        // Apply date filter ONCE
         $baseQuery->whereBetween('date', [$start, $end]);
-
-        /* -------------------------------------------------
-        | 5. Fetch transactions
-        -------------------------------------------------*/
         $transactions = (clone $baseQuery)
             ->orderBy('date', 'desc')
             ->get();
 
-        /* -------------------------------------------------
-        | 6. Totals & goals
-        -------------------------------------------------*/
         $dailyGoal = (float) ApplicationConfigurationSetting::get('daily_expected_income', 800000);
         $dailyGoalTotal = $dailyGoal * $totalDays;
         $totalIncome = $transactions->sum('amount');
@@ -157,9 +135,6 @@ class ReportController extends Controller
             ? min(($totalIncome / $dailyGoalTotal) * 100, 100)
             : 0;
 
-        /* -------------------------------------------------
-        | 7. Grouping
-        -------------------------------------------------*/
         if (in_array($range, ['This Year', 'All Time'])) {
             $groupedByPeriod = $transactions
                 ->groupBy(fn($t) => Carbon::parse($t->date)->format('Y-M'))
@@ -170,22 +145,47 @@ class ReportController extends Controller
                 ->map(fn($g) => $g->sum('amount'));
         }
 
-        $groupedByService = $transactions
-            ->groupBy('service_description')
-            ->map(function ($items, $serviceId) {
-                $service = \App\Models\Service::find($serviceId);
-                return [
-                    'service_id'   => $service->id ?? $serviceId,
-                    'service_name' => $service->name ?? 'Unknown',
-                    'service_code' => $service->service_code ?? null,
-                    'category'     => $service->category ?? null,
-                    'total_amount' => $items->sum('amount'),
-                ];
-            });
 
-        /* -------------------------------------------------
-            | 8. Employee analytics (optional)
-            -------------------------------------------------*/
+        if ($categoriseToSections) {
+            // Return section, category and total amount eg Men Hair Team - 50000, Women Hair Team - 70000
+            $groupedByService = $transactions
+                ->groupBy('service_description')
+                ->map(function ($items, $serviceId) {
+                    $service = \App\Models\Service::with(['section', 'category'])->find($serviceId);
+                    return [
+                        'service_id'   => $service->id ?? $serviceId,
+                        'service_name' => $service->name ?? 'Unknown',
+                        'service_code' => $service->service_code ?? null,
+                        'section_name' => $service->section->name ?? 'Unknown Section',
+                        'category_name' => $service->category->name ?? 'Unknown Category',
+                        'total_amount' => $items->sum('amount'),
+                    ];
+                })
+                ->groupBy('section_name')
+                ->map(function ($sectionItems, $sectionName) {
+                    return [
+                        'section_name' => $sectionName,
+                        'total_amount' => $sectionItems->sum('total_amount'),
+                        'services' => $sectionItems->values()
+                    ];
+                });
+        } else {
+            // Return service and total amount
+            $groupedByService = $transactions
+                ->groupBy('service_description')
+                ->map(function ($items, $serviceId) {
+                    $service = \App\Models\Service::with(['section', 'category'])->find($serviceId);
+                    return [
+                        'service_id'   => $service->id ?? $serviceId,
+                        'service_name' => $service->name ?? 'Unknown',
+                        'service_code' => $service->service_code ?? null,
+                        'section_name' => $service->section->name ?? null,
+                        'category_name' => $service->category->name ?? null,
+                        'total_amount' => $items->sum('amount'),
+                    ];
+                });
+        }
+
         $selectedEmpData = null;
 
         if ($employeeId) {
@@ -238,19 +238,10 @@ class ReportController extends Controller
         $employee_id = $request->input('employee_id', null);
         $report_type = $request->input('report_type', 'Income');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Base Query (Single Source of Truth)
-        |--------------------------------------------------------------------------
-        */
+       
         $baseQuery = Transaction::query()
             ->where('transaction_type', $report_type);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Resolve Date Range
-        |--------------------------------------------------------------------------
-        */
         $rangeLabel = 'Today';
 
         switch ($range) {
@@ -323,14 +314,11 @@ class ReportController extends Controller
         $baseQuery->whereBetween('date', [$startDate, $endDate]);
 
         if ($employee_id) {
-            $baseQuery->where('employee_id', $employee_id);
+            $baseQuery->where('transactions.employee_id', $employee_id);
+
         }
 
-        /*
-    |--------------------------------------------------------------------------
-    | Aggregate Employer Contributions
-    |--------------------------------------------------------------------------
-    */
+
         $topEmployers = $baseQuery
             ->join('employees', 'transactions.employee_id', '=', 'employees.employee_id')
             ->select(
@@ -347,11 +335,7 @@ class ReportController extends Controller
             ->limit(10)
             ->get();
 
-        /*
-    |--------------------------------------------------------------------------
-    | Format Response
-    |--------------------------------------------------------------------------
-    */
+
         $data = $topEmployers->map(function ($row) {
             return [
                 'Employee'    => $row->label,

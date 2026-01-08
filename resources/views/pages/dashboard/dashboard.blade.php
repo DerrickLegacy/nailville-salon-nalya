@@ -1,4 +1,29 @@
 <x-app-layout>
+    <style>
+#weekRangePicker {
+    width: 100%;
+}
+
+#weekRangePicker .flatpickr-calendar {
+    width: 100% !important; /* override inline width */
+    max-width: 100% !important;
+    margin: 0 auto !important;
+}
+
+#weekRangePicker .flatpickr-days {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    gap: 0 !important;
+}
+
+#weekRangePicker .flatpickr-months {
+    width: 100% !important;
+    justify-content: space-between !important;
+}
+#weekRangePicker .flatpickr-month {
+    width: 48% !important;
+}
+</style>
     <div class="px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 w-full max-w-full mx-auto">
 
         <!-- Dashboard actions -->
@@ -230,7 +255,7 @@
             </div>
 
             <div class="lg:col-span-1 space-y-4 sm:space-y-6">
-                <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg sm:rounded-xl p-3 sm:p-4 w-full text-center">
+                <div class="text-center">
                     <h2 class="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 mb-2 sm:mb-3">Calendar</h2>
                     <div id="weekRangePicker" class="w-full max-w-full"></div>
                 </div>
@@ -296,29 +321,7 @@
     </div>
 
 </x-app-layout>
-<style>
-    #weekRangePicker .flatpickr-calendar.inline {
-        width: 100% !important;
-        max-width: 100% !important;
-    }
 
-    #weekRangePicker .flatpickr-days {
-        display: grid !important;
-        grid-template-columns: repeat(7, 1fr) !important;
-    }
-
-
-
-    /* Optional: shrink day cells for small screens */
-    @media (max-width: 640px) {
-
-        /* sm breakpoint */
-        #weekRangePicker .flatpickr-day {
-            padding: 0.25rem 0.15rem !important;
-            font-size: 0.7rem !important;
-        }
-    }
-</style>
 
 <script>
     const incomeTransactions = @json($topIncomeTransactions);
@@ -605,4 +608,39 @@
             console.error("Error loading chart data:", error);
         }
     });
+
+
+    function initialiseCalendar() {
+        // Inline small weekly calendar
+        const weekPicker = document.getElementById('weekRangeCalendarPicker');
+        if (weekPicker) {
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            const monday = new Date(today);
+            monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+
+            flatpickr(weekPicker, {
+                mode: 'range',
+                dateFormat: 'Y-m-d',
+                defaultDate: [monday, sunday],
+                allowInput: false,
+                inline: true,
+                monthSelectorType: 'static',
+                onReady: (selectedDates, dateStr, instance) => {
+                    if (selectedDates.length === 2) {
+                        const [start, end] = selectedDates;
+                        instance.input.value = `${instance.formatDate(start, 'Y-m-d')} - ${instance.formatDate(end, 'Y-m-d')}`;
+                    }
+                },
+                onChange: (selectedDates, dateStr, instance) => {
+                    if (selectedDates.length === 2) {
+                        const [start, end] = selectedDates;
+                        instance.input.value = `${instance.formatDate(start, 'Y-m-d')} - ${instance.formatDate(end, 'Y-m-d')}`;
+                    }
+                },
+            });
+        }
+    }
 </script>

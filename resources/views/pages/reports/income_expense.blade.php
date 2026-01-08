@@ -16,13 +16,24 @@
             </div>
         </div>
 
+        <style>
+            .rotate-90 {
+                transform: rotate(90deg);
+            }
+        </style>
+
+
         <!-- Dashboard actions -->
         <div class="sm:flex sm:justify-between sm:items-center mb-2 fade-in">
             <!-- Left: Title -->
             <div class="mb-4 sm:mb-0">
                 <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100"> <?php echo $report_type; ?> Report</h1>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Get to know your day-to-day income salon insights.</p>
+                @if($report_type=='Income')
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Analyze your salon's income performance and make informed business decisions.</p>
+                @else
 
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Get to know yourday-to-day expense salon insights.</p>
+                @endif
             </div>
         </div>
         @if($report_type=='Income')
@@ -69,7 +80,6 @@
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Filters:</h2>
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
-                <!-- LEFT: Period Filters -->
                 <div
                     x-data="{ active: 'Today' }"
                     class="flex flex-row flex-nowrap items-center gap-2
@@ -172,6 +182,8 @@
             </div>
 
             <input type="hidden" id="report_type" name="report_type" value="<?php echo $report_type; ?>">
+
+
         </div>
         <div class="mt-10">
             <div id="todays-income-container" class="flex flex-col lg:flex-row gap-6">
@@ -249,10 +261,10 @@
                                             <td class="px-6 py-3 text-right" id="contri_per_total"></td>
                                         </tr>
                                     </tbody>
-                                    <tfoot class="bg-gray-50 dark:bg-gray-700">
+                                    <tfoot class="bg-gray-50 dark:bg-gray-700  text-[#8200DB]">
                                         <tr>
                                             <td class="px-6 py-3 font-semibold">Total</td>
-                                            <td class="px-6 py-3 text-right font-semibold" id="emp_total_income">
+                                            <td class="px-6 py-3 text-right font-semibold  text-[#8200DB]" id="emp_total_income">
                                             </td>
                                         </tr>
                                     </tfoot>
@@ -284,24 +296,17 @@
                                     </div>
 
                                 </form>
-                                <!-- View by: Default / Category Toggle -->
-                                <div class="w-full flex justify-end items-center mb-4">
-                                    <label class="inline-flex items-center cursor-pointer">
-                                        <span class="select-none text-sm font-medium text-heading">Default</span>
+                            </div>
 
-                                        <input type="checkbox" value="" class="sr-only peer">
-
-                                        <div class="relative mx-3 w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full 
-                                        peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-purple-500
-                                        peer-checked:bg-purple-600 after:content-[''] after:absolute after:top-[2px] 
-                                        after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 
-                                        after:transition-all peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full">
-                                        </div>
-
-                                        <span class="select-none text-sm font-medium text-heading">Category</span>
-                                    </label>
-                                </div>
-
+                            <div class="mt-4 flex items-center mb-3">
+                                <input
+                                    type="checkbox"
+                                    id="categorise_services"
+                                    name="categorise_services"
+                                    class="h-4 w-4 text-[#8200DB] focus:ring-[#8200DB] border-gray-300 rounded">
+                                <label for="categorise_services" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">
+                                    Group by Sections (Barbers Team, Hairdressers and Nailist Teams.)
+                                </label>
                             </div>
 
                             <table id="service_table"
@@ -319,13 +324,13 @@
                                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
                                 <tfoot class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        <td class="px-6 py-3 font-semibold text-gray-800 dark:text-gray-200">Total
+                                        <td class="px-6 py-3 font-semibold dark:text-gray-200  text-[#8200DB]">Total
                                         </td>
                                         <td
-                                            class="px-6 py-3 slot font-semibold text-right text-gray-800 dark:text-gray-200">
+                                            class="px-6 py-3 slot font-semibold text-right  dark:text-gray-200  text-[#8200DB]">
                                         </td>
                                     </tr>
-                                </tfoot>
+                                </tfoot>`
                             </table>
 
                         </div>
@@ -349,10 +354,10 @@
                                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
                                     <tfoot class="bg-gray-50 dark:bg-gray-700">
                                         <tr>
-                                            <td class="px-6 py-3 font-semibold text-gray-800 dark:text-gray-200">Total
+                                            <td class="px-6 py-3 font-semibold text-[#8200DB] dark:text-gray-200">Total
                                             </td>
                                             <td
-                                                class="slot px-6 py-3 font-semibold text-right text-gray-800 dark:text-gray-200">
+                                                class="slot px-6 py-3 font-semibold text-right text-[#8200DB] dark:text-gray-200">
                                             </td>
                                         </tr>
                                     </tfoot>
@@ -379,11 +384,11 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <td class="px-6 py-3 font-semibold text-gray-800 dark:text-gray-200">Total
+                                            <td class="px-6 py-3 font-semibold text-[#8200DB] dark:text-gray-200">Total
                                             </td>
                                             <td></td>
                                             <td
-                                                class="slot px-6 py-3 font-semibold text-right text-gray-800 dark:text-gray-200">
+                                                class="slot px-6 py-3 font-semibold text-right text-[#8200DB] dark:text-gray-200">
                                             </td>
                                         </tr>
                                     </tfoot>
@@ -494,6 +499,15 @@
                     fetchEmployerContribution(range);
                 });
 
+                // Add event listener for categorise services checkbox
+                $('#categorise_services').on('change', function() {
+                    const activeRange = $('.solid-filter-btns.bg-\\[\\#8200DB\\]').text().trim() || 'Today';
+                    const employee_id = $('#employee_id').val();
+
+                    // Reload data with current settings
+                    loadIncomeData(activeRange, null, null, employee_id);
+                });
+
                 $('.filter-btn').on('click', function() {
                     let startDate = '';
                     let endDate = '';
@@ -602,14 +616,11 @@
                                 tbody.append(tr);
                             });
 
-                            // Append total to table footer
                             const formattedTotal = totalIncomeSum.toLocaleString('en-US', {
                                 minimumFractionDigits: 0,
                                 maximumFractionDigits: 2
                             });
                             $('#employer-table tfoot tr td:last-child').text(formattedTotal);
-
-
                         },
                         error: function(xhr, status, error) {
                             alert('Error fetching employer contributions:', error);
@@ -619,6 +630,8 @@
                 }
 
                 function loadIncomeData(range, start_date = null, end_date = null, employee_id = null) {
+                    const categoriseServices = $('#categorise_services').is(':checked');
+
                     $.ajax({
                         url: "{{ route('reports.data') }}",
                         method: "GET",
@@ -627,217 +640,295 @@
                             start_date: start_date,
                             end_date: end_date,
                             employee_id: employee_id,
-                            report_type: report_type
+                            report_type: report_type,
+                            categorise_services: categoriseServices
                         },
 
                         dataType: "json",
                         success: function(data) {
+                            //   1. EMPLOYEE DATA
 
-                            /* ===============================
-                             * 1. EMPLOYEE DATA
-                             =============================== */
-                            let employeData = data.selectedEmpData;
-                            let employer_contribution = 0;
+                            if (data) {
+                                let employeData = data.selectedEmpData;
+                                let employer_contribution = 0;
 
-                            if (employeData && employeData.employee_id) {
-                                $('#employee_table_div, #employee_table_heading, #employee_table_wrapper')
-                                    .removeClass('hidden');
+                                if (employeData && employeData.employee_id) {
+                                    $('#employee_table_div, #employee_table_heading, #employee_table_wrapper')
+                                        .removeClass('hidden');
 
-                                document.getElementById('emp_name').textContent = employeData.name;
-                                document.getElementById('rank_position').textContent = employeData.rank ?? '-';
-                                document.getElementById('emp_expertise').textContent = employeData.expertise;
-                                document.getElementById('transactions_registered').textContent =
-                                    employeData.performance_positions;
+                                    document.getElementById('emp_name').textContent = employeData.name;
+                                    document.getElementById('rank_position').textContent = employeData.rank ?? '-';
+                                    document.getElementById('emp_expertise').textContent = employeData.expertise;
+                                    document.getElementById('transactions_registered').textContent =
+                                        employeData.performance_positions;
 
-                                document.getElementById('emp_total_income').textContent =
-                                    Number(employeData.total_income).toLocaleString();
+                                    document.getElementById('emp_total_income').textContent =
+                                        Number(employeData.total_income).toLocaleString();
 
-                                employer_contribution = Number(employeData.total_income);
-                            }
+                                    employer_contribution = Number(employeData.total_income);
+                                }
 
-                            /* ===============================
-                             * 2. INCOME TABLE & TOTAL
-                             =============================== */
-                            const income_tbody = $('#income_table tbody');
-                            income_tbody.empty();
+                                /* ===============================
+                                 * 2. INCOME TABLE & TOTAL
+                                 =============================== */
+                                const income_tbody = $('#income_table tbody');
+                                income_tbody.empty();
 
-                            let total_income = 0;
+                                let total_income = 0;
 
-                            const groupedData = Object.entries(data.grouped_by_period).map(
-                                ([label, value]) => ({
-                                    label,
-                                    value: Number(value)
-                                })
-                            );
+                                const groupedData = Object.entries(data.grouped_by_period).map(
+                                    ([label, value]) => ({
+                                        label,
+                                        value: Number(value)
+                                    })
+                                );
 
-                            groupedData.sort((a, b) => new Date(a.label) - new Date(b.label));
+                                groupedData.sort((a, b) => new Date(a.label) - new Date(b.label));
 
-                            groupedData.forEach(item => {
-                                total_income += item.value;
-                                income_tbody.append(`
-                <tr>
-                    <td class="px-6 py-3">${item.label}</td>
-                    <td class="text-right px-6 py-3">${item.value.toLocaleString()}</td>
-                </tr>
-            `);
-                            });
+                                groupedData.forEach(item => {
+                                    total_income += item.value;
+                                    income_tbody.append(`
+                                    <tr>
+                                        <td class="px-6 py-3">${item.label}</td>
+                                        <td class="text-right px-6 py-3">${item.value.toLocaleString()}</td>
+                                    </tr>
+                                `);
+                                });
 
-                            $('#income_table tfoot td:last').text(total_income.toLocaleString());
+                                $('#income_table tfoot td:last').text(total_income.toLocaleString());
 
-                            /* ===============================
-                             * 3. ROLLING COUNTERS
-                             =============================== */
-                            rollSlots(data.expected_income_target, 'expected_income', 1000, 100);
-                            rollSlots(total_income, 'achieved_income', 1000, 100);
+                                /* ===============================
+                                 * 3. ROLLING COUNTERS
+                                 =============================== */
+                                rollSlots(data.expected_income_target, 'expected_income', 800, 100);
+                                rollSlots(total_income, 'achieved_income', 800, 100);
 
-                            if (employeData && employeData.employee_id) {
-                                rollSlots(total_income, 'total_income_card', 1500, 100);
-                            }
+                                if (employeData && employeData.employee_id) {
+                                    rollSlots(total_income, 'total_income_card', 800, 100);
+                                }
 
-                            /* ===============================
-                             * 4. PERCENTAGE ACHIEVEMENT (FIXED)
-                             =============================== */
-                            let percentageAchievement = 0;
+                                /* ===============================
+                                 * 4. PERCENTAGE ACHIEVEMENT (FIXED)
+                                 =============================== */
+                                let percentageAchievement = 0;
 
-                            if (data.expected_income_target > 0 && total_income > 0) {
-                                percentageAchievement =
-                                    (total_income / data.expected_income_target) * 100;
-                            }
+                                if (data.expected_income_target > 0 && total_income > 0) {
+                                    percentageAchievement =
+                                        (total_income / data.expected_income_target) * 100;
+                                }
 
-                            // Display logic
-                            let percentageAchievementNumeric =
-                                percentageAchievement < 1 ?
-                                Number(percentageAchievement.toFixed(2)) :
-                                Number(percentageAchievement.toFixed(2));
+                                // Display logic
+                                let percentageAchievementNumeric =
+                                    percentageAchievement < 1 ?
+                                    Number(percentageAchievement.toFixed(2)) :
+                                    Number(percentageAchievement.toFixed(2));
 
-                            // Optional UX minimum visibility
-                            if (percentageAchievementNumeric > 0 && percentageAchievementNumeric < 0.1) {
-                                percentageAchievementNumeric = 0.1;
-                            }
-
-                            rollSlots(
-                                percentageAchievementNumeric,
-                                'percentage_improvement',
-                                1000,
-                                100
-                            );
-
-                            console.log('Total Income:', total_income);
-                            console.log('Expected Target:', data.expected_income_target);
-                            console.log('Percentage Achievement:', percentageAchievementNumeric);
-
-                            /* ===============================
-                             * 5. PERFORMANCE DONUT
-                             =============================== */
-                            $('#todays-income-performance-progress').empty();
-
-                            const remainingPercentage = Math.max(
-                                0,
-                                100 - percentageAchievementNumeric
-                            );
-
-                            Morris.Donut({
-                                element: 'todays-income-performance-progress',
-                                data: [{
-                                        label: 'Achieved',
-                                        value: percentageAchievementNumeric
-                                    },
-                                    {
-                                        label: 'Remaining',
-                                        value: remainingPercentage
-                                    }
-                                ],
-                                colors: ['#CC0066', '#E5E5E5'],
-                                resize: true,
-                                redraw: true,
-                                formatter: y => y.toFixed(2) + '%'
-                            });
-
-                            /* ===============================
-                             * 6. LINE CHART
-                             =============================== */
-                            $('#income-chart').empty();
-
-                            new Morris.Line({
-                                element: 'income-chart',
-                                data: groupedData.map(d => ({
-                                    date: d.label,
-                                    income: d.value
-                                })),
-                                xkey: 'date',
-                                ykeys: ['income'],
-                                labels: ['Income'],
-                                parseTime: false,
-                                resize: true,
-                                lineColors: ['#1e88e5']
-                            });
-
-                            /* ===============================
-                             * 7. SERVICE DONUT
-                             =============================== */
-                            let chartData;
-
-                            if (report_type.toLowerCase() === 'income') {
-                                chartData = Object.values(data.grouped).map(item => ({
-                                    label: item.service_name,
-                                    value: Number(item.total_amount)
-                                }));
-                            } else {
-                                chartData = Object.entries(data.grouped).map(([label, item]) => ({
-                                    label,
-                                    value: Number(item.total_amount)
-                                }));
-                            }
-
-                            $('#todays-income-chart-progress').empty();
-
-                            Morris.Donut({
-                                element: 'todays-income-chart-progress',
-                                data: chartData,
-                                colors: [
-                                    '#8200DB', '#D90082', '#00DB82', '#DB8200',
-                                    '#0066CC', '#CC0066', '#00CC66', '#CC6600'
-                                ],
-                                resize: true,
-                                redraw: true
-                            });
-
-                            /* ===============================
-                             * 8. SERVICE TABLE
-                             =============================== */
-                            const tbody = $('#service_table tbody');
-                            tbody.empty();
-
-                            let serviceTotal = 0;
-
-                            chartData.forEach(item => {
-                                serviceTotal += item.value;
-                                tbody.append(`
-                                <tr>
-                                    <td class="px-6 py-3">${item.label}</td>
-                                    <td class="text-right px-6 py-3">${item.value.toLocaleString()}</td>
-                                </tr>
-                            `);
-                            });
-
-                            $('#service_table tfoot td:last').text(serviceTotal.toLocaleString());
-
-                            /* ===============================
-                             * 9. EMPLOYEE CONTRIBUTION
-                             =============================== */
-                            if (total_income > 0 && employer_contribution > 0) {
-                                const employerContributionPercentage =
-                                    (employer_contribution / total_income) * 100;
+                                // Optional UX minimum visibility
+                                if (percentageAchievementNumeric > 0 && percentageAchievementNumeric < 0.1) {
+                                    percentageAchievementNumeric = 0.1;
+                                }
 
                                 rollSlots(
-                                    employerContributionPercentage,
-                                    'total_emp_contribution_card',
-                                    1500,
+                                    percentageAchievementNumeric,
+                                    'percentage_improvement',
+                                    1000,
                                     100
                                 );
 
-                                document.getElementById('contri_per_total').textContent =
-                                    employerContributionPercentage.toFixed(2);
+                                //  * 5. PERFORMANCE DONUT
+                                $('#todays-income-performance-progress').empty();
+
+                                const remainingPercentage = Math.max(
+                                    0,
+                                    100 - percentageAchievementNumeric
+                                );
+
+                                Morris.Donut({
+                                    element: 'todays-income-performance-progress',
+                                    data: [{
+                                            label: 'Achieved',
+                                            value: percentageAchievementNumeric
+                                        },
+                                        {
+                                            label: 'Remaining',
+                                            value: remainingPercentage
+                                        }
+                                    ],
+                                    colors: ['#CC0066', '#E5E5E5'],
+                                    resize: true,
+                                    redraw: true,
+                                    formatter: y => y.toFixed(2) + '%'
+                                });
+
+                                /* ===============================
+                                 * 6. LINE CHART
+                                 =============================== */
+                                $('#income-chart').empty();
+
+                                new Morris.Line({
+                                    element: 'income-chart',
+                                    data: groupedData.map(d => ({
+                                        date: d.label,
+                                        income: d.value
+                                    })),
+                                    xkey: 'date',
+                                    ykeys: ['income'],
+                                    labels: ['Income'],
+                                    parseTime: false,
+                                    resize: true,
+                                    lineColors: ['#1e88e5']
+                                });
+
+                                /* ===============================
+                                 * 7. SERVICE DONUT
+                                 =============================== */
+                                let chartData = [];
+
+                                if (report_type.toLowerCase() === 'income') {
+
+                                    if (categoriseServices && data.grouped && typeof data.grouped === 'object') {
+
+                                        chartData = Object.values(data.grouped)
+                                            .filter(section => Number(section.total_amount) > 0)
+                                            .map(section => ({
+                                                label: section.section_name || 'Unknown',
+                                                value: Number(section.total_amount)
+                                            }));
+
+                                    } else {
+
+                                        chartData = Object.values(data.grouped).flatMap(item =>
+                                            (item.services || [])
+                                            .filter(s => Number(s.total_amount) > 0)
+                                            .map(service => ({
+                                                label: service.service_name || 'Unknown',
+                                                value: Number(service.total_amount)
+                                            }))
+                                        );
+                                    }
+
+                                } else {
+
+                                    chartData = Object.entries(data.grouped || {})
+                                        .filter(([_, item]) => Number(item.total_amount) > 0)
+                                        .map(([label, item]) => ({
+                                            label,
+                                            value: Number(item.total_amount)
+                                        }));
+                                }
+
+                                if (!Array.isArray(chartData) || chartData.length === 0) {
+                                    console.warn('Skipping donut chart — invalid data', chartData);
+                                    $('#todays-income-chart-progress')
+                                        .html('<p class="text-center text-sm text-gray-400">No data available</p>');
+                                    return;
+                                } else {
+
+
+                                    $('#todays-income-chart-progress').empty();
+                                    Morris.Donut({
+                                        element: 'todays-income-chart-progress',
+                                        data: chartData,
+                                        colors: [
+                                            '#8200DB', '#D90082', '#00DB82', '#DB8200',
+                                            '#0066CC', '#CC0066', '#00CC66', '#CC6600'
+                                        ],
+                                        resize: true,
+                                        redraw: true
+                                    });
+                                }
+
+                                /* ===============================
+                                 * 8. SERVICE TABLE
+                                 =============================== */
+                                const tbody = $('#service_table tbody');
+                                tbody.empty();
+                                let serviceTotal = 0;
+
+                                if (categoriseServices && data.grouped && typeof data.grouped === 'object') {
+
+                                    Object.values(data.grouped).forEach((section, index) => {
+                                        serviceTotal += section.total_amount;
+
+                                        const sectionId = `section-${index}`;
+
+                                        tbody.append(`
+                                            <tr 
+                                                class="bg-gray-100 dark:bg-gray-700 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                                                data-toggle="${sectionId}"
+                                            >
+                                                <td class="px-6 py-3 flex items-center gap-2">
+                                                    <span class="accordion-icon transition-transform  text-[#8200DB]">▶</span>
+                                                    ${section.section_name}
+                                                </td>
+                                                <td class="text-right px-6 py-3 text-[#8200DB]">
+                                                    ${section.total_amount.toLocaleString()}
+                                                </td>
+                                            </tr>
+                                        `);
+
+                                        // SERVICE ROWS (HIDDEN BY DEFAULT)
+                                        if (section.services && section.services.length > 0) {
+                                            section.services.forEach(service => {
+                                                tbody.append(`
+                                                    <tr 
+                                                        class="hidden text-sm accordion-row"
+                                                        data-parent="${sectionId}"
+                                                    >
+                                                        <td class="px-6 py-2 pl-12 text-gray-600 dark:text-gray-400">
+                                                            └ ${service.service_name}
+                                                        </td>
+                                                        <td class="text-right px-6 py-2 text-gray-600 dark:text-gray-400 ">
+                                                            ${service.total_amount.toLocaleString()}
+                                                        </td>
+                                                    </tr>
+                                                `);
+                                            });
+                                        }
+                                    });
+                                } else {
+
+                                    chartData.forEach(item => {
+                                        serviceTotal += item.value;
+                                        tbody.append(`
+                                        <tr>
+                                            <td class="px-6 py-3">${item.label}</td>
+                                            <td class="text-right px-6 py-3">${item.value.toLocaleString()}</td>
+                                        </tr>
+                                    `);
+                                    });
+                                }
+
+                                $(document).on('click', '[data-toggle]', function() {
+                                    const sectionId = $(this).data('toggle');
+                                    const rows = $(`[data-parent="${sectionId}"]`);
+                                    const icon = $(this).find('.accordion-icon');
+
+                                    rows.toggleClass('hidden');
+
+                                    // Rotate arrow
+                                    icon.toggleClass('rotate-90');
+                                });
+
+                                $('#service_table tfoot td:last').text(serviceTotal.toLocaleString());
+
+                                /* ===============================
+                                 * 9. EMPLOYEE CONTRIBUTION
+                                 =============================== */
+                                if (total_income > 0 && employer_contribution > 0) {
+                                    const employerContributionPercentage =
+                                        (employer_contribution / total_income) * 100;
+
+                                    rollSlots(
+                                        employerContributionPercentage,
+                                        'total_emp_contribution_card',
+                                        1500,
+                                        100
+                                    );
+
+                                    document.getElementById('contri_per_total').textContent =
+                                        employerContributionPercentage.toFixed(2);
+                                }
                             }
                         },
                         error: function(xhr, status, error) {

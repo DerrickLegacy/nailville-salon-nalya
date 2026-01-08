@@ -37,6 +37,22 @@ CREATE TABLE `app_settings` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `categories`
+--
+
+DROP TABLE IF EXISTS `categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `categories` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `datafeeds`
 --
 
@@ -187,7 +203,7 @@ CREATE TABLE `notifications` (
   KEY `notifications_is_read_created_at_index` (`is_read`,`created_at`),
   KEY `notifications_type_index` (`type`),
   KEY `notifications_category_index` (`category`)
-) ENGINE=InnoDB AUTO_INCREMENT=543 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -236,6 +252,22 @@ CREATE TABLE `product_prices` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `sections`
+--
+
+DROP TABLE IF EXISTS `sections`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sections` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `services`
 --
 
@@ -245,16 +277,21 @@ DROP TABLE IF EXISTS `services`;
 CREATE TABLE `services` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `service_code` varchar(50) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `category` varchar(100) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `category_id` int(10) unsigned DEFAULT NULL,
+  `section_id` int(10) unsigned DEFAULT NULL,
   `price` decimal(10,2) DEFAULT 0.00,
   `description` text DEFAULT NULL,
   `status` enum('Active','Inactive') DEFAULT 'Active',
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `service_code` (`service_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  UNIQUE KEY `service_code` (`service_code`),
+  KEY `fk_services_category` (`category_id`),
+  KEY `fk_services_section` (`section_id`),
+  CONSTRAINT `fk_services_category` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`),
+  CONSTRAINT `fk_services_section` FOREIGN KEY (`section_id`) REFERENCES `sections` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -314,7 +351,7 @@ CREATE TABLE `transactions` (
   `amount` decimal(12,2) NOT NULL,
   `transaction_type` enum('Income','Expense') NOT NULL,
   `payment_method` enum('Cash','MobileMoney','Card','Bank','Other') DEFAULT 'Cash',
-  `service_description` varchar(255) DEFAULT NULL,
+  `service_description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -324,7 +361,7 @@ CREATE TABLE `transactions` (
   KEY `transactions_recorded_by_foreign` (`recorded_by`),
   CONSTRAINT `transactions_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`) ON DELETE SET NULL,
   CONSTRAINT `transactions_recorded_by_foreign` FOREIGN KEY (`recorded_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6342 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8176 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -348,11 +385,13 @@ CREATE TABLE `users` (
   `activity` enum('Active','Inactive') NOT NULL DEFAULT 'Active' COMMENT 'User status',
   `current_team_id` bigint(20) unsigned DEFAULT NULL,
   `profile_photo_path` varchar(2048) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `was_deleted` tinyint(1) DEFAULT 1,
+  `has_transactions` tinyint(1) DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_email_unique` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -364,4 +403,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-27 16:20:27
+-- Dump completed on 2026-01-07 19:14:07
