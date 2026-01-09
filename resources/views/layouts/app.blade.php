@@ -25,25 +25,21 @@
     <meta name="description" content="{{ $pageDescription }}">
     <meta name="keywords" content="Nailville, salon, beauty, hair, spa, nails, Kampala, Naalya, Uganda">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="{{ $canonicalUrl }}">
-
-    <!-- Open Graph / Facebook / LinkedIn -->
     <meta property="og:title" content="{{ $fullTitle }}">
     <meta property="og:description" content="{{ $pageDescription }}">
     <meta property="og:image" content="{{ asset('images/preview.png') }}">
     <meta property="og:url" content="{{ $canonicalUrl }}">
     <meta property="og:site_name" content="Nailville Salon">
     <meta property="og:type" content="website">
-
-    <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $fullTitle }}">
     <meta name="twitter:description" content="{{ $pageDescription }}">
     <meta name="twitter:image" content="{{ asset('images/preview.png') }}">
     <meta name="twitter:site" content="@NailvilleSalon"> <!-- replace with real handle -->
     <meta name="twitter:creator" content="@NailvilleSalon">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
 
-    <!-- Schema.org JSON-LD -->
+
     <script type="application/ld+json">
         {
             "@context": "https://schema.org",
