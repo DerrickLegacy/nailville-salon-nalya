@@ -44,7 +44,7 @@
                     <div class="error" id="returned-error"></div>
                     <!-- Modal Header -->
                     <div class="flex justify-between items-center mb-0">
-                        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Manage Sections</h2>
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Add New Section</h3>
                         <button id="closeModal" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -54,7 +54,6 @@
 
                     <!-- Add Section Form -->
                     <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Add New Section</h3>
                         <form id="transactionForm" action="{{ route('transactions.store') }}" method="POST" class="space-y-4 sm:space-y-6">
                             @csrf
                             <input type="hidden" name="transaction_type" value="{{ $transactionType }}">
