@@ -905,59 +905,75 @@
                     });
                 },
 
-                updateServiceTable(grouped) {
-                    const tbody = $('#service_table tbody');
-                    tbody.empty();
-                    let serviceTotal = 0;
-                    const categoriseServices = $('#categorise_services').is(':checked');
+           updateServiceTable(grouped) {
+    const tbody = $('#service_table tbody');
+    tbody.empty();
+    let serviceTotal = 0;
+    const categoriseServices = $('#categorise_services').is(':checked');
 
-                    if (categoriseServices && grouped && typeof grouped === 'object') {
-                        Object.values(grouped).forEach((section, index) => {
-                            serviceTotal += section.total_amount;
-                            const sectionId = `section-${index}`;
+    if (categoriseServices && grouped && typeof grouped === 'object') {
+        Object.values(grouped).forEach((section, index) => {
+            serviceTotal += section.total_amount;
+            const sectionId = `section-${index}`;
 
-                            tbody.append(`
-                                <tr class="bg-gray-100 dark:bg-gray-700 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                                    data-toggle="${sectionId}" title="Click to expand/collapse services">
-                                    <td class="px-6 py-3 flex items-center gap-2">
-                                        <span class="accordion-icon transition-transform text-[#8200DB] font-bold">▶</span>
-                                        <span>${section.section_name}</span>
-                                    </td>
-                                    <td class="text-right px-6 py-3 text-[#8200DB] font-semibold">
-                                        ${section.total_amount.toLocaleString()}
-                                    </td>
-                                </tr>
-                            `);
+            // Append section row
+            tbody.append(`
+                <tr class="bg-gray-100 dark:bg-gray-700 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    data-toggle="${sectionId}" title="Click to expand/collapse services">
+                    <td class="px-6 py-3 flex items-center gap-2">
+                        <span class="accordion-icon transition-transform text-[#8200DB] font-bold">▶</span>
+                        <span class="truncate">${section.section_name}</span>
+                    </td>
+                    <td class="text-right px-6 py-3 text-[#8200DB] font-semibold">
+                        ${section.total_amount.toLocaleString()}
+                    </td>
+                </tr>
+            `);
 
-                            if (section.services && section.services.length > 0) {
-                                section.services.forEach(service => {
-                                    tbody.append(`
-                                        <tr class="hidden text-sm accordion-row" data-parent="${sectionId}">
-                                            <td class="px-6 py-2 pl-12 text-gray-600 dark:text-gray-400">
-                                                └ ${service.service_name}
-                                            </td>
-                                            <td class="text-right px-6 py-2 text-gray-600 dark:text-gray-400">
-                                                ${service.total_amount.toLocaleString()}
-                                            </td>
-                                        </tr>
-                                    `);
-                                });
-                            }
-                        });
-                    } else {
-                        Object.values(grouped).forEach(item => {
-                            serviceTotal += item.total_amount;
-                            tbody.append(`
-                                <tr>
-                                    <td class="px-6 py-3">${item.services[0].service_name || item.label}</td>
-                                    <td class="text-right px-6 py-3">${item.total_amount.toLocaleString()}</td>
-                                </tr>
-                            `);
-                        });
-                    }
+            // Append services if they exist
+            if (section.services && section.services.length > 0) {
+                let coloredDots = [
+                    '#8200DB', '#D90082', '#00DB82', '#DB8200', '#0066CC',
+                    '#CC0066', '#00CC66', '#CC6600', '#FF0000', '#FF7F00',
+                    '#FFFF00', '#00FF00', '#0000FF', '#8B00FF', '#A52A2A',
+                    '#FFC0CB', '#00FFFF', '#FFD700', '#4B0082', '#FF69B4'
+                ];
 
-                    $('#service_table tfoot td:last').text(serviceTotal.toLocaleString());
-                },
+                let dotIndex = 0;
+
+                section.services.forEach(service => {
+                    tbody.append(`
+                        <tr class="hidden text-sm accordion-row" data-parent="${sectionId}">
+                            <td class="px-6 py-2 pl-12 text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                                <!-- Colored dot -->
+                                <span style="color: ${coloredDots[dotIndex % coloredDots.length]}; font-size: 1.25rem; flex-shrink: 0;">●</span>
+                                <!-- Service name -->
+                                <span class="truncate">${service.service_name}</span>
+                            </td>
+                            <td class="text-right px-6 py-2 text-gray-600 dark:text-gray-400">
+                                ${service.total_amount.toLocaleString()}
+                            </td>
+                        </tr>
+                    `);
+                    dotIndex++;
+                });
+            }
+        });
+    } else {
+        Object.values(grouped).forEach(item => {
+            serviceTotal += item.total_amount;
+            tbody.append(`
+                <tr>
+                    <td class="px-6 py-3 truncate">${item.services[0].service_name || item.label}</td>
+                    <td class="text-right px-6 py-3">${item.total_amount.toLocaleString()}</td>
+                </tr>
+            `);
+        });
+    }
+
+    $('#service_table tfoot td:last').text(serviceTotal.toLocaleString());
+},
+
 
                 rollSlots(amount, element, duration = 2000, intervalTime = 50) {
                     const slots = document.querySelectorAll('#' + element);
