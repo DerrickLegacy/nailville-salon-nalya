@@ -14,5 +14,11 @@
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
+  },
+  "resources/js/splash.js": {
+    "file": "assets/splash-mwJTX66i.js",
+    "name": "splash",
+    "src": "resources/js/splash.js",
+    "isEntry": true
   }
 }

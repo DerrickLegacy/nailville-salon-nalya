@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     @vite(['resources/css/app.css', 'resources/js/splash.js'])
+    @vite(['resources/css/app.css', 'resources/js/splash.js', 'resources/js/app.js'])
+
 </head>
 <style>
     .dot {
@@ -70,6 +72,12 @@
 
     <!-- Loading text -->
     <p class="text-sm sm:text-base text-gray-500">Loading...</p>
+
+    <script>
+        setTimeout(() => {
+            window.location.href = "{{ route('login') }}";
+        }, 5000); // 4 seconds
+    </script>
 
 </body>
 
