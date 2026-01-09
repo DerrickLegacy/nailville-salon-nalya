@@ -155,7 +155,20 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/{id}', [App\Http\Controllers\ServiceController::class, 'show'])->name('show');
         Route::put('/{id}', [App\Http\Controllers\ServiceController::class, 'update'])->name('update');
         Route::delete('/{id}', [App\Http\Controllers\ServiceController::class, 'destroy'])->name('destroy');
-        Route::get('/categories/list', [App\Http\Controllers\ServiceController::class, 'getCategories'])->name('categories');
+
+        // Categories management
+        Route::get('/categories/list', [App\Http\Controllers\ServiceController::class, 'getCategories'])->name('categories.list');
+        Route::post('/categories/store', [App\Http\Controllers\ServiceController::class, 'storeCategory'])->name('categories.store');
+        Route::put('/categories/{id}', [App\Http\Controllers\ServiceController::class, 'updateCategory'])->name('categories.update');
+        Route::delete('/categories/{id}', [App\Http\Controllers\ServiceController::class, 'destroyCategory'])->name('categories.destroy');
+
+        // Sections management
+        Route::get('/sections/list', [App\Http\Controllers\ServiceController::class, 'getSections'])->name('sections.list');
+        Route::post('/sections/store', [App\Http\Controllers\ServiceController::class, 'storeSection'])->name('sections.store');
+        Route::put('/sections/{id}', [App\Http\Controllers\ServiceController::class, 'updateSection'])->name('sections.update');
+        Route::delete('/sections/{id}', [App\Http\Controllers\ServiceController::class, 'destroySection'])->name('sections.destroy');
+
+        // Meta data for dropdowns
         Route::get('/categories-and-sections/meta',  [App\Http\Controllers\ServiceController::class, 'meta'])
             ->name('categories.services.meta');
     });
