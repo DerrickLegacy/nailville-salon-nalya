@@ -24,7 +24,20 @@ use App\Http\Controllers\InventoryController;
 |
 */
 
-Route::redirect('/', 'login');
+
+// Route::get('/', function () {
+//     return view('splash');
+// });
+
+// Route::redirect('/login', 'login');
+
+Route::get('/', function () {
+    // if (session()->has('visited')) {
+    //     return redirect()->route('login');
+    // }
+    session(['visited' => true]);
+    return view('auth/splash');
+});
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 

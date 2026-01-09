@@ -36,14 +36,9 @@
             </div>
 
             <div class="flex flex-wrap gap-2 justify-start sm:justify-end">
-                <x-dropdown-filter align="right" />
-                <button
-                    class="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white text-xs sm:text-sm px-3 py-2">
-                    <svg class="fill-current shrink-0 w-4 h-4 sm:mr-1" width="16" height="16" viewBox="0 0 16 16">
-                        <path
-                            d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
-                    </svg>
-                    <span class="hidden sm:inline text-xs sm:text-sm">Add View</span>
+                <button id="liveClock"
+                    class="btn bg-purple-600 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white text-xs sm:text-sm px-3 py-2">
+
                 </button>
             </div>
         </div>
@@ -108,7 +103,7 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-            <div class="lg:col-span-3 space-y-4 sm:space-y-6"> <!-- left side -->
+            <div class="lg:col-span-3 space-y-4 sm:space-y-6">
 
                 <h2 class="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 flex justify-start">Todays Sales Vs
                     Previous Day</h2>
@@ -259,24 +254,19 @@
             </div>
 
             <div class="lg:col-span-1 space-y-4 sm:space-y-6">
-
+                <h2 class="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 flex justify-start">Employee Performance</h2>
                 <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg sm:rounded-xl p-3 sm:p-4">
-                    <h3 class="text-sm sm:text-base text-gray-800 dark:text-gray-100 font-semibold mb-2 sm:mb-3 text-center">Employee Performance
-                    </h3>
                     <div id="top-employers" class="w-full h-48 sm:h-56 md:h-64 lg:h-80"></div>
                 </div>
 
+                <h2 class="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 flex justify-start">Employee Performance Summary</h2>
                 <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg sm:rounded-xl p-3 sm:p-4">
-                    <h3 class="text-sm sm:text-base text-gray-800 dark:text-gray-100 font-semibold text-center">
-                        Employee Performance Summary
-                    </h3>
                     <p id="month_sumary" class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center mb-3 sm:mb-4"></p>
                     <div id="employers-table" class="overflow-x-auto -mx-3 sm:mx-0"></div>
                 </div>
 
+                <h2 class="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 flex justify-start">Current Monthly Transactions - <?php echo date("F") ?></h2>
                 <div x-data="stockAlert()" class="bg-white dark:bg-gray-800 shadow-xs rounded-lg sm:rounded-xl p-3 sm:p-4 text-center">
-                    <h3 class="text-sm sm:text-base text-gray-800 dark:text-gray-100 font-semibold mb-1">
-                        Monthly Transactions</h3>
                     <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Expenses Vs Income</p>
                     <small class="text-xs text-gray-500 dark:text-gray-500"><?php echo date("F") ?></small>
 
@@ -294,9 +284,9 @@
                         </div>
                     </div>
                 </div>
+
+                <h2 class="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 flex justify-start">Current Year (<?php echo date("Y") ?>) Transaction Summary</h2>
                 <div x-data="stockAlert()" class="bg-white dark:bg-gray-800 shadow-xs rounded-lg sm:rounded-xl p-3 sm:p-4 text-center">
-                    <h3 class="text-sm sm:text-base text-gray-800 dark:text-gray-100 font-semibold mb-1">
-                        Year Transactions</h3>
                     <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Expenses Vs Income</p>
                     <small class="text-xs text-gray-500 dark:text-gray-500"><?php echo date("Y") ?></small>
                     <div id="transactions-bar-chart-year" class="w-full"
@@ -452,6 +442,7 @@
             }
         }
     }
+
     $.ajax({
         url: "{{ route('chart.data') }}",
         method: "GET",
@@ -502,8 +493,6 @@
             window.alert("Error loading chart data:", error);
         }
     });
-
-
 
     $.ajax({
         url: "{{ route('chart.income.expenses.year') }}",
@@ -604,6 +593,13 @@
         }
     });
 
+    $(document).ready(function() {
+        setInterval(function() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString(); // Automatically handles 12/24hr format
+            $('#liveClock').text(timeString);
+        }, 1000);
+    });
 
     function initialiseCalendar() {
         // Inline small weekly calendar
