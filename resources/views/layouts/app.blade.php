@@ -1,56 +1,36 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
-<head>
-    <!-- Basic Meta -->
+<head> <!-- Basic Meta -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/preview.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/preview.png') }}">
-    <link rel="shortcut icon" href="{{ asset('images/preview.png') }}">
-    
-
-    @php
-    $pageTitle = $title ?? null;
-    $fullTitle = $pageTitle
-    ? config('app.name', 'Nailville Salon') . ' - ' . $pageTitle
-    : config('app.name', 'Nailville Salon');
-    $pageDescription = $metaDescription ?? 'Nailville Salon is a unisex salon in Naalya opposite Quality Shopping Village Namugongo, offering beauty, hair, nail and spa services for men, women, and children.';
-    $canonicalUrl = url()->current();
-    @endphp
-
-    <title>{{ $fullTitle }}</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}"> <!-- site map -->
+    <meta name="google-site-verification" content="NxXiaY1odI6lPdxfwtvYHkE1VIEI2bI2gJ9Vt0XZ1R0" /> @php $pageTitle = $title ?? null; $fullTitle = $pageTitle ? config('app.name', 'Nailville Salon') . ' - ' . $pageTitle : config('app.name', 'Nailville Salon'); $pageDescription = $metaDescription ?? 'Nailville Salon is a unisex salon in Naalya opposite Quality Shopping Village Namugongo, offering beauty, hair, nail and spa services for men, women, and children.'; $canonicalUrl = url()->current(); $previewImage = asset('images/preview.png'); // Replace with your actual preview image path @endphp <title>{{ $fullTitle }}</title>
     <meta name="description" content="{{ $pageDescription }}">
     <meta name="keywords" content="Nailville, salon, beauty, hair, spa, nails, Kampala, Naalya, Uganda">
     <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ $canonicalUrl }}"> <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/preview.png')}}"> <!-- Open Graph Meta Tags (for Facebook, WhatsApp, LinkedIn, etc.) -->
     <meta property="og:title" content="{{ $fullTitle }}">
     <meta property="og:description" content="{{ $pageDescription }}">
-    <meta property="og:image" content="{{ asset('images/preview.png') }}">
+    <meta property="og:image" content="{{ $previewImage }}">
     <meta property="og:url" content="{{ $canonicalUrl }}">
     <meta property="og:site_name" content="Nailville Salon">
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="website"> <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $fullTitle }}">
     <meta name="twitter:description" content="{{ $pageDescription }}">
-    <meta name="twitter:image" content="{{ asset('images/preview.png') }}">
-    <meta name="twitter:site" content="@NailvilleSalon"> <!-- replace with real handle -->
-    <meta name="twitter:creator" content="@NailvilleSalon">
-    <link rel="canonical" href="{{ $canonicalUrl }}">
-
-
+    <meta name="twitter:image" content="{{ $previewImage }}">
+    <meta name="twitter:site" content="@NailvilleSalon"> <!-- Replace with your real handle -->
+    <meta name="twitter:creator" content="@NailvilleSalon"> <!-- Structured Data (Organization Schema for Google Rich Results) -->
     <script type="application/ld+json">
         {
             "@context": "https://schema.org",
             "@type": "Organization",
             "name": "Nailville Salon",
-            "url": "{{ url('/') }}",
-            "logo": "{{ asset('images/preview.png') }}",
-            "sameAs": [
-                "https://www.facebook.com/nailvillesalon",
-                "https://www.instagram.com/nailvillesalon"
-            ],
+            "url": "https://staging-nailville-salon.kenvies.com",
+            "logo": "https://staging-nailville-salon.kenvies.com/salon.png",
+            "sameAs": ["https://www.facebook.com/nailvillesalon", "https://www.instagram.com/nailvillesalon"],
             "contactPoint": {
                 "@type": "ContactPoint",
                 "telephone": "+256-700-000000",
@@ -65,28 +45,25 @@
                 "addressCountry": "UG"
             }
         }
-    </script>
-
-    <!-- Fonts -->
+    </script> <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet" />
-
-    <!-- Styles & Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <!-- Livewire & Filament -->
-    @livewireStyles
-    @filamentStyles
-
-    <!-- Dark Mode JS -->
-    <script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet" /> <!-- Tailwind CSS --> {{-- <script src="https://cdn.tailwindcss.com"></script> --}} <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script> <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.3.3/js/dataTables.tailwindcss.js"></script> {{-- sweet alert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> {{-- Javascript pdf export --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script> {{-- Morris chart --}}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script> <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.3/css/dataTables.tailwindcss.css"> <!-- Scripts --> @vite(['resources/css/app.css', 'resources/js/app.js']) <!-- Styles --> @livewireStyles @filamentStyles @livewireStyles <script>
         if (localStorage.getItem('dark-mode') === 'false' || !('dark-mode' in localStorage)) {
-            document.documentElement.classList.remove('dark');
-            document.documentElement.style.colorScheme = 'light';
+            document.querySelector('html').classList.remove('dark');
+            document.querySelector('html').style.colorScheme = 'light';
         } else {
-            document.documentElement.classList.add('dark');
-            document.documentElement.style.colorScheme = 'dark';
+            document.querySelector('html').classList.add('dark');
+            document.querySelector('html').style.colorScheme = 'dark';
         }
     </script>
 </head>
