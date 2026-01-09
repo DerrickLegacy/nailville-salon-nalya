@@ -27,45 +27,35 @@
             </div>
         </div>
     </div>
-    <!-- Change w-fit to w-full -->
 
+    <div class="px-2 lg:px-8 w-full max-w-9xl flex justify-end">
+        <button id="addTransactionBtn" class="w-auto px-4 py-2 bg-purple-700 text-white text-sm font-medium rounded-lg hover:bg-purple-800 dark:bg-purple-600 dark:hover:bg-purple-700 transition-colors duration-200 flex items-center justify-center"> <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <span>Add Transaction</span>
+        </button>
+    </div>
 
-    <div class="px-2  lg:px-8 w-full max-w-9xl">
-        <div x-data="{ modalIsOpen: false }" class="flex justify-end w-full">
-
-            <!-- Change w-full to w-auto so it fits the text/icon content -->
-            <button @click="modalIsOpen = true"
-                class="w-auto px-4 py-2 bg-purple-700 text-white text-sm font-medium rounded-lg hover:bg-purple-800 dark:bg-purple-600 dark:hover:bg-purple-700 transition-colors duration-200 flex items-center justify-center">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-                Add Transaction
-            </button>
-            <!-- Modal backdrop -->
-            <div x-show="modalIsOpen" x-transition.opacity
-                class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-
-                <!-- Modal panel -->
-                <div x-show="modalIsOpen" x-transition @click.away="modalIsOpen = false"
-                    @keydown.escape.window="modalIsOpen = false"
-                    class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
-
-                    <!-- Modal header -->
-                    <div class="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
-                        <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-100">
-                            Add {{ $transactionType }} Transaction
-                        </h2>
-                        <button @click="modalIsOpen = false"
-                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Section Modal -->
+    <div id="sectionModal" class="fixed inset-0 hidden z-50 fill-white drop-shadow-xl/50" style="z-index: 9999; backdrop-filter: blur(4px);">
+        <div class="flex items-center justify-center min-h-screen px-4 py-8">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative border border-gray-200 dark:border-gray-700">
+                <div class="p-6">
+                    <div class="error" id="returned-error"></div>
+                    <!-- Modal Header -->
+                    <div class="flex justify-between items-center mb-0">
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Manage Sections</h2>
+                        <button id="closeModal" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                         </button>
                     </div>
 
-                    <!-- Modal Form -->
-                    <div class="p-4 sm:p-6">
-                        <form x-ref="transactionForm" action="{{ route('transactions.store') }}" method="POST" class="space-y-4 sm:space-y-6">
+                    <!-- Add Section Form -->
+                    <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Add New Section</h3>
+                        <form id="transactionForm" action="{{ route('transactions.store') }}" method="POST" class="space-y-4 sm:space-y-6">
                             @csrf
                             <input type="hidden" name="transaction_type" value="{{ $transactionType }}">
 
@@ -212,7 +202,7 @@
                                     Notes
                                 </label>
                                 <textarea name="notes" rows="3"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base resize-none">Service payments have been made.</textarea>
+                                    class="w-full px-1 py-0 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base resize-none">Service payments have been made.</textarea>
                             </div>
 
                             <!-- Recorded By -->
@@ -227,7 +217,7 @@
 
                             <!-- Modal footer -->
                             <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                                <button type="button" @click="modalIsOpen = false"
+                                <button type="button" id="cancelBtn"
                                     class="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200 text-sm sm:text-base">
                                     Cancel
                                 </button>
@@ -398,7 +388,6 @@
         });
     </script>
 
-    <!-- Main DataTable Script -->
     <script>
         $(document).ready(function() {
             var perPage = 10;
@@ -420,6 +409,56 @@
             const baseUrl = "{{ url('/') }}";
 
             loadTransactions();
+
+            function openSectionModal() {
+                const modal = document.getElementById('sectionModal');
+                modal.classList.remove('hidden');
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                resetSectionForm();
+            }
+
+            function resetSectionForm() {
+                // console.log('Resetting section form',$('#sectionForm').reset());
+                $('#transactionForm')[0].reset();
+
+                $('#sectionId').val('');
+                $('#submitSectionBtn').text('Add Section');
+                $('.error-message').text('');
+                isSectionEditMode = false;
+                currentSectionId = null;
+            }
+
+            function closeModal() {
+                const modal = document.getElementById('sectionModal');
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+
+                resetSectionForm();
+            }
+
+            // Close section modal handlers
+            $('#closeModal, #cancelBtn').on('click', function(e) {
+                e.preventDefault();
+                closeModal();
+            });
+
+            $('#sectionModal').on('click', function(e) {
+                if (e.target.id === 'sectionModal') {
+                    closeModal();
+                }
+            });
+
+            // Open Section Management Modal
+            $('#addTransactionBtn').on('click', function() {
+                openSectionModal();
+            });
+
+            $('#closeModal, #cancelBtn').on('click', function(e) {
+                e.preventDefault();
+                closeModal();
+            });
 
             function loadTransactions() {
                 const table = new DataTable('#transactions-table', {
