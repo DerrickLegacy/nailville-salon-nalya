@@ -73,6 +73,12 @@
     <!-- Loading text -->
     <p class="text-sm sm:text-base text-gray-500">Loading...</p>
 
+    <script>
+        setTimeout(() => {
+            window.location.href = "{{ route('login') }}";
+        }, 4000); // 4 seconds
+    </script>
+
 </body>
 
 </html>

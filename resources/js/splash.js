@@ -44,9 +44,5 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     );
 
-    // Optional: redirect after 1 animation loop
-    setTimeout(() => {
-        window.location.href = "/login";
-    }, DURATION * 1000);
-    
+  
 });
