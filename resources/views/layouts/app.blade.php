@@ -257,8 +257,6 @@
                     });
                 </script>
                 @endif
-
-
             </main>
 
         </div>

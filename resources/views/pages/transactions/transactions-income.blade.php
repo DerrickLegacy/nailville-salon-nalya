@@ -1,10 +1,5 @@
 <x-app-layout>
     <div class="px-2 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 w-full max-w-9xl mx-auto">
-        <!-- Page Header -->
-
-
-
-
         <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-4">
             <div class="mb-4 sm:mb-6 fade-in">
                 <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:justify-between sm:items-start">
@@ -34,13 +29,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Parent Section: Added 'flex flex-col' and a minimum height -->
-            <div class="mb-4 sm:mb-6 fade-in flex flex-col h-full ">
-                <div class="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-end mb-0">
-                    <!-- Other content here stays at the top -->
-                </div>
-
-                <!-- Add Transaction Button: Added 'mt-auto' to push it to the bottom -->
+            <div class=" fade-in flex flex-col h-full ">
                 <div x-data="{ modalIsOpen: false }" class="flex justify-end w-full sm:w-auto mt-auto">
                     <button @click="modalIsOpen = true"
                         class="w-full sm:w-auto px-4 py-2.5 bg-purple-700 text-white text-sm font-medium rounded-lg hover:bg-purple-800 dark:bg-purple-600 dark:hover:bg-purple-700 transition-colors duration-200 flex items-center justify-center">
@@ -254,9 +243,8 @@
         </div>
     </div>
 
-
     <!-- Statistics Cards -->
-    <div class="mb-4 sm:mb-6">
+    <div class="px-2 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 w-full max-w-9xl mx-auto">
         <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
             <!-- Total Records -->
             <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
@@ -285,10 +273,10 @@
     </div>
 
     <!-- Main Content Area -->
-    <div class="fade-in">
+    <div class="px-2 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 w-full max-w-9xl mx-auto">
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg sm:rounded-xl overflow-hidden">
             <!-- Search and Filter Section -->
-            <div class="p-3 sm:p-4 lg:p-6 border-b border-gray-200 dark:border-gray-700">
+            <div class="md:p-3 p-1 sm:p-4 lg:p-6 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex flex-col space-y-3 sm:space-y-4 lg:flex-row lg:space-y-0 lg:items-center lg:justify-between">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                         <!-- Search -->
