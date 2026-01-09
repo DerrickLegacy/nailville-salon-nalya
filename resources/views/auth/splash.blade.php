@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     @vite(['resources/css/app.css', 'resources/js/splash.js'])
+    @vite(['resources/css/app.css', 'resources/js/splash.js', 'resources/js/app.js'])
+
 </head>
 <style>
     .dot {
