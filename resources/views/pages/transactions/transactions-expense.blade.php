@@ -1,5 +1,5 @@
 <x-app-layout>
-      <div class="px-2 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 w-full max-w-9xl mx-auto">
+    <div class="px-2 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 w-full max-w-9xl mx-auto">
         <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-4">
             <div class="mb-4 sm:mb-6 fade-in">
                 <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:justify-between sm:items-start">
@@ -29,215 +29,216 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class=" fade-in flex flex-col h-full ">
-                <div x-data="{ modalIsOpen: false }" class="flex justify-end w-full sm:w-auto mt-auto">
-                    <button @click="modalIsOpen = true"
-                        class="w-full sm:w-auto px-4 py-2.5 bg-purple-700 text-white text-sm font-medium rounded-lg hover:bg-purple-800 dark:bg-purple-600 dark:hover:bg-purple-700 transition-colors duration-200 flex items-center justify-center">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                        </svg>
-                        Add Transaction
-                    </button>
+    <div class="px-2  lg:px-8 w-full max-w-9xl">
+        <div x-data="{ modalIsOpen: false }" class="flex justify-end w-full">
 
-                    <!-- Modal backdrop -->
-                    <div x-show="modalIsOpen" x-transition.opacity
-                        class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <!-- Change w-full to w-auto so it fits the text/icon content -->
+            <button @click="modalIsOpen = true"
+                class="w-auto px-4 py-2 bg-purple-700 text-white text-sm font-medium rounded-lg hover:bg-purple-800 dark:bg-purple-600 dark:hover:bg-purple-700 transition-colors duration-200 flex items-center justify-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Add Transaction
+            </button>
+            <!-- Modal backdrop -->
+            <div x-show="modalIsOpen" x-transition.opacity
+                class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 
-                        <!-- Modal panel -->
-                        <div x-show="modalIsOpen" x-transition @click.away="modalIsOpen = false"
-                            @keydown.escape.window="modalIsOpen = false"
-                            class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
+                <!-- Modal panel -->
+                <div x-show="modalIsOpen" x-transition @click.away="modalIsOpen = false"
+                    @keydown.escape.window="modalIsOpen = false"
+                    class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
 
-                            <!-- Modal header -->
-                            <div class="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
-                                <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-100">
-                                    Add {{ $transactionType }} Transaction
-                                </h2>
-                                <button @click="modalIsOpen = false"
-                                    class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1">
-                                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
+                    <!-- Modal header -->
+                    <div class="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-100">
+                            Add {{ $transactionType }} Transaction
+                        </h2>
+                        <button @click="modalIsOpen = false"
+                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Modal Form -->
+                    <div class="p-4 sm:p-6">
+                        <form x-ref="transactionForm" action="{{ route('transactions.store') }}" method="POST" class="space-y-4 sm:space-y-6">
+                            @csrf
+                            <input type="hidden" name="transaction_type" value="{{ $transactionType }}">
+
+                            <!-- Customer Name -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Customer Name
+                                </label>
+                                <input type="text" name="customer_name" value="Walkin Client"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                    required>
+                            </div>
+
+                            <!-- Two Column Grid for smaller fields -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                <!-- Receipt ID -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Receipt ID
+                                    </label>
+                                    <input type="text" name="receipt_id"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                        required>
+                                </div>
+
+                                <!-- Transaction Type -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Transaction Type
+                                    </label>
+                                    <input disabled value="{{ $transactionType }}"
+                                        class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base">
+                                </div>
+                            </div>
+
+                            <!-- Service/Expense and Amount Grid -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                @if ($transactionType === 'Income')
+                                <!-- Service Offered -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Service Offered
+                                    </label>
+                                    <select name="service_offered" id="service_offered"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                        required>
+                                        <option value="">-- Select Service --</option>
+                                        @foreach ($services as $service)
+                                        <option value="{{ $service->name }}" data-price="{{ $service->price }}" data-service-id="{{ $service->id }}">
+                                            {{ $service->name }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                    <input type="hidden" name="service_id" id="service_id" required />
+                                </div>
+                                @else
+                                <!-- Expense Category -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Expense Category
+                                    </label>
+                                    <select name="expense_type"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                        required>
+                                        <option value="">-- Select Expense --</option>
+                                        <option value="Rent">Rent / Lease</option>
+                                        <option value="Salaries">Salaries & Wages</option>
+                                        <option value="Allowances">Allowances / Bonuses</option>
+                                        <option value="Training">Staff Training / Workshops</option>
+                                        <option value="Utilities">Utilities</option>
+                                        <option value="BeautyProducts">Beauty Products</option>
+                                        <option value="HairSupplies">Hair Supplies</option>
+                                        <option value="NailSupplies">Nail Supplies</option>
+                                        <option value="Cleaning">Cleaning Supplies</option>
+                                        <option value="FurnitureEquipment">Furniture & Equipment</option>
+                                        <option value="Maintenance">Maintenance</option>
+                                        <option value="Marketing">Marketing & Advertising</option>
+                                        <option value="Transport">Transport / Delivery</option>
+                                        <option value="Licenses">Licenses / Insurance</option>
+                                        <option value="Miscellaneous">Miscellaneous</option>
+                                    </select>
+                                </div>
+                                @endif
+
+                                <!-- Amount -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Amount
+                                    </label>
+                                    <input type="text" id="amount_display"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                        required>
+                                    <input type="hidden" id="amount" name="amount">
+                                </div>
+                            </div>
+
+                            <!-- Payment Method, Date, Employee Grid -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                                <!-- Payment Method -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Payment Method
+                                    </label>
+                                    <select name="payment_method"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                        required>
+                                        <option value="Cash">Cash</option>
+                                        <option value="MobileMoney">Mobile Money</option>
+                                        <option value="Card">Card</option>
+                                        <option value="Bank">Bank</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                <!-- Date -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Date
+                                    </label>
+                                    <input type="date" name="date" value="{{ old('date', now()->format('Y-m-d')) }}"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                        required>
+                                </div>
+
+                                <!-- Employee -->
+                                <div class="sm:col-span-2 lg:col-span-1">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Worked On By
+                                    </label>
+                                    <select name="employee_id"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                        required>
+                                        <option value="">-- Select Employee --</option>
+                                        @foreach ($employees as $employee)
+                                        <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Notes -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Notes
+                                </label>
+                                <textarea name="notes" rows="3"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base resize-none">Service payments have been made.</textarea>
+                            </div>
+
+                            <!-- Recorded By -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Recorded By
+                                </label>
+                                <input type="text" value="{{ Auth::user()->name }}" disabled
+                                    class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base">
+                                <input type="hidden" name="recorded_by" value="{{ Auth::id() }}">
+                            </div>
+
+                            <!-- Modal footer -->
+                            <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <button type="button" @click="modalIsOpen = false"
+                                    class="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200 text-sm sm:text-base">
+                                    Cancel
+                                </button>
+                                <button type="submit"
+                                    class="w-full sm:w-auto px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 text-sm sm:text-base">
+                                    Save Transaction
                                 </button>
                             </div>
-
-                            <!-- Modal Form -->
-                            <div class="p-4 sm:p-6">
-                                <form x-ref="transactionForm" action="{{ route('transactions.store') }}" method="POST" class="space-y-4 sm:space-y-6">
-                                    @csrf
-                                    <input type="hidden" name="transaction_type" value="{{ $transactionType }}">
-
-                                    <!-- Customer Name -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            Customer Name
-                                        </label>
-                                        <input type="text" name="customer_name" value="Walkin Client"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
-                                            required>
-                                    </div>
-
-                                    <!-- Two Column Grid for smaller fields -->
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                                        <!-- Receipt ID -->
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                Receipt ID
-                                            </label>
-                                            <input type="text" name="receipt_id"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
-                                                required>
-                                        </div>
-
-                                        <!-- Transaction Type -->
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                Transaction Type
-                                            </label>
-                                            <input disabled value="{{ $transactionType }}"
-                                                class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base">
-                                        </div>
-                                    </div>
-
-                                    <!-- Service/Expense and Amount Grid -->
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                                        @if ($transactionType === 'Income')
-                                        <!-- Service Offered -->
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                Service Offered
-                                            </label>
-                                            <select name="service_offered" id="service_offered"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
-                                                required>
-                                                <option value="">-- Select Service --</option>
-                                                @foreach ($services as $service)
-                                                <option value="{{ $service->name }}" data-price="{{ $service->price }}" data-service-id="{{ $service->id }}">
-                                                    {{ $service->name }}
-                                                </option>
-                                                @endforeach
-                                            </select>
-                                            <input type="hidden" name="service_id" id="service_id" required />
-                                        </div>
-                                        @else
-                                        <!-- Expense Category -->
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                Expense Category
-                                            </label>
-                                            <select name="expense_type"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
-                                                required>
-                                                <option value="">-- Select Expense --</option>
-                                                <option value="Rent">Rent / Lease</option>
-                                                <option value="Salaries">Salaries & Wages</option>
-                                                <option value="Allowances">Allowances / Bonuses</option>
-                                                <option value="Training">Staff Training / Workshops</option>
-                                                <option value="Utilities">Utilities</option>
-                                                <option value="BeautyProducts">Beauty Products</option>
-                                                <option value="HairSupplies">Hair Supplies</option>
-                                                <option value="NailSupplies">Nail Supplies</option>
-                                                <option value="Cleaning">Cleaning Supplies</option>
-                                                <option value="FurnitureEquipment">Furniture & Equipment</option>
-                                                <option value="Maintenance">Maintenance</option>
-                                                <option value="Marketing">Marketing & Advertising</option>
-                                                <option value="Transport">Transport / Delivery</option>
-                                                <option value="Licenses">Licenses / Insurance</option>
-                                                <option value="Miscellaneous">Miscellaneous</option>
-                                            </select>
-                                        </div>
-                                        @endif
-
-                                        <!-- Amount -->
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                Amount
-                                            </label>
-                                            <input type="text" id="amount_display"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
-                                                required>
-                                            <input type="hidden" id="amount" name="amount">
-                                        </div>
-                                    </div>
-
-                                    <!-- Payment Method, Date, Employee Grid -->
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                                        <!-- Payment Method -->
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                Payment Method
-                                            </label>
-                                            <select name="payment_method"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
-                                                required>
-                                                <option value="Cash">Cash</option>
-                                                <option value="MobileMoney">Mobile Money</option>
-                                                <option value="Card">Card</option>
-                                                <option value="Bank">Bank</option>
-                                                <option value="Other">Other</option>
-                                            </select>
-                                        </div>
-
-                                        <!-- Date -->
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                Date
-                                            </label>
-                                            <input type="date" name="date" value="{{ old('date', now()->format('Y-m-d')) }}"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
-                                                required>
-                                        </div>
-
-                                        <!-- Employee -->
-                                        <div class="sm:col-span-2 lg:col-span-1">
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                Worked On By
-                                            </label>
-                                            <select name="employee_id"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
-                                                required>
-                                                <option value="">-- Select Employee --</option>
-                                                @foreach ($employees as $employee)
-                                                <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <!-- Notes -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            Notes
-                                        </label>
-                                        <textarea name="notes" rows="3"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base resize-none">Service payments have been made.</textarea>
-                                    </div>
-
-                                    <!-- Recorded By -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            Recorded By
-                                        </label>
-                                        <input type="text" value="{{ Auth::user()->name }}" disabled
-                                            class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base">
-                                        <input type="hidden" name="recorded_by" value="{{ Auth::id() }}">
-                                    </div>
-
-                                    <!-- Modal footer -->
-                                    <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                                        <button type="button" @click="modalIsOpen = false"
-                                            class="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200 text-sm sm:text-base">
-                                            Cancel
-                                        </button>
-                                        <button type="submit"
-                                            class="w-full sm:w-auto px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 text-sm sm:text-base">
-                                            Save Transaction
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -245,7 +246,7 @@
     </div>
 
     <!-- Statistics Cards -->
-    <div class="px-2 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 w-full max-w-9xl mx-auto">
+    <div class="px-2 sm:px-4 lg:px-8 py-4 sm:py-3 lg:py-4 w-full max-w-9xl mx-auto">
         <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
             <!-- Total Records -->
             <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
