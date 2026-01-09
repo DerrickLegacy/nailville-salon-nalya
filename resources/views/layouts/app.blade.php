@@ -10,12 +10,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/preview.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/preview.png') }}">
     <link rel="shortcut icon" href="{{ asset('images/preview.png') }}">
-
-
-    <!-- Favicons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ $previewImage }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ $previewImage }}">
-    <link rel="shortcut icon" href="{{ $previewImage }}">
+    
 
     @php
     $pageTitle = $title ?? null;
@@ -24,7 +19,6 @@
     : config('app.name', 'Nailville Salon');
     $pageDescription = $metaDescription ?? 'Nailville Salon is a unisex salon in Naalya opposite Quality Shopping Village Namugongo, offering beauty, hair, nail and spa services for men, women, and children.';
     $canonicalUrl = url()->current();
-    $previewImage = asset('images/preview.png'); // Absolute public URL
     @endphp
 
     <title>{{ $fullTitle }}</title>
@@ -36,7 +30,7 @@
     <!-- Open Graph / Facebook / LinkedIn -->
     <meta property="og:title" content="{{ $fullTitle }}">
     <meta property="og:description" content="{{ $pageDescription }}">
-    <meta property="og:image" content="{{ $previewImage }}">
+    <meta property="og:image" content="{{ asset('images/preview.png') }}">
     <meta property="og:url" content="{{ $canonicalUrl }}">
     <meta property="og:site_name" content="Nailville Salon">
     <meta property="og:type" content="website">
@@ -45,7 +39,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $fullTitle }}">
     <meta name="twitter:description" content="{{ $pageDescription }}">
-    <meta name="twitter:image" content="{{ $previewImage }}">
+    <meta name="twitter:image" content="{{ asset('images/preview.png') }}">
     <meta name="twitter:site" content="@NailvilleSalon"> <!-- replace with real handle -->
     <meta name="twitter:creator" content="@NailvilleSalon">
 
@@ -56,7 +50,7 @@
             "@type": "Organization",
             "name": "Nailville Salon",
             "url": "{{ url('/') }}",
-            "logo": "{{ $previewImage }}",
+            "logo": "{{ asset('images/preview.png') }}",
             "sameAs": [
                 "https://www.facebook.com/nailvillesalon",
                 "https://www.instagram.com/nailvillesalon"
