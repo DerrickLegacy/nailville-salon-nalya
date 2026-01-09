@@ -36,17 +36,13 @@
         }
     }
 </style>
-
-
 <body class="h-screen flex flex-col items-center justify-center bg-gray-50 text-gray-900">
-
-    <!-- Animated SVG container -->
     <div class="relative w-full max-w-xl mb-4 px-4 ">
         <svg viewBox="0 0 450 430" class="w-full h-auto">
             <path
                 id="motion-path"
                 d="M 215 49 C 132 78 163 204 251 147 C 287 91 221 48 195 96 C 181 157 271 126 234 104"
-                 fill="transparent"
+                fill="transparent"
                 stroke="#8200DB"
                 stroke-width="0"
                 stroke-linecap="round"
@@ -73,7 +69,7 @@
     <script>
         setTimeout(() => {
             window.location.href = "{{ route('login') }}";
-        }, 6000); 
+        }, 6000);
     </script>
 
 </body>

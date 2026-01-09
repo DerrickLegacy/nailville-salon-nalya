@@ -7,6 +7,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/preview.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/preview.png') }}">
+    <link rel="shortcut icon" href="{{ asset('images/preview.png') }}">
+
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ $previewImage }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ $previewImage }}">
+    <link rel="shortcut icon" href="{{ $previewImage }}">
+
     @php
     $pageTitle = $title ?? null;
     $fullTitle = $pageTitle
@@ -22,11 +32,6 @@
     <meta name="keywords" content="Nailville, salon, beauty, hair, spa, nails, Kampala, Naalya, Uganda">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ $canonicalUrl }}">
-
-    <!-- Favicons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ $previewImage }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ $previewImage }}">
-    <link rel="shortcut icon" href="{{ $previewImage }}">
 
     <!-- Open Graph / Facebook / LinkedIn -->
     <meta property="og:title" content="{{ $fullTitle }}">
