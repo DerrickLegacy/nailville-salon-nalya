@@ -230,7 +230,7 @@
                                             <th
                                                 class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                 Value</th>
-                                        </tr>
+                                        </tr>Employee Contr
                                     </thead>
                                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                                         <tr>
@@ -474,100 +474,501 @@
             </div>
         </div>
         <script>
-            $(document).ready(function() {
-                var report_type = $('#report_type').val();
-                var total_Income_recorded = 0;
-                var employer_contribution = 0;
-                report_period = document.getElementById('report_period')
-                report_period.textContent = `Today's Report`;
-                loadIncomeData('Today');
-                fetchEmployerContribution();
+            // Global state management
+            const ReportManager = {
+                state: {
+                    mode: 'range', // 'range' | 'custom'
+                    range: 'Today',
+                    start_date: null,
+                    end_date: null,
+                    employee_id: null,
+                    report_type: $('#report_type').val()
+                },
 
-                $(document).on('click', '[data-toggle]', function(e) {
+                init() {
+                    this.bindEvents();
+                    this.loadInitialData();
+                },
+
+                bindEvents() {
+                    // Range button clicks
+                    $('.solid-filter-btns').on('click', (e) => this.handleRangeClick(e));
+
+                    // Filter button click
+                    $('.filter-btn').on('click', (e) => this.handleFilterClick(e));
+
+                    // Categorize services checkbox
+                    $('#categorise_services').on('change', () => this.handleCategorizeChange());
+
+                    // Service search
+                    $('#service-search').on('input', (e) => this.handleServiceSearch(e));
+
+                    // Accordion toggles
+                    $(document).on('click', '[data-toggle]', (e) => this.handleAccordionToggle(e));
+                },
+
+                loadInitialData() {
+                    $('#report_period').text("Today's Report");
+                    $('#dateSelect').val('');
+                    this.loadData();
+                },
+
+                handleRangeClick(e) {
+                    const range = $(e.target).text().trim();
+
+                    // Update state
+                    this.state.mode = 'range';
+                    this.state.range = range;
+                    this.state.start_date = null;
+                    this.state.end_date = null;
+                    this.state.employee_id = $('#employee_id').val();
+
+                    // Update UI
+                    this.updateRangeButtonsUI($(e.target));
+                    this.clearCustomFilters();
+                    this.updateHeadings(range);
+
+                    // Load data
+                    this.loadData();
+                },
+
+                handleFilterClick(e) {
+                    e.preventDefault();
+
+                    const employee_id = $('#employee_id').val();
+                    const dateValue = $('#dateSelect').val().trim();
+
+                    if (!dateValue && !employee_id) {
+                        this.showAlert('Please select a date range or an employee.');
+                        return;
+                    }
+
+                    let startDate = null;
+                    let endDate = null;
+
+                    if (dateValue) {
+                        const parts = dateValue.split('-').map(d => d.trim());
+                        startDate = parts[0];
+                        endDate = parts[1] ?? parts[0];
+                    }
+
+                    // Update state
+                    this.state.mode = 'custom';
+                    this.state.range = null;
+                    this.state.start_date = startDate;
+                    this.state.end_date = endDate;
+                    this.state.employee_id = employee_id;
+
+                    // Update UI
+                    this.deactivateRangeButtons();
+                    this.updateCustomFilterHeadings(startDate, endDate, employee_id);
+
+                    // Load data
+                    this.loadData();
+                },
+
+                handleCategorizeChange() {
+                    this.loadData();
+                },
+
+                handleServiceSearch(e) {
+                    const query = $(e.target).val().toLowerCase();
+                    $('#service_table tbody tr').each(function() {
+                        const service = $(this).find('td:first').text().toLowerCase();
+                        $(this).toggle(service.includes(query));
+                    });
+                },
+
+                handleAccordionToggle(e) {
                     e.preventDefault();
                     e.stopPropagation();
 
-                    const sectionId = $(this).data('toggle');
-
+                    const sectionId = $(e.currentTarget).data('toggle');
                     const rows = $(`[data-parent="${sectionId}"]`);
-                    const icon = $(this).find('.accordion-icon');
+                    const icon = $(e.currentTarget).find('.accordion-icon');
 
                     rows.toggleClass('hidden');
-                    // Rotate arrow
                     icon.toggleClass('rotate-90');
-                });
+                },
 
-                $('#simple-search').on('input', function() {
-                    const query = $(this).val().toLowerCase();
-                    $('table tbody tr').each(function() {
-                        const service = $(this).find('td:first').text().toLowerCase();
-                        if (service.includes(query)) {
-                            $(this).show();
-                        } else {
-                            $(this).hide();
+                updateRangeButtonsUI(activeButton) {
+                    $('.solid-filter-btns')
+                        .removeClass('bg-[#8200DB] text-white border-[#8200DB]')
+                        .addClass('border border-[#8200DB] text-[#8200DB]')
+                        .css('opacity', '1');
+
+                    activeButton
+                        .removeClass('border border-[#8200DB] text-[#8200DB]')
+                        .addClass('bg-[#8200DB] text-white border-[#8200DB]');
+                },
+
+                deactivateRangeButtons() {
+                    $('.solid-filter-btns')
+                        .removeClass('bg-[#8200DB] text-white border-[#8200DB]')
+                        .addClass('border border-[#8200DB] text-[#8200DB]')
+                        .css('opacity', '0.7');
+                },
+
+                clearCustomFilters() {
+                    $('#dateSelect').val('');
+                },
+
+                updateHeadings(range) {
+                    $('.heading').text(range);
+                    $('#report_period').text(`${range}'s Report`);
+                },
+
+                updateCustomFilterHeadings(startDate, endDate, employee_id) {
+                    let headingText = 'Filtered';
+                    let reportText = 'Filtered Report';
+
+                    if (startDate && endDate) {
+                        headingText = `${startDate} to ${endDate}`;
+                        reportText = `From ${startDate} to ${endDate}`;
+                    } else if (employee_id) {
+                        const employeeName = $('#employee_id option:selected').text();
+                        headingText = `Employee: ${employeeName}`;
+                        reportText = `Employee Filter: ${employeeName}`;
+                    }
+
+                    $('.heading').text(headingText);
+                    $('#report_period').text(reportText);
+                },
+
+                loadData() {
+                    const requestData = this.buildRequestData();
+
+                    // Load main data
+                    this.loadIncomeData(requestData);
+
+                    // Load employer contribution
+                    this.fetchEmployerContribution(requestData);
+                },
+
+                buildRequestData() {
+                    const baseData = {
+                        report_type: this.state.report_type,
+                        categorise_services: $('#categorise_services').is(':checked')
+                    };
+
+                    if (this.state.mode === 'range') {
+                        baseData.range = this.state.range;
+                        if (this.state.employee_id) {
+                            baseData.employee_id = this.state.employee_id;
+                        }
+                    } else if (this.state.mode === 'custom') {
+                        baseData.range = 'Filter';
+                        if (this.state.start_date) baseData.start_date = this.state.start_date;
+                        if (this.state.end_date) baseData.end_date = this.state.end_date;
+                        if (this.state.employee_id) baseData.employee_id = this.state.employee_id;
+                    }
+
+                    return baseData;
+                },
+
+                loadIncomeData(requestData) {
+                    $.ajax({
+                        url: "{{ route('reports.data') }}",
+                        method: "GET",
+                        data: requestData,
+                        dataType: "json",
+                        success: (data) => this.handleIncomeDataSuccess(data),
+                        error: (xhr, status, error) => {
+                            console.error("Error loading chart data:", error);
+                            this.showAlert("Error loading data. Please try again.");
                         }
                     });
-                });
+                },
 
-                $('.solid-filter-btns').on('click', function() {
-                    const range = $(this).text().trim();
-                    $('.heading').text(range ? range : 'Today');
-                    report_period.textContent = `${range}'s Report`;
-                    loadIncomeData(range);
-                    fetchEmployerContribution(range);
-                });
+                fetchEmployerContribution(requestData) {
+                    $.ajax({
+                        url: "{{ route('reports.employer.performance') }}",
+                        method: 'GET',
+                        data: requestData,
+                        dataType: 'json',
+                        success: (response) => this.handleEmployerContributionSuccess(response),
+                        error: (xhr, status, error) => {
+                            console.error('Error fetching employer contributions:', error);
+                        }
+                    });
+                },
 
-                // Add event listener for categorise services checkbox
-                $('#categorise_services').on('change', function() {
-                    const activeRange = $('.solid-filter-btns.bg-\\[\\#8200DB\\]').text().trim() || 'Today';
-                    const employee_id = $('#employee_id').val();
+                handleIncomeDataSuccess(data) {
+                    if (!data) return;
 
-                    // Reload data with current settings
-                    loadIncomeData(activeRange, null, null, employee_id);
-                });
+                    // Handle employee data
+                    this.updateEmployeeData(data.selectedEmpData);
 
-                $('.filter-btn').on('click', function() {
-                    let startDate = '';
-                    let endDate = '';
-                    const range = $(this).text().trim();
-                    const employee_id = $('#employee_id').val();
-                    const ww = document.getElementById('dateSelect').value.split('-').map(d => d.trim());
+                    // Update income table
+                    this.updateIncomeTable(data.grouped_by_period);
 
-                    if (ww.length === 1) {
-                        startDate = ww[0];
-                        endDate = ww[0];
-                    } else if (ww.length >= 2) {
-                        startDate = ww[0];
-                        endDate = ww[1];
+                    // Update rolling counters
+                    this.updateRollingCounters(data);
+
+                    // Update charts
+                    this.updateCharts(data);
+
+                    // Update service table
+                    this.updateServiceTable(data.grouped);
+                },
+
+                handleEmployerContributionSuccess(response) {
+                    const tbody = $('#employer-table tbody');
+                    tbody.empty();
+                    let totalIncomeSum = 0;
+
+                    response.data.forEach(row => {
+                        const income = parseFloat(row.totalIncome.toString().replace(/,/g, ''));
+                        totalIncomeSum += income;
+
+                        tbody.append(`
+                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <td class="px-4 py-2">${row.Employee}</td>
+                                <td class="px-4 py-2">${row.Invoices}</td>
+                                <td class="px-6 py-2 text-right">${income.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</td>
+                            </tr>
+                        `);
+                    });
+
+                    const formattedTotal = totalIncomeSum.toLocaleString('en-US', {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2
+                    });
+                    $('#employer-table tfoot tr td:last-child').text(formattedTotal);
+                },
+
+                updateEmployeeData(employeeData) {
+                    if (employeeData && employeeData.employee_id) {
+                        $('#employee_table_div, #employee_table_heading, #employee_table_wrapper').removeClass('hidden');
+
+                        $('#emp_name').text(employeeData.name);
+                        $('#rank_position').text(employeeData.rank ?? '-');
+                        $('#emp_expertise').text(employeeData.expertise);
+                        $('#transactions_registered').text(employeeData.performance_positions);
+                        $('#emp_total_income').text(Number(employeeData.total_income).toLocaleString());
+                    }
+                },
+
+                updateIncomeTable(groupedByPeriod) {
+                    const tbody = $('#income_table tbody');
+                    tbody.empty();
+                    let totalIncome = 0;
+
+                    const groupedData = Object.entries(groupedByPeriod).map(([label, value]) => ({
+                        label,
+                        value: Number(value)
+                    }));
+
+                    groupedData.sort((a, b) => new Date(a.label) - new Date(b.label));
+
+                    groupedData.forEach(item => {
+                        totalIncome += item.value;
+                        tbody.append(`
+                            <tr>
+                                <td class="px-6 py-3">${item.label}</td>
+                                <td class="text-right px-6 py-3">${item.value.toLocaleString()}</td>
+                            </tr>
+                        `);
+                    });
+
+                    $('#income_table tfoot td:last').text(totalIncome.toLocaleString());
+                    return {
+                        groupedData,
+                        totalIncome
+                    };
+                },
+
+                updateRollingCounters(data) {
+                    const {
+                        totalIncome
+                    } = this.updateIncomeTable(data.grouped_by_period);
+
+                    this.rollSlots(data.expected_income_target, 'expected_income', 800, 100);
+                    this.rollSlots(totalIncome, 'achieved_income', 800, 100);
+
+                    if (data.selectedEmpData && data.selectedEmpData.employee_id) {
+                        this.rollSlots(totalIncome, 'total_income_card', 800, 100);
+                    }
+
+                    // Calculate percentage achievement
+                    let percentageAchievement = 0;
+                    if (data.expected_income_target > 0 && totalIncome > 0) {
+                        percentageAchievement = (totalIncome / data.expected_income_target) * 100;
+                    }
+
+                    let percentageAchievementNumeric = Number(percentageAchievement.toFixed(2));
+                    if (percentageAchievementNumeric > 0 && percentageAchievementNumeric < 0.1) {
+                        percentageAchievementNumeric = 0.1;
+                    }
+
+                    this.rollSlots(percentageAchievementNumeric, 'percentage_improvement', 1000, 100);
+
+                    return {
+                        totalIncome,
+                        percentageAchievementNumeric
+                    };
+                },
+
+                updateCharts(data) {
+                    const {
+                        groupedData,
+                        totalIncome
+                    } = this.updateIncomeTable(data.grouped_by_period);
+                    const {
+                        percentageAchievementNumeric
+                    } = this.updateRollingCounters(data);
+
+                    // Performance donut chart
+                    $('#todays-income-performance-progress').empty();
+                    const remainingPercentage = Math.max(0, 100 - percentageAchievementNumeric);
+
+                    Morris.Donut({
+                        element: 'todays-income-performance-progress',
+                        data: [{
+                                label: 'Achieved',
+                                value: percentageAchievementNumeric
+                            },
+                            {
+                                label: 'Remaining',
+                                value: remainingPercentage
+                            }
+                        ],
+                        colors: ['#CC0066', '#E5E5E5'],
+                        resize: true,
+                        redraw: true,
+                        formatter: y => y.toFixed(2) + '%'
+                    });
+
+                    // Line chart
+                    $('#income-chart').empty();
+                    new Morris.Line({
+                        element: 'income-chart',
+                        data: groupedData.map(d => ({
+                            date: d.label,
+                            income: d.value
+                        })),
+                        xkey: 'date',
+                        ykeys: ['income'],
+                        labels: ['Income'],
+                        parseTime: false,
+                        resize: true,
+                        lineColors: ['#1e88e5']
+                    });
+
+                    // Service breakdown chart
+                    this.updateServiceChart(data);
+                },
+
+                updateServiceChart(data) {
+                    let chartData = [];
+                    const categoriseServices = $('#categorise_services').is(':checked');
+
+                    if (this.state.report_type.toLowerCase() === 'income') {
+                        if (categoriseServices && data.grouped && typeof data.grouped === 'object') {
+                            chartData = Object.values(data.grouped)
+                                .filter(section => Number(section.total_amount) > 0)
+                                .map(section => ({
+                                    label: section.section_name || 'Unknown',
+                                    value: Number(section.total_amount)
+                                }));
+                        } else {
+                            chartData = Object.values(data.grouped).flatMap(item =>
+                                (item.services || [])
+                                .filter(s => Number(s.total_amount) > 0)
+                                .map(service => ({
+                                    label: service.service_name || 'Unknown',
+                                    value: Number(service.total_amount)
+                                }))
+                            );
+                        }
                     } else {
-                        alert('Please select a valid date or range.');
+                        chartData = Object.entries(data.grouped || {})
+                            .filter(([_, item]) => Number(item.total_amount) > 0)
+                            .map(([label, item]) => ({
+                                label,
+                                value: Number(item.total_amount)
+                            }));
+                    }
+
+                    if (!Array.isArray(chartData) || chartData.length === 0) {
+                        $('#todays-income-chart-progress').html('<p class="text-center text-sm text-gray-400">No data available</p>');
                         return;
                     }
-                    $('.heading').text(`${startDate} to ${endDate}`);
-                    report_period.textContent = `From: ${startDate} to ${endDate}`;
-                    loadIncomeData(range, startDate, endDate, employee_id);
-                    fetchEmployerContribution('Filter', employee_id, startDate, endDate);
-                });
 
-                function rollSlots(amount, element, duration = 2000, intervalTime = 50) {
+                    $('#todays-income-chart-progress').empty();
+                    Morris.Donut({
+                        element: 'todays-income-chart-progress',
+                        data: chartData,
+                        colors: ['#8200DB', '#D90082', '#00DB82', '#DB8200', '#0066CC', '#CC0066', '#00CC66', '#CC6600'],
+                        resize: true,
+                        redraw: true
+                    });
+                },
 
+                updateServiceTable(grouped) {
+                    const tbody = $('#service_table tbody');
+                    tbody.empty();
+                    let serviceTotal = 0;
+                    const categoriseServices = $('#categorise_services').is(':checked');
+
+                    if (categoriseServices && grouped && typeof grouped === 'object') {
+                        Object.values(grouped).forEach((section, index) => {
+                            serviceTotal += section.total_amount;
+                            const sectionId = `section-${index}`;
+
+                            tbody.append(`
+                                <tr class="bg-gray-100 dark:bg-gray-700 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                                    data-toggle="${sectionId}" title="Click to expand/collapse services">
+                                    <td class="px-6 py-3 flex items-center gap-2">
+                                        <span class="accordion-icon transition-transform text-[#8200DB] font-bold">▶</span>
+                                        <span>${section.section_name}</span>
+                                    </td>
+                                    <td class="text-right px-6 py-3 text-[#8200DB] font-semibold">
+                                        ${section.total_amount.toLocaleString()}
+                                    </td>
+                                </tr>
+                            `);
+
+                            if (section.services && section.services.length > 0) {
+                                section.services.forEach(service => {
+                                    tbody.append(`
+                                        <tr class="hidden text-sm accordion-row" data-parent="${sectionId}">
+                                            <td class="px-6 py-2 pl-12 text-gray-600 dark:text-gray-400">
+                                                └ ${service.service_name}
+                                            </td>
+                                            <td class="text-right px-6 py-2 text-gray-600 dark:text-gray-400">
+                                                ${service.total_amount.toLocaleString()}
+                                            </td>
+                                        </tr>
+                                    `);
+                                });
+                            }
+                        });
+                    } else {
+                        Object.values(grouped).forEach(item => {
+                            serviceTotal += item.total_amount;
+                            tbody.append(`
+                                <tr>
+                                    <td class="px-6 py-3">${item.service_name || item.label}</td>
+                                    <td class="text-right px-6 py-3">${item.total_amount.toLocaleString()}</td>
+                                </tr>
+                            `);
+                        });
+                    }
+
+                    $('#service_table tfoot td:last').text(serviceTotal.toLocaleString());
+                },
+
+                rollSlots(amount, element, duration = 2000, intervalTime = 50) {
                     const slots = document.querySelectorAll('#' + element);
 
                     slots.forEach(slot => {
-
-                        // Detect percentage values
                         const isPercentage = element.includes('percentage') || element.includes('contri');
-
-                        // Determine decimals
-                        const decimals = isPercentage ?
-                            (amount < 1 ? 2 : 0) :
-                            0;
-
+                        const decimals = isPercentage ? (amount < 1 ? 2 : 0) : 0;
                         const finalValue = Number(amount) || 0;
                         let elapsed = 0;
 
                         const interval = setInterval(() => {
-
                             let randomValue;
 
                             if (isPercentage) {
@@ -589,361 +990,18 @@
                                     slot.textContent = finalValue.toLocaleString();
                                 }
                             }
-
                         }, intervalTime);
                     });
+                },
+
+                showAlert(message) {
+                    alert(message);
                 }
+            };
 
-
-                function fetchEmployerContribution(range = 'Today', employee_id = null, start_date = null, end_date =
-                    null) {
-                    $.ajax({
-                        url: "{{ route('reports.employer.performance') }}",
-                        method: 'GET',
-                        data: {
-                            range: range,
-                            employee_id: employee_id,
-                            start_date: start_date,
-                            end_date: end_date,
-                            report_type: report_type
-                        },
-                        dataType: 'json',
-                        success: function(response) {
-                            // Update range label
-                            $('#range-label').text(response.range_label);
-
-                            // Clear previous table rows
-                            const tbody = $('#employer-table tbody');
-                            tbody.empty();
-                            let totalIncomeSum = 0; // Initialize total
-
-                            response.data.forEach(function(row) {
-                                // Convert string with commas to a number
-                                const income = parseFloat(row.totalIncome.toString().replace(/,/g,
-                                    ''));
-
-                                // Add to running total
-                                totalIncomeSum += income;
-
-                                const tr = `<tr class="border-b border-gray-200 dark:border-gray-700">
-                                        <td class="px-4 py-2">${row.Employee}</td>
-                                        <td class="px-4 py-2">${row.Invoices}</td>
-                                        <td class="px-6 py-2 text-right">${income.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</td>
-                                    </tr>`;
-
-                                tbody.append(tr);
-                            });
-
-                            const formattedTotal = totalIncomeSum.toLocaleString('en-US', {
-                                minimumFractionDigits: 0,
-                                maximumFractionDigits: 2
-                            });
-                            $('#employer-table tfoot tr td:last-child').text(formattedTotal);
-                        },
-                        error: function(xhr, status, error) {
-                            alert('Error fetching employer contributions:', error);
-                            return
-                        }
-                    });
-                }
-
-                function loadIncomeData(range, start_date = null, end_date = null, employee_id = null) {
-                    const categoriseServices = $('#categorise_services').is(':checked');
-
-                    $.ajax({
-                        url: "{{ route('reports.data') }}",
-                        method: "GET",
-                        data: {
-                            range: range,
-                            start_date: start_date,
-                            end_date: end_date,
-                            employee_id: employee_id,
-                            report_type: report_type,
-                            categorise_services: categoriseServices
-                        },
-
-                        dataType: "json",
-                        success: function(data) {
-                            //   1. EMPLOYEE DATA
-
-                            if (data) {
-                                let employeData = data.selectedEmpData;
-                                let employer_contribution = 0;
-
-                                if (employeData && employeData.employee_id) {
-                                    $('#employee_table_div, #employee_table_heading, #employee_table_wrapper')
-                                        .removeClass('hidden');
-
-                                    document.getElementById('emp_name').textContent = employeData.name;
-                                    document.getElementById('rank_position').textContent = employeData.rank ?? '-';
-                                    document.getElementById('emp_expertise').textContent = employeData.expertise;
-                                    document.getElementById('transactions_registered').textContent =
-                                        employeData.performance_positions;
-
-                                    document.getElementById('emp_total_income').textContent =
-                                        Number(employeData.total_income).toLocaleString();
-
-                                    employer_contribution = Number(employeData.total_income);
-                                }
-
-                                /* ===============================
-                                 * 2. INCOME TABLE & TOTAL
-                                 =============================== */
-                                const income_tbody = $('#income_table tbody');
-                                income_tbody.empty();
-
-                                let total_income = 0;
-
-                                const groupedData = Object.entries(data.grouped_by_period).map(
-                                    ([label, value]) => ({
-                                        label,
-                                        value: Number(value)
-                                    })
-                                );
-
-                                groupedData.sort((a, b) => new Date(a.label) - new Date(b.label));
-
-                                groupedData.forEach(item => {
-                                    total_income += item.value;
-                                    income_tbody.append(`
-                                    <tr>
-                                        <td class="px-6 py-3">${item.label}</td>
-                                        <td class="text-right px-6 py-3">${item.value.toLocaleString()}</td>
-                                    </tr>
-                                `);
-                                });
-
-                                $('#income_table tfoot td:last').text(total_income.toLocaleString());
-
-                                /* ===============================
-                                 * 3. ROLLING COUNTERS
-                                 =============================== */
-                                rollSlots(data.expected_income_target, 'expected_income', 800, 100);
-                                rollSlots(total_income, 'achieved_income', 800, 100);
-
-                                if (employeData && employeData.employee_id) {
-                                    rollSlots(total_income, 'total_income_card', 800, 100);
-                                }
-
-                                /* ===============================
-                                 * 4. PERCENTAGE ACHIEVEMENT (FIXED)
-                                 =============================== */
-                                let percentageAchievement = 0;
-
-                                if (data.expected_income_target > 0 && total_income > 0) {
-                                    percentageAchievement =
-                                        (total_income / data.expected_income_target) * 100;
-                                }
-
-                                // Display logic
-                                let percentageAchievementNumeric =
-                                    percentageAchievement < 1 ?
-                                    Number(percentageAchievement.toFixed(2)) :
-                                    Number(percentageAchievement.toFixed(2));
-
-                                // Optional UX minimum visibility
-                                if (percentageAchievementNumeric > 0 && percentageAchievementNumeric < 0.1) {
-                                    percentageAchievementNumeric = 0.1;
-                                }
-
-                                rollSlots(
-                                    percentageAchievementNumeric,
-                                    'percentage_improvement',
-                                    1000,
-                                    100
-                                );
-
-                                //  * 5. PERFORMANCE DONUT
-                                $('#todays-income-performance-progress').empty();
-
-                                const remainingPercentage = Math.max(
-                                    0,
-                                    100 - percentageAchievementNumeric
-                                );
-
-                                Morris.Donut({
-                                    element: 'todays-income-performance-progress',
-                                    data: [{
-                                            label: 'Achieved',
-                                            value: percentageAchievementNumeric
-                                        },
-                                        {
-                                            label: 'Remaining',
-                                            value: remainingPercentage
-                                        }
-                                    ],
-                                    colors: ['#CC0066', '#E5E5E5'],
-                                    resize: true,
-                                    redraw: true,
-                                    formatter: y => y.toFixed(2) + '%'
-                                });
-
-                                /* ===============================
-                                 * 6. LINE CHART
-                                 =============================== */
-                                $('#income-chart').empty();
-
-                                new Morris.Line({
-                                    element: 'income-chart',
-                                    data: groupedData.map(d => ({
-                                        date: d.label,
-                                        income: d.value
-                                    })),
-                                    xkey: 'date',
-                                    ykeys: ['income'],
-                                    labels: ['Income'],
-                                    parseTime: false,
-                                    resize: true,
-                                    lineColors: ['#1e88e5']
-                                });
-
-                                /* ===============================
-                                 * 7. SERVICE DONUT
-                                 =============================== */
-                                let chartData = [];
-
-                                if (report_type.toLowerCase() === 'income') {
-
-                                    if (categoriseServices && data.grouped && typeof data.grouped === 'object') {
-
-                                        chartData = Object.values(data.grouped)
-                                            .filter(section => Number(section.total_amount) > 0)
-                                            .map(section => ({
-                                                label: section.section_name || 'Unknown',
-                                                value: Number(section.total_amount)
-                                            }));
-
-                                    } else {
-
-                                        chartData = Object.values(data.grouped).flatMap(item =>
-                                            (item.services || [])
-                                            .filter(s => Number(s.total_amount) > 0)
-                                            .map(service => ({
-                                                label: service.service_name || 'Unknown',
-                                                value: Number(service.total_amount)
-                                            }))
-                                        );
-                                    }
-
-                                } else {
-
-                                    chartData = Object.entries(data.grouped || {})
-                                        .filter(([_, item]) => Number(item.total_amount) > 0)
-                                        .map(([label, item]) => ({
-                                            label,
-                                            value: Number(item.total_amount)
-                                        }));
-                                }
-
-                                if (!Array.isArray(chartData) || chartData.length === 0) {
-                                    $('#todays-income-chart-progress')
-                                        .html('<p class="text-center text-sm text-gray-400">No data available</p>');
-                                    return;
-                                } else {
-
-
-                                    $('#todays-income-chart-progress').empty();
-                                    Morris.Donut({
-                                        element: 'todays-income-chart-progress',
-                                        data: chartData,
-                                        colors: [
-                                            '#8200DB', '#D90082', '#00DB82', '#DB8200',
-                                            '#0066CC', '#CC0066', '#00CC66', '#CC6600'
-                                        ],
-                                        resize: true,
-                                        redraw: true
-                                    });
-                                }
-
-                                /* ===============================
-                                 * 8. SERVICE TABLE
-                                 =============================== */
-                                const tbody = $('#service_table tbody');
-                                tbody.empty();
-                                let serviceTotal = 0;
-
-                                if (categoriseServices && data.grouped && typeof data.grouped === 'object') {
-
-                                    Object.values(data.grouped).forEach((section, index) => {
-                                        serviceTotal += section.total_amount;
-
-                                        const sectionId = `section-${index}`;
-
-                                        tbody.append(`
-                                            <tr 
-                                                class="bg-gray-100 dark:bg-gray-700 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                                                data-toggle="${sectionId}"
-                                                title="Click to expand/collapse services"
-                                            >
-                                                <td class="px-6 py-3 flex items-center gap-2">
-                                                    <span class="accordion-icon transition-transform text-[#8200DB] font-bold">▶</span>
-                                                    <span class="">${section.section_name}</span>
-                                                </td>
-                                                <td class="text-right px-6 py-3 text-[#8200DB] font-semibold">
-                                                    ${section.total_amount.toLocaleString()}
-                                                </td>
-                                            </tr>
-                                        `);
-
-                                        // SERVICE ROWS (HIDDEN BY DEFAULT)
-                                        if (section.services && section.services.length > 0) {
-                                            section.services.forEach(service => {
-                                                tbody.append(`
-                                                    <tr 
-                                                        class="hidden text-sm accordion-row"
-                                                        data-parent="${sectionId}"
-                                                    >
-                                                        <td class="px-6 py-2 pl-12 text-gray-600 dark:text-gray-400">
-                                                            └ ${service.service_name}
-                                                        </td>
-                                                        <td class="text-right px-6 py-2 text-gray-600 dark:text-gray-400 ">
-                                                            ${service.total_amount.toLocaleString()}
-                                                        </td>
-                                                    </tr>
-                                                `);
-                                            });
-                                        }
-                                    });
-                                } else {
-
-                                    chartData.forEach(item => {
-                                        serviceTotal += item.value;
-                                        tbody.append(`
-                                        <tr>
-                                            <td class="px-6 py-3">${item.label}</td>
-                                            <td class="text-right px-6 py-3">${item.value.toLocaleString()}</td>
-                                        </tr>
-                                    `);
-                                    });
-                                }
-
-                                $('#service_table tfoot td:last').text(serviceTotal.toLocaleString());
-
-                                /* ===============================
-                                 * 9. EMPLOYEE CONTRIBUTION
-                                 =============================== */
-                                if (total_income > 0 && employer_contribution > 0) {
-                                    const employerContributionPercentage =
-                                        (employer_contribution / total_income) * 100;
-
-                                    rollSlots(
-                                        employerContributionPercentage,
-                                        'total_emp_contribution_card',
-                                        1500,
-                                        100
-                                    );
-
-                                    document.getElementById('contri_per_total').textContent =
-                                        employerContributionPercentage.toFixed(2);
-                                }
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            alert("Error loading chart data:", error);
-                            return;
-                        }
-                    });
-                }
+            // Initialize when document is ready
+            $(document).ready(() => {
+                ReportManager.init();
             });
         </script>
 </x-app-layout>

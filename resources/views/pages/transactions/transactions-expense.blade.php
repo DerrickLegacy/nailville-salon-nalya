@@ -1,41 +1,37 @@
 <x-app-layout>
-    <div class="px-2 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 w-full max-w-9xl mx-auto">
-        <!-- Page Header -->
-        <div class="mb-4 sm:mb-6 fade-in">
-            <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:justify-between sm:items-start">
-                <div class="flex-1">
-                    <nav class="flex mb-2" aria-label="Breadcrumb">
-                        <ol class="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
-                            <li><a href="#" class="text-gray-500 hover:text-purple-600 truncate">Transactions</a></li>
-                            <li class="flex items-center">
-                                <span class="text-gray-400 mx-1 sm:mx-2">›</span>
-                                <a href="{{ route('transactions.' . strtolower($transactionType)) }}"
-                                    class="text-gray-500 hover:text-purple-600 truncate">
-                                    {{ $transactionType }}
-                                </a>
-                            </li>
-                            <li class="flex items-center">
-                                <span class="text-gray-400 mx-1 sm:mx-2">›</span>
-                                <span class="text-gray-500 truncate">List</span>
-                            </li>
-                        </ol>
-                    </nav>
-                    <h1 class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 dark:text-gray-100">
-                        {{ $transactionType }} Transactions
-                    </h1>
-                    <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Manage your salon's {{ strtolower($transactionType) }} transactions.
-                    </p>
+      <div class="px-2 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 w-full max-w-9xl mx-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-4">
+            <div class="mb-4 sm:mb-6 fade-in">
+                <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:justify-between sm:items-start">
+                    <div class="flex-1">
+                        <nav class="flex mb-2" aria-label="Breadcrumb">
+                            <ol class="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
+                                <li><a href="#" class="text-gray-500 hover:text-purple-600 truncate">Transactions</a></li>
+                                <li class="flex items-center">
+                                    <span class="text-gray-400 mx-1 sm:mx-2">›</span>
+                                    <a href="{{ route('transactions.' . strtolower($transactionType)) }}"
+                                        class="text-gray-500 hover:text-purple-600 truncate">
+                                        {{ $transactionType }}
+                                    </a>
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="text-gray-400 mx-1 sm:mx-2">›</span>
+                                    <span class="text-gray-500 truncate">List</span>
+                                </li>
+                            </ol>
+                        </nav>
+                        <h1 class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 dark:text-gray-100">
+                            {{ $transactionType }} Transactions
+                        </h1>
+                        <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            Manage your salon's {{ strtolower($transactionType) }} transactions.
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Actions Section -->
-        <div class="mb-4 sm:mb-6 fade-in">
-            <div class="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-end">
-
-                <!-- Add Transaction Button -->
-                <div x-data="{ modalIsOpen: false }" class="w-full sm:w-auto">
+            <div class=" fade-in flex flex-col h-full ">
+                <div x-data="{ modalIsOpen: false }" class="flex justify-end w-full sm:w-auto mt-auto">
                     <button @click="modalIsOpen = true"
                         class="w-full sm:w-auto px-4 py-2.5 bg-purple-700 text-white text-sm font-medium rounded-lg hover:bg-purple-800 dark:bg-purple-600 dark:hover:bg-purple-700 transition-colors duration-200 flex items-center justify-center">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -43,6 +39,7 @@
                         </svg>
                         Add Transaction
                     </button>
+
                     <!-- Modal backdrop -->
                     <div x-show="modalIsOpen" x-transition.opacity
                         class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -88,7 +85,7 @@
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                                 Receipt ID
                                             </label>
-                                            <input type="text" name="receipt_id" value="{{ $transactionType === 'Expense' ? $exp_transaction_id : '' }}"
+                                            <input type="text" name="receipt_id"
                                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
                                                 required>
                                         </div>
@@ -102,8 +99,28 @@
                                                 class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base">
                                         </div>
                                     </div>
+
                                     <!-- Service/Expense and Amount Grid -->
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                        @if ($transactionType === 'Income')
+                                        <!-- Service Offered -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Service Offered
+                                            </label>
+                                            <select name="service_offered" id="service_offered"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                                required>
+                                                <option value="">-- Select Service --</option>
+                                                @foreach ($services as $service)
+                                                <option value="{{ $service->name }}" data-price="{{ $service->price }}" data-service-id="{{ $service->id }}">
+                                                    {{ $service->name }}
+                                                </option>
+                                                @endforeach
+                                            </select>
+                                            <input type="hidden" name="service_id" id="service_id" required />
+                                        </div>
+                                        @else
                                         <!-- Expense Category -->
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -117,19 +134,20 @@
                                                 <option value="Salaries">Salaries & Wages</option>
                                                 <option value="Allowances">Allowances / Bonuses</option>
                                                 <option value="Training">Staff Training / Workshops</option>
-                                                <option value="Utilities">Utilities (Electricity, Water, Internet)</option>
+                                                <option value="Utilities">Utilities</option>
                                                 <option value="BeautyProducts">Beauty Products</option>
                                                 <option value="HairSupplies">Hair Supplies</option>
                                                 <option value="NailSupplies">Nail Supplies</option>
-                                                <option value="Cleaning">Cleaning Supplies / Laundry</option>
-                                                <option value="FurnitureEquipment">Furniture & Equipment Purchase</option>
-                                                <option value="Maintenance">Equipment Maintenance & Repairs</option>
+                                                <option value="Cleaning">Cleaning Supplies</option>
+                                                <option value="FurnitureEquipment">Furniture & Equipment</option>
+                                                <option value="Maintenance">Maintenance</option>
                                                 <option value="Marketing">Marketing & Advertising</option>
-                                                <option value="Transport">Transport / Delivery Costs</option>
-                                                <option value="Licenses">Licenses, Permits & Insurance</option>
-                                                <option value="Miscellaneous">Miscellaneous / Other</option>
+                                                <option value="Transport">Transport / Delivery</option>
+                                                <option value="Licenses">Licenses / Insurance</option>
+                                                <option value="Miscellaneous">Miscellaneous</option>
                                             </select>
                                         </div>
+                                        @endif
 
                                         <!-- Amount -->
                                         <div>
@@ -186,13 +204,14 @@
                                             </select>
                                         </div>
                                     </div>
+
                                     <!-- Notes -->
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Notes
                                         </label>
                                         <textarea name="notes" rows="3"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base resize-none">Expense payment has been made.</textarea>
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base resize-none">Service payments have been made.</textarea>
                                     </div>
 
                                     <!-- Recorded By -->
@@ -223,126 +242,125 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Statistics Cards -->
-        <div class="mb-4 sm:mb-6">
-            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
-                <!-- Total Records -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
-                    <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">Total Records</span>
-                    <span id="totalRecordsCount" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
-                </div>
+    <!-- Statistics Cards -->
+    <div class="px-2 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 w-full max-w-9xl mx-auto">
+        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
+            <!-- Total Records -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
+                <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">Total Records</span>
+                <span id="totalRecordsCount" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
+            </div>
 
-                <!-- Current Page -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
-                    <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">Current Page</span>
-                    <div class="shs">Shs.</div>
-                    <span id="currnetPage" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
-                </div>
+            <!-- Current Page -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
+                <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">Current Page</span>
+                <span id="currnetPage" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
+            </div>
 
-                <!-- All Pages Total -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
-                    <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">All Pages Total</span>
-                    <div class="shs">Shs.</div>
-                    <span id="totalAllPagesAmountRet" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
-                </div>
+            <!-- All Pages Total -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
+                <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">All Pages Total</span>
+                <span id="totalAllPagesAmountRet" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
+            </div>
 
-                <!-- Total Income/Expense -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px] col-span-2 sm:col-span-2 lg:col-span-1">
-                    <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">Total {{ $transactionType }}</span>
-                    <div class="shs">Shs.</div>
-                    <span id="total{{ $transactionType }}" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
-                </div>
+            <!-- Total Income/Expense -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
+                <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">Total {{ $transactionType }}</span>
+                <span id="total{{ $transactionType }}" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
             </div>
         </div>
-        <!-- Main Content Area -->
-        <div class="fade-in">
-            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg sm:rounded-xl overflow-hidden">
-                <!-- Search and Filter Section -->
-                <div class="p-3 sm:p-4 lg:p-6 border-b border-gray-200 dark:border-gray-700">
-                    <div class="flex flex-col space-y-3 sm:space-y-4 lg:flex-row lg:space-y-0 lg:items-center lg:justify-between">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            <!-- Search -->
-                            <div class="flex-1 lg:max-w-md">
-                                <label for="simple-search" class="sr-only">Search</label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-                                    <input type="text" id="simple-search" name="simple-search"
-                                        class="w-full pl-8 sm:pl-10 pr-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                                        placeholder="Search transactions...">
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="px-2 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 w-full max-w-9xl mx-auto">
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg sm:rounded-xl overflow-hidden">
+            <!-- Search and Filter Section -->
+            <div class="p-3 sm:p-4 lg:p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex flex-col space-y-3 sm:space-y-4 lg:flex-row lg:space-y-0 lg:items-center lg:justify-between">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <!-- Search -->
+                        <div class="flex-1 lg:max-w-md">
+                            <label for="simple-search" class="sr-only">Search</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                    </svg>
                                 </div>
+                                <input type="text" id="simple-search" name="simple-search"
+                                    class="w-full pl-8 sm:pl-10 pr-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                    placeholder="Search transactions...">
                             </div>
-                            <div class="w-full sm:w-auto sm:flex-1 sm:max-w-xs">
-                                <x-datepicker class="w-full" />
-                            </div>
-
                         </div>
-                        <!-- Action Buttons -->
-                        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-                            <!-- Export Button -->
-                            <button type="button" id="export-button"
-                                class="flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors duration-200">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                <span class="hidden sm:inline">Export PDF</span>
-                                <span class="sm:hidden">Export</span>
-                            </button>
-
-                            <!-- Filter Dropdown -->
-                            <x-dropdown-income-filter align="right" type="expense" :filterPageCount="false" :showActions="false" />
+                        <div class="w-full sm:w-auto sm:flex-1 sm:max-w-xs">
+                            <x-datepicker class="w-full" />
                         </div>
+
+                    </div>
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                        <!-- Export Button -->
+                        <button type="button" id="export-button"
+                            class="flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors duration-200">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span class="hidden sm:inline">Export PDF</span>
+                            <span class="sm:hidden">Export</span>
+                        </button>
+
+                        <!-- Filter Dropdown -->
+                        <x-dropdown-income-filter align="right" type="expense" :filterPageCount="false" :showActions="false" />
                     </div>
                 </div>
+            </div>
 
-                <!-- Loading Spinner -->
-                <div id="transactions-spinner" class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-800/70 z-50 hidden">
-                    <div class="flex items-center space-x-2">
-                        <svg class="animate-spin w-6 h-6 sm:w-8 sm:h-8 text-purple-600" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span class="text-sm text-gray-600 dark:text-gray-400">Loading...</span>
-                    </div>
+            <!-- Loading Spinner -->
+            <div id="transactions-spinner" class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-800/70 z-50 hidden">
+                <div class="flex items-center space-x-2">
+                    <svg class="animate-spin w-6 h-6 sm:w-8 sm:h-8 text-purple-600" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Loading...</span>
                 </div>
-                <!-- Table Container -->
-                <div class="relative">
-                    <div class="overflow-x-auto">
-                        <div id="transactions-export-wrapper">
-                            <table id="transactions-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                    <tr>
-                                        <th class="px-2 sm:px-4 py-3 min-w-[100px]">Date</th>
-                                        <th class="px-2 sm:px-4 py-3 min-w-[120px]">Expense</th>
-                                        <th class="px-2 sm:px-4 py-3 min-w-[100px] hidden sm:table-cell">Receipt ID</th>
-                                        <th class="px-2 sm:px-4 py-3 min-w-[120px] hidden md:table-cell">Recorded By</th>
-                                        <th class="px-2 sm:px-4 py-3 min-w-[100px] hidden lg:table-cell">Payment</th>
-                                        <th class="px-2 sm:px-4 py-3 min-w-[100px] text-right">Amount</th>
-                                        <th class="px-2 sm:px-4 py-3 min-w-[100px] text-center">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="transactions-wrapper" class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                                    <!-- DataTables will populate this -->
-                                </tbody>
-                                <tfoot class="bg-gray-50 dark:bg-gray-700">
-                                    <tr class="font-semibold text-gray-900 dark:text-white">
-                                        <th class="px-2 sm:px-4 py-3 text-left">Total</th>
-                                        <th class="px-2 sm:px-4 py-3 hidden sm:table-cell" colspan="3"></th>
-                                        <th class="px-2 sm:px-4 py-3 hidden lg:table-cell"></th>
-                                        <th class="px-2 sm:px-4 py-3 text-right" id="totalPageAmount">0</th>
-                                        <th class="px-2 sm:px-4 py-3"></th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
+            </div>
+            <!-- Table Container -->
+            <div class="relative">
+                <div class="overflow-x-auto">
+                    <div id="transactions-export-wrapper">
+                        <table id="transactions-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th class="px-2 sm:px-4 py-3 min-w-[100px]">Date</th>
+                                    <th class="px-2 sm:px-4 py-3 min-w-[120px]">Expense</th>
+                                    <th class="px-2 sm:px-4 py-3 min-w-[100px] hidden sm:table-cell">Receipt ID</th>
+                                    <th class="px-2 sm:px-4 py-3 min-w-[120px] hidden md:table-cell">Recorded By</th>
+                                    <th class="px-2 sm:px-4 py-3 min-w-[100px] hidden lg:table-cell">Payment</th>
+                                    <th class="px-2 sm:px-4 py-3 min-w-[100px] text-right">Amount</th>
+                                    <th class="px-2 sm:px-4 py-3 min-w-[100px] text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-wrapper" class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                <!-- DataTables will populate this -->
+                            </tbody>
+                            <tfoot class="bg-gray-50 dark:bg-gray-700">
+                                <tr class="font-semibold text-gray-900 dark:text-white">
+                                    <th class="px-2 sm:px-4 py-3 text-left">Total</th>
+                                    <th class="px-2 sm:px-4 py-3 hidden sm:table-cell" colspan="3"></th>
+                                    <th class="px-2 sm:px-4 py-3 hidden lg:table-cell"></th>
+                                    <th class="px-2 sm:px-4 py-3 text-right" id="totalPageAmount">0</th>
+                                    <th class="px-2 sm:px-4 py-3"></th>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- </div> -->
 
         <input type="hidden" id="transaction_type" value="{{ $transactionType }}">
     </div>
