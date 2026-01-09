@@ -949,7 +949,7 @@
                             serviceTotal += item.total_amount;
                             tbody.append(`
                                 <tr>
-                                    <td class="px-6 py-3">${item.service_name || item.label}</td>
+                                    <td class="px-6 py-3">${item.services[0].service_name || item.label}</td>
                                     <td class="text-right px-6 py-3">${item.total_amount.toLocaleString()}</td>
                                 </tr>
                             `);
