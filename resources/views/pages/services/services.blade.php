@@ -72,7 +72,7 @@
                     <label class="block text-sm font-medium text-gray-700 dark:text-[#8200DB]  mb-2">Type</label>
                     <select id="typeFilter"
                         class="form-select w-full rounded-lg border-[#8200DB]  dark:border-[#8200DB] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:bg-gray-700 dark:text-[#8200DB] ">
-                        <option value="">--select type--</option>
+                        <option value="">-- Select Type --</option>
                         <option value="income">Income</option>
                         <option value="expense">Expense</option>
                     </select>
@@ -636,8 +636,12 @@
                 if (!editMode) {
                     $('#serviceForm')[0].reset();
                     currentServiceId = null;
+                    // Load metadata for new services
+                    loadServiceMeta(callback);
+                } else {
+                    // For edit mode, callback is executed after metadata is loaded in loadServiceData
+                    if (callback) callback();
                 }
-                // loadServiceMeta(callback);
             }
 
             function closeModal() {
@@ -657,26 +661,46 @@
                     url: `/admin/services/${serviceId}`,
                     type: 'GET',
                     success: function(response) {
-
-                        console.log("REsp : ", response);
+                        console.log("Service Response: ", response);
                         if (response.success) {
                             const service = response.data;
                             currentServiceId = service.id;
 
-                            $('#serviceCode').val(service.service_code);
+                            // Set basic service data first
                             $('#serviceName').val(service.name);
                             $('#servicePrice').val(service.price);
                             $('#serviceDescription').val(service.description);
                             $('#serviceStatus').val(service.status);
+
+                            // Set service type FIRST - this is crucial for loading correct metadata
                             $('#serviceType').val(service.trans_type);
 
-                            openModal(true, function() {
-                                $('#serviceCategory').val(service.category.id);
-                                $('#serviceSection').val(service.section.id);
+                            // Open modal first
+                            openModal(true);
+
+                            // Then load metadata based on the service type and set dropdowns
+                            loadServiceMeta(function() {
+                                // After metadata is loaded, set the category and section values
+                                if (service.category && service.category.id) {
+                                    $('#serviceCategory').val(service.category.id);
+                                } else {
+                                    console.warn('Service category not found:', service
+                                        .category);
+                                }
+
+                                if (service.section && service.section.id) {
+                                    $('#serviceSection').val(service.section.id);
+                                } else {
+                                    console.warn('Service section not found:', service.section);
+                                }
+
+                                console.log('Set category to:', service.category?.id,
+                                    'Set section to:', service.section?.id);
                             });
                         }
                     },
-                    error: function() {
+                    error: function(xhr) {
+                        console.error('Failed to load service data:', xhr);
                         showNotification('error', 'Failed to load service data');
                     }
                 });

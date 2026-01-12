@@ -40,22 +40,22 @@ categories ─┘
 
 New
 alter table `services`
-add column trans_type varchar(200) not NUll after section_id
+add column trans_type varchar(200) not NUll after section_id;
 
 update services
-set trans_type="income"
+set trans_type="income";
 
 
 alter table sections
-add column service_type varchar(200) not null	after name
+add column service_type varchar(200) not null	after name;
 
-update sections set service_type = "income"
+update sections set service_type = "income";
 
 alter TABLE categories
 add column type	varchar(100) not null after name;
 
 update categories
-set type="income"
+set type="income";
 
 INSERT INTO `categories` (`id`, `name`, `type`, `description`)
 VALUES
