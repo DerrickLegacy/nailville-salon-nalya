@@ -26,7 +26,14 @@ class TransactionController extends Controller
             'name' => $e->full_name,
         ]);
 
-        $services = Service::where('status', 'Active')->orderBy('name')->get();
+
+        // $transactionType = ;
+
+        $services = Service::where([
+            ['trans_type', strtolower($request->route('transaction_type')) ?? strtolower($request->get('transaction_type', 'Income'))],
+            ['status', 'Active']
+        ])->orderBy('name')->get();
+
 
         $latestExpenseId = Transaction::where('transaction_type', 'Expense')
             ->selectRaw('CAST(SUBSTRING(receipt_id, 5) AS UNSIGNED) as numeric_id')
@@ -37,7 +44,6 @@ class TransactionController extends Controller
         $formattedExpenseId = "EXP-" . str_pad($nextNumeric, 4, "0", STR_PAD_LEFT);
 
         // dd($formattedExpenseId);
-
 
         $transactionType = $request->route('transaction_type')
             ?? $request->get('transaction_type', 'Income');
@@ -55,7 +61,6 @@ class TransactionController extends Controller
             'exp_transaction_raw'   => $nextNumeric,
         ]);
     }
-
 
     public function getRecords(Request $request)
     {
@@ -199,6 +204,8 @@ class TransactionController extends Controller
         // Generate a unique transaction_id
         $transactionId = strtoupper(Str::random(10));
 
+        // dd($validated);
+
         $transaction = Transaction::create([
             'employee_id'        => $validated['employee_id'] ?? null,
             'recorded_by'        => Auth::id(),
@@ -214,7 +221,6 @@ class TransactionController extends Controller
             'notes'              => $validated['notes'] ?? null,
             'date'               => isset($validated['date']) ? date('Y-m-d', strtotime($validated['date'])) : now(),
         ]);
-
         return redirect()->back()->with('success', 'Transaction saved successfully!');
     }
 

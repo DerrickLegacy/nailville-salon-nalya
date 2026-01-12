@@ -169,6 +169,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::put('/{id}', [App\Http\Controllers\ServiceController::class, 'update'])->name('update');
         Route::delete('/{id}', [App\Http\Controllers\ServiceController::class, 'destroy'])->name('destroy');
 
+        // Bulk operations
+        Route::post('/bulk/status', [App\Http\Controllers\ServiceController::class, 'bulkUpdateStatus'])->name('bulk.status');
+        Route::delete('/bulk/delete', [App\Http\Controllers\ServiceController::class, 'bulkDelete'])->name('bulk.delete');
+        
+        // Statistics
+        Route::get('/statistics/data', [App\Http\Controllers\ServiceController::class, 'statistics'])->name('statistics');
+
         // Categories management
         Route::get('/categories/list', [App\Http\Controllers\ServiceController::class, 'getCategories'])->name('categories.list');
         Route::post('/categories/store', [App\Http\Controllers\ServiceController::class, 'storeCategory'])->name('categories.store');

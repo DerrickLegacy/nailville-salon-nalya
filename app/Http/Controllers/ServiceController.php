@@ -25,7 +25,7 @@ class ServiceController extends Controller
     public function list(Request $request)
     {
         try {
-            $query = Service::with(['category:id,name', 'section:id,name']);
+            $query = Service::with(['category:id,name,type', 'section:id,name,service_type']);
 
             /** 🔍 Search */
             if (!empty($request->search['value'])) {
@@ -35,6 +35,7 @@ class ServiceController extends Controller
                     $q->where('services.name', 'like', "%{$search}%")
                         ->orWhere('service_code', 'like', "%{$search}%")
                         ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhere('trans_type', 'like', "%{$search}%")
                         ->orWhereHas(
                             'category',
                             fn($c) =>
@@ -61,18 +62,23 @@ class ServiceController extends Controller
                 $query->where('section_id', $request->section_id);
             }
 
+            if ($request->filled('trans_type')) {
+                $query->where('trans_type', $request->trans_type);
+            }
+
             /** 📊 Counts */
             $totalRecords = Service::count();
             $filteredRecords = $query->count();
 
             /** ↕ Sorting */
             $columns = [
+                'created_at',
+                'trans_type',
                 'name',
                 'category_id',
                 'section_id',
                 'price',
-                'status',
-                'created_at'
+                'status'
             ];
 
             $orderColumnIndex = $request->order[0]['column'] ?? 0;
@@ -81,7 +87,7 @@ class ServiceController extends Controller
             if (isset($columns[$orderColumnIndex])) {
                 $query->orderBy($columns[$orderColumnIndex], $orderDir);
             } else {
-                $query->orderBy('name', 'asc');
+                $query->orderBy('created_at', 'desc');
             }
 
             /** 📄 Pagination */
@@ -93,11 +99,13 @@ class ServiceController extends Controller
                     'id' => $service->id,
                     'service_code' => $service->service_code,
                     'name' => $service->name,
+                    'trans_type' => ucfirst($service->trans_type),
                     'category' => $service->category?->name ?? 'N/A',
                     'section' => $service->section?->name ?? 'N/A',
                     'price' => number_format($service->price, 0),
                     'status' => $service->status,
                     'created_at' => $service->created_at->format('Y-m-d'),
+                    'description' => $service->description
                 ]);
 
             return response()->json([
@@ -130,8 +138,12 @@ class ServiceController extends Controller
                 'section_id' => 'required|exists:sections,id',
                 'price' => 'required|numeric|min:0',
                 'description' => 'nullable|string|max:1000',
-                'status' => 'required|in:Active,Inactive'
+                'status' => 'required|in:Active,Inactive',
+                'trans_type' => 'required|in:income,expense'
             ]);
+
+            // Validate that category and section match the trans_type
+            $this->validateServiceTypeConsistency($data['category_id'], $data['section_id'], $data['trans_type']);
 
             // Standardize name: trim and capitalize words
             $data['name'] = ucwords(strtolower(trim($data['name'])));
@@ -157,7 +169,8 @@ class ServiceController extends Controller
             Log::error('Service creation failed: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create service. Please try again later.'
+                'message' => 'Failed to create service. Please try again later.',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -190,22 +203,26 @@ class ServiceController extends Controller
         try {
             $service = Service::findOrFail($id);
 
-
-
-
             $data = $request->validate([
                 'name' => 'required|max:255',
                 'category_id' => 'required|exists:categories,id',
                 'section_id' => 'required|exists:sections,id',
                 'price' => 'required|numeric|min:0',
-                'description' => 'nullable',
-                'status' => 'required|in:Active,Inactive'
+                'description' => 'nullable|string|max:1000',
+                'status' => 'required|in:Active,Inactive',
+                'trans_type' => 'required|in:income,expense'
             ]);
+
+            // Validate that category and section match the trans_type
+            $this->validateServiceTypeConsistency($data['category_id'], $data['section_id'], $data['trans_type']);
 
             // Standardize name: trim and capitalize words
             $data['name'] = ucwords(strtolower(trim($data['name'])));
 
-            $service_code = $this->generateServiceCode($data['name']). $id;
+            // Update service code if name changed
+            if ($service->name !== $data['name']) {
+                $data['service_code'] = $this->generateServiceCode($data['name']);
+            }
 
             $service->update($data);
 
@@ -255,7 +272,8 @@ class ServiceController extends Controller
             Log::error('Service deletion failed: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete service'
+                'message' => 'Failed to delete service',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -263,13 +281,22 @@ class ServiceController extends Controller
     /**
      * Get categories and sections for dropdowns
      */
-    public function meta()
+    public function meta(Request $request)
     {
         try {
-            return response()->json([
-                'categories' => Category::select('id', 'name')->orderBy('name')->get(),
-                'sections' => Section::select('id', 'name')->orderBy('name')->get()
-            ]);
+            $serviceType = $request->input('serviceType');
+
+            if ($serviceType) {
+                return response()->json([
+                    'categories' => Category::select('id', 'name', 'type')->where('type', $serviceType)->orderBy('name')->get(),
+                    'sections' => Section::select('id', 'name', 'service_type')->where('service_type', $serviceType)->orderBy('name')->get()
+                ]);
+            } else {
+                return response()->json([
+                    'categories' => Category::select('id', 'name', 'type')->orderBy('name')->get(),
+                    'sections' => Section::select('id', 'name', 'service_type')->orderBy('name')->get()
+                ]);
+            }
         } catch (\Exception $e) {
             Log::error('Meta data fetch failed: ' . $e->getMessage());
             return response()->json([
@@ -304,7 +331,8 @@ class ServiceController extends Controller
         try {
             $data = $request->validate([
                 'name' => 'required|max:255|unique:sections,name',
-                'description' => 'nullable|string|max:1000'
+                'description' => 'nullable|string|max:1000',
+                'service_type' => 'required|in:income,expense'
             ]);
 
             $section = Section::create($data);
@@ -336,7 +364,8 @@ class ServiceController extends Controller
 
             $data = $request->validate([
                 'name' => 'required|max:255|unique:sections,name,' . $id,
-                'description' => 'nullable|string|max:1000'
+                'description' => 'nullable|string|max:1000',
+                'service_type' => 'required|in:income,expense'
             ]);
 
             $section->update($data);
@@ -414,7 +443,8 @@ class ServiceController extends Controller
         try {
             $data = $request->validate([
                 'name' => 'required|max:255|unique:categories,name',
-                'description' => 'nullable|string|max:1000'
+                'description' => 'nullable|string|max:1000',
+                'type' => 'required|in:income,expense'
             ]);
 
             $category = Category::create($data);
@@ -446,7 +476,8 @@ class ServiceController extends Controller
 
             $data = $request->validate([
                 'name' => 'required|max:255|unique:categories,name,' . $id,
-                'description' => 'nullable|string|max:1000'
+                'description' => 'nullable|string|max:1000',
+                'type' => 'required|in:income,expense'
             ]);
 
             $category->update($data);
@@ -523,5 +554,120 @@ class ServiceController extends Controller
         }
 
         return $serviceCode;
+    }
+
+    /**
+     * Validate that category and section types match the service trans_type
+     */
+    private function validateServiceTypeConsistency($categoryId, $sectionId, $transType)
+    {
+        $category = Category::find($categoryId);
+        $section = Section::find($sectionId);
+
+        if ($category && $category->type !== $transType) {
+            throw new \Exception("Selected category type ({$category->type}) does not match service type ({$transType})");
+        }
+
+        if ($section && $section->service_type !== $transType) {
+            throw new \Exception("Selected section type ({$section->service_type}) does not match service type ({$transType})");
+        }
+    }
+
+    /**
+     * Bulk update services status
+     */
+    public function bulkUpdateStatus(Request $request)
+    {
+        try {
+            $data = $request->validate([
+                'service_ids' => 'required|array',
+                'service_ids.*' => 'exists:services,id',
+                'status' => 'required|in:Active,Inactive'
+            ]);
+
+            $updated = Service::whereIn('id', $data['service_ids'])
+                ->update(['status' => $data['status']]);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully updated {$updated} services to {$data['status']} status"
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Bulk status update failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update services status'
+            ], 500);
+        }
+    }
+
+    /**
+     * Bulk delete services
+     */
+    public function bulkDelete(Request $request)
+    {
+        try {
+            $data = $request->validate([
+                'service_ids' => 'required|array',
+                'service_ids.*' => 'exists:services,id'
+            ]);
+
+            // Check if any services have transactions
+            $servicesWithTransactions = Service::whereIn('id', $data['service_ids'])
+                ->whereHas('transactions')
+                ->pluck('name')
+                ->toArray();
+
+            if (!empty($servicesWithTransactions)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot delete services with transactions: ' . implode(', ', $servicesWithTransactions)
+                ], 422);
+            }
+
+            $deleted = Service::whereIn('id', $data['service_ids'])->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully deleted {$deleted} services"
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Bulk delete failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete services'
+            ], 500);
+        }
+    }
+
+    /**
+     * Get service statistics
+     */
+    public function statistics()
+    {
+        try {
+            $stats = [
+                'total_services' => Service::count(),
+                'active_services' => Service::where('status', 'Active')->count(),
+                'inactive_services' => Service::where('status', 'Inactive')->count(),
+                'income_services' => Service::where('trans_type', 'income')->count(),
+                'expense_services' => Service::where('trans_type', 'expense')->count(),
+                'services_by_category' => Category::withCount('services')->get(),
+                'services_by_section' => Section::withCount('services')->get(),
+                'average_price' => Service::avg('price'),
+                'total_value' => Service::sum('price')
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => $stats
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Statistics fetch failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch statistics'
+            ], 500);
+        }
     }
 }

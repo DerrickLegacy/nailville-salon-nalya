@@ -159,6 +159,7 @@ class ReportController extends Controller
                         'section_name' => $service->section->name ?? 'Unknown Section',
                         'category_name' => $service->category->name ?? 'Unknown Category',
                         'total_amount' => $items->sum('amount'),
+                        'items' => $items,
                     ];
                 })
                 ->groupBy('section_name')
@@ -177,11 +178,12 @@ class ReportController extends Controller
                     $service = \App\Models\Service::with(['section', 'category'])->find($serviceId);
                     return [
                         'service_id'   => $service->id ?? $serviceId,
-                        'service_name' => $service->name ?? 'Unknown',
+                        'service_name' => $service->name ?? 'Unknown......',
                         'service_code' => $service->service_code ?? null,
                         'section_name' => $service->section->name ?? null,
                         'category_name' => $service->category->name ?? null,
                         'total_amount' => $items->sum('amount'),
+                        'item' => $items,
                     ];
                 });
         }
@@ -306,17 +308,12 @@ class ReportController extends Controller
                 break;
         }
 
-                /*
-            |--------------------------------------------------------------------------
-            | Apply Filters (IMPORTANT: BEFORE JOIN)
-            |--------------------------------------------------------------------------
-            */
+        // Apply Filters (IMPORTANT: BEFORE JOIN)
         $baseQuery->whereBetween('date', [$startDate, $endDate]);
 
         if ($employee_id) {
             $baseQuery->where('transactions.employee_id', $employee_id);
         }
-
 
         $topEmployers = $baseQuery
             ->join('employees', 'transactions.employee_id', '=', 'employees.employee_id')
@@ -334,29 +331,23 @@ class ReportController extends Controller
             ->limit(10)
             ->get();
 
-        $rankings = Transaction::select('employee_id', DB::raw('SUM(amount) total'))
-            ->whereBetween('date', [$start, $end])
-            ->where('transaction_type', $reportType)
+        $rankings = Transaction::select('employee_id', DB::raw('SUM(amount) AS total'))
+            ->whereBetween('date', [$startDate, $endDate])
+            ->where('transaction_type', $report_type)
             ->groupBy('employee_id')
             ->orderByDesc('total')
             ->pluck('employee_id')
             ->toArray();
 
-
-        $data = $topEmployers->map(function ($row) {
+        $data = $topEmployers->map(function ($row) use ($rankings) {
             return [
                 'Employee'    => $row->label,
                 'Invoices'    => (int) $row->invoice_count,
                 'totalIncome' => number_format((float) $row->total_amount, 2),
-                'rank'        => null,
+                'rank'        => array_search($row->employee_id, $rankings) + 1,
             ];
         });
 
-        /*
-        |--------------------------------------------------------------------------
-        | JSON Response
-        |--------------------------------------------------------------------------
-        */
         return response()->json([
             'status'      => 'success',
             'range_label' => $rangeLabel,
@@ -365,7 +356,6 @@ class ReportController extends Controller
             'data'        => $data,
         ]);
     }
-
 
     public function expense()
     {
