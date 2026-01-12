@@ -33,46 +33,56 @@
             <!-- Left: Title -->
             <div class="mb-4 sm:mb-0">
                 <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100"> <?php echo $report_type; ?> Report</h1>
-                @if($report_type=='Income')
-                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Analyze your salon's income performance and make informed business decisions.</p>
+                @if ($report_type == 'Income')
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Analyze your salon's income performance and
+                        make informed business decisions.</p>
                 @else
-
-                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Get to know yourday-to-day expense salon insights.</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Get to know yourday-to-day expense salon
+                        insights.</p>
                 @endif
             </div>
         </div>
 
-        @if($report_type=='Income')
-        <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-[#8200DB] p-4 mb-6">
-            <div class="flex">
-                <svg class="h-5 w-5 text-[#8200DB] mr-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                </svg>
-                <div>
-                    <p class="text-sm  text-[#8200DB] dark:text-blue-300">
-                        <strong>Note:</strong> This is a report focuses on only business income. For expenditure, go to <span>
-                            <a href="{{ route('reports.expense') }}" class="text-[#8200DB] dark:text-blue-300 hover:underline italic font-bold">expense report</a>
-                        </span>.
-                    </p>
+        @if ($report_type == 'Income')
+            <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-[#8200DB] p-4 mb-6">
+                <div class="flex">
+                    <svg class="h-5 w-5 text-[#8200DB] mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    <div>
+                        <p class="text-sm  text-[#8200DB] dark:text-blue-300">
+                            <strong>Note:</strong> This is a report focuses on only business income. For expenditure, go
+                            to <span>
+                                <a href="{{ route('reports.expense') }}"
+                                    class="text-[#8200DB] dark:text-blue-300 hover:underline italic font-bold">expense
+                                    report</a>
+                            </span>.
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
         @else
-
-        <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-[#8200DB] p-4 mb-6">
-            <div class="flex">
-                <svg class="h-5 w-5 text-blue-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                </svg>
-                <div>
-                    <p class="text-sm text-[#8200DB] dark:text-blue-300">
-                        <strong>Note:</strong> This is a report focuses on only business expenses. For income, go to <span>
-                            <a href="{{ route('reports.income') }}" class="text-[#8200DB] dark:text-blue-300 hover:underline italic font-bold">income report</a>
-                        </span>.
-                    </p>
+            <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-[#8200DB] p-4 mb-6">
+                <div class="flex">
+                    <svg class="h-5 w-5 text-blue-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    <div>
+                        <p class="text-sm text-[#8200DB] dark:text-blue-300">
+                            <strong>Note:</strong> This is a report focuses on only business expenses. For income, go to
+                            <span>
+                                <a href="{{ route('reports.income') }}"
+                                    class="text-[#8200DB] dark:text-blue-300 hover:underline italic font-bold">income
+                                    report</a>
+                            </span>.
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
         @endif
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-6">
             <h5 class="font-semibold dark:text-white my-2 text-2xl text-center">
@@ -85,19 +95,17 @@
 
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Filters:</h2>
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div
-                    x-data="{ active: 'Today' }"
+                <div x-data="{ active: 'Today' }"
                     class="flex flex-row flex-nowrap items-center gap-2
                overflow-x-auto sm:overflow-visible py-3">
 
                     @foreach (['Today', 'This Week', 'This Month', 'This Year', 'All Time'] as $label)
-                    <button
-                        type="button"
-                        @click="active = '{{ $label }}'"
-                        :class="active === '{{ $label }}'
-                    ? 'bg-[#8200DB] text-white border-[#8200DB]'
-                    : 'border border-[#8200DB] text-[#8200DB] hover:bg-[#8200DB] hover:text-white'"
-                        class="solid-filter-btns
+                        <button type="button" @click="active = '{{ $label }}'"
+                            :class="active === '{{ $label }}'
+                                ?
+                                'bg-[#8200DB] text-white border-[#8200DB]' :
+                                'border border-[#8200DB] text-[#8200DB] hover:bg-[#8200DB] hover:text-white'"
+                            class="solid-filter-btns
                        whitespace-nowrap
                        rounded-md
                        border
@@ -106,8 +114,8 @@
                        font-medium
                        transition
                        focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
-                        {{ $label }}
-                    </button>
+                            {{ $label }}
+                        </button>
                     @endforeach
                 </div>
 
@@ -116,8 +124,7 @@
 
                     <!-- Datepicker -->
                     <div class="relative w-full sm:w-1/3">
-                        <input
-                            type="text"
+                        <input type="text"
                             class="datepicker form-input pl-10 w-full
                                 dark:bg-[#8200DB] text-[#8200DB]
                                 border border-purple-400 rounded-lg
@@ -126,22 +133,19 @@
                                 font-medium
                                 text-xs sm:text-sm lg:text-base
                                 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
-                            placeholder="Select date range"
-                            id="dateSelect"
-                            name="dateSelect"
+                            placeholder="Select date range" id="dateSelect" name="dateSelect"
                             data-class="flatpickr-right" />
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <svg class="fill-current text-gray-400 dark:text-gray-500 w-4 h-4" viewBox="0 0 16 16">
                                 <path d="M5 4a1 1 0 0 0 0 2h6a1 1 0 1 0 0-2H5Z" />
-                                <path d="M4 0a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4H4ZM2 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4Z" />
+                                <path
+                                    d="M4 0a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4H4ZM2 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4Z" />
                             </svg>
                         </div>
                     </div>
 
                     <!-- Employee Select -->
-                    <select
-                        name="employee_id"
-                        id="employee_id"
+                    <select name="employee_id" id="employee_id"
                         class="w-full sm:w-48
                             rounded-lg border border-[#8200DB]
                             bg-white dark:bg-gray-700
@@ -152,24 +156,26 @@
                             transition">
                         <option value="">Select Employee</option>
                         @foreach ($employees as $employee)
-                        <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
+                            <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
                         @endforeach
                     </select>
 
                     <!-- Filter Button -->
-                    <button
-                        type="submit"
+                    <button type="submit"
                         class="filter-btn inline-flex items-center justify-center gap-2
                             w-full sm:w-auto
                             px-4 py-2 rounded-lg
                             border border-[#8200DB]
                             text-xs sm:text-sm lg:text-base
-                            font-medium 
+                            font-medium
                             text-[#8200DB] bg-white
                             hover:bg-[#8200DB] hover:text-white
-                            transition" @click.prevent="open = !open">
+                            transition"
+                        @click.prevent="open = !open">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+                            <path fill-rule="evenodd"
+                                d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+                                clip-rule="evenodd" />
                         </svg>
                         Filter
                     </button>
@@ -205,8 +211,7 @@
                                 <div
                                     class="bg-white dark:bg-[#8200DB] border border-[#c180ed] dark:border-[#9b4dff] rounded-lg shadow-md p-4 flex items-center space-x-4 transition-transform transform hover:scale-105">
                                     <div class="flex-shrink-0">
-                                        <img src="{{ asset('images/earning_16136294.png') }}"
-                                            alt="Contribution Icon"
+                                        <img src="{{ asset('images/earning_16136294.png') }}" alt="Contribution Icon"
                                             class="w-12 h-12 md:w-16 md:h-16 object-contain">
                                     </div>
                                     <div class="flex-1 text-center sm:text-left">
@@ -257,7 +262,8 @@
                                     <tfoot class="bg-gray-50 dark:bg-gray-700  text-[#8200DB]">
                                         <tr>
                                             <td class="px-6 py-3 font-semibold">Total</td>
-                                            <td class="px-6 py-3 text-right font-semibold  text-[#8200DB]" id="emp_total_income">
+                                            <td class="px-6 py-3 text-right font-semibold  text-[#8200DB]"
+                                                id="emp_total_income">
                                             </td>
                                         </tr>
                                     </tfoot>
@@ -274,41 +280,35 @@
                                     <label for="service-search" class="sr-only">Search</label>
 
                                     <div class="relative w-full">
-                                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                            <svg aria-hidden="true"
-                                                class="w-5 h-5 text-[#8200DB] dark:text-gray-400"
-                                                fill="currentColor"
-                                                viewBox="0 0 20 20">
+                                        <div
+                                            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                            <svg aria-hidden="true" class="w-5 h-5 text-[#8200DB] dark:text-gray-400"
+                                                fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd"
                                                     d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
                                                     clip-rule="evenodd" />
                                             </svg>
                                         </div>
 
-                                        <input
-                                            type="text"
-                                            id="service-search"
-                                            name="service-search"
+                                        <input type="text" id="service-search" name="service-search"
                                             placeholder="Search for a service..."
                                             class="bg-gray-50 border border-[#8200DB] text-[#8200DB]
-                   text-sm rounded-lg
-                   focus:ring-[#8200DB] focus:border-[#8200DB]
-                   block w-full pl-10 p-2
-                   dark:bg-gray-700 dark:border-[#8200DB]
-                   dark:placeholder-[#8200DB] dark:text-white">
+                                                text-sm rounded-lg
+                                                focus:ring-[#8200DB] focus:border-[#8200DB]
+                                                block w-full pl-10 p-2
+                                                dark:bg-gray-700 dark:border-[#8200DB]
+                                                dark:placeholder-[#8200DB] dark:text-white">
                                     </div>
                                 </form>
 
                             </div>
 
                             <div class="mt-4 flex items-center mb-3">
-                                <label for="categorise_services" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">
+                                <label for="categorise_services"
+                                    class="ml-2 block text-sm text-gray-900 dark:text-gray-300">
                                     Group by Sections (Barbers Team, Hairdressers and Nailist Teams.)
                                 </label>
-                                <input
-                                    type="checkbox"
-                                    id="categorise_services"
-                                    name="categorise_services"
+                                <input type="checkbox" id="categorise_services" name="categorise_services"
                                     class="h-4 w-4 text-[#8200DB] focus:ring-[#8200DB] ring-[#8200DB] border-[#8200DB]  rounded">
 
                             </div>
@@ -402,8 +402,7 @@
                     </div>
                 </div>
 
-                <div
-                    class="lg:w-1/3 flex flex-col gap-6 px-0  ">
+                <div class="lg:w-1/3 flex flex-col gap-6 px-0  ">
                     <div
                         class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-100 dark:border-gray-700 transition-all">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 text-center mb-6">💼
@@ -419,8 +418,8 @@
                                 <div class="text-gray-700 dark:text-gray-300 font-medium">Projected
                                     <?php echo $report_type; ?>
                                 </div>
-                                <div id="expected_income"
-                                    class="text-gray-900 dark:text-white font-semibold text-lg"></div>
+                                <div id="expected_income" class="text-gray-900 dark:text-white font-semibold text-lg">
+                                </div>
                             </div>
 
                             <div
@@ -475,6 +474,7 @@
         </div>
         <script>
             // Global state management
+            const reportType = $('#report_type').val();
             const ReportManager = {
                 state: {
                     mode: 'range', // 'range' | 'custom'
@@ -891,7 +891,8 @@
                     }
 
                     if (!Array.isArray(chartData) || chartData.length === 0) {
-                        $('#todays-income-chart-progress').html('<p class="text-center text-sm text-gray-400">No data available</p>');
+                        $('#todays-income-chart-progress').html(
+                            '<p class="text-center text-sm text-gray-400">No data available</p>');
                         return;
                     }
 
@@ -899,81 +900,103 @@
                     Morris.Donut({
                         element: 'todays-income-chart-progress',
                         data: chartData,
-                        colors: ['#8200DB', '#D90082', '#00DB82', '#DB8200', '#0066CC', '#CC0066', '#00CC66', '#CC6600'],
+                        colors: ['#8200DB', '#D90082', '#00DB82', '#DB8200', '#0066CC', '#CC0066', '#00CC66',
+                            '#CC6600'
+                        ],
                         resize: true,
                         redraw: true
                     });
                 },
 
-           updateServiceTable(grouped) {
-    const tbody = $('#service_table tbody');
-    tbody.empty();
-    let serviceTotal = 0;
-    const categoriseServices = $('#categorise_services').is(':checked');
+                updateServiceTable(grouped) {
+                    // console.log('Updating service table with grouped data:',reportType, grouped);
+                    const tbody = $('#service_table tbody');
+                    tbody.empty();
+                    let serviceTotal = 0;
+                    const categoriseServices = $('#categorise_services').is(':checked');
 
-    if (categoriseServices && grouped && typeof grouped === 'object') {
-        Object.values(grouped).forEach((section, index) => {
-            serviceTotal += section.total_amount;
-            const sectionId = `section-${index}`;
+                    if (categoriseServices && grouped && typeof grouped === 'object') {
+                        Object.values(grouped).forEach((section, index) => {
+                            serviceTotal += section.total_amount;
+                            const sectionId = `section-${index}`;
 
-            // Append section row
-            tbody.append(`
-                <tr class="bg-gray-100 dark:bg-gray-700 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                    data-toggle="${sectionId}" title="Click to expand/collapse services">
-                    <td class="px-6 py-3 flex items-center gap-2">
-                        <span class="accordion-icon transition-transform text-[#8200DB] font-bold">▶</span>
-                        <span class="truncate">${section.section_name}</span>
-                    </td>
-                    <td class="text-right px-6 py-3 text-[#8200DB] font-semibold">
-                        ${section.total_amount.toLocaleString()}
-                    </td>
-                </tr>
-            `);
+                            // Append section row
+                            tbody.append(`
+                                <tr class="bg-gray-100 dark:bg-gray-700 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                                    data-toggle="${sectionId}" title="Click to expand/collapse services">
+                                    <td class="px-6 py-3 flex items-center gap-2">
+                                        <span class="accordion-icon transition-transform text-[#8200DB] font-bold">▶</span>
+                                        <span class="truncate">${section.section_name}</span>
+                                    </td>
+                                    <td class="text-right px-6 py-3 text-[#8200DB] font-semibold">
+                                        ${section.total_amount.toLocaleString()}
+                                    </td>
+                                </tr>
+                            `);
 
-            // Append services if they exist
-            if (section.services && section.services.length > 0) {
-                let coloredDots = [
-                    '#8200DB', '#D90082', '#00DB82', '#DB8200', '#0066CC',
-                    '#CC0066', '#00CC66', '#CC6600', '#FF0000', '#FF7F00',
-                    '#FFFF00', '#00FF00', '#0000FF', '#8B00FF', '#A52A2A',
-                    '#FFC0CB', '#00FFFF', '#FFD700', '#4B0082', '#FF69B4'
-                ];
+                            // Append services if they exist
+                            if (section.services && section.services.length > 0) {
+                                let coloredDots = [
+                                    '#8200DB', '#D90082', '#00DB82', '#DB8200', '#0066CC',
+                                    '#CC0066', '#00CC66', '#CC6600', '#FF0000', '#FF7F00',
+                                    '#FFFF00', '#00FF00', '#0000FF', '#8B00FF', '#A52A2A',
+                                    '#FFC0CB', '#00FFFF', '#FFD700', '#4B0082', '#FF69B4'
+                                ];
 
-                let dotIndex = 0;
+                                let dotIndex = 0;
 
-                section.services.forEach(service => {
-                    tbody.append(`
-                        <tr class="hidden text-sm accordion-row" data-parent="${sectionId}">
-                            <td class="px-6 py-2 pl-12 text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                                <!-- Colored dot -->
-                                <span style="color: ${coloredDots[dotIndex % coloredDots.length]}; font-size: 1.25rem; flex-shrink: 0;">●</span>
-                                <!-- Service name -->
-                                <span class="truncate">${service.service_name}</span>
-                            </td>
-                            <td class="text-right px-6 py-2 text-gray-600 dark:text-gray-400">
-                                ${service.total_amount.toLocaleString()}
-                            </td>
-                        </tr>
-                    `);
-                    dotIndex++;
-                });
-            }
-        });
-    } else {
-        Object.values(grouped).forEach(item => {
-            serviceTotal += item.total_amount;
-            tbody.append(`
-                <tr>
-                    <td class="px-6 py-3 truncate">${item.services[0].service_name || item.label}</td>
-                    <td class="text-right px-6 py-3">${item.total_amount.toLocaleString()}</td>
-                </tr>
-            `);
-        });
-    }
+                                section.services.forEach(service => {
+                                    tbody.append(`
+                                        <tr class="hidden text-sm accordion-row" data-parent="${sectionId}">
+                                            <td class="px-6 py-2 pl-12 text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                                                <!-- Colored dot -->
+                                                <span style="color: ${coloredDots[dotIndex % coloredDots.length]}; font-size: 1.25rem; flex-shrink: 0;">●</span>
+                                                <!-- Service name -->
+                                                <span class="truncate">${service.service_name}</span>
+                                            </td>
+                                            <td class="text-right px-6 py-2 text-gray-600 dark:text-gray-400">
+                                                ${service.total_amount.toLocaleString()}
+                                            </td>
+                                        </tr>
+                                    `);
+                                    dotIndex++;
+                                });
+                            }
+                        });
+                    } else {
+                        if (this.state.report_type.toLowerCase() === 'income') {
+                            Object.values(grouped).forEach(item => {
+                                (item.services || []).forEach(service => {
+                                    serviceTotal += service.total_amount;
+                                    tbody.append(`
+                                        <tr>
+                                            <td class="px-6 py-3 truncate">${service.service_name}</td>
+                                            <td class="text-right px-6 py-3">${service.total_amount.toLocaleString()}</td>
+                                        </tr>
+                                    `);
+                                });
+                            });
+                        } else {
 
-    $('#service_table tfoot td:last').text(serviceTotal.toLocaleString());
-},
+                            Object.values(grouped).forEach(item => {
 
+                                (item.services || []).forEach(service => {
+                                    console.log('Adding service to table:', service);
+
+                                    serviceTotal += service.total_amount;
+                                    tbody.append(`
+                                        <tr>
+                                            <td class="px-6 py-3 truncate">${service.service_name}</td>
+                                            <td class="text-right px-6 py-3">${service.total_amount.toLocaleString()}</td>
+                                        </tr>
+                                    `);
+                                });
+                            });
+                        }
+                    }
+
+                    $('#service_table tfoot td:last').text(serviceTotal.toLocaleString());
+                },
 
                 rollSlots(amount, element, duration = 2000, intervalTime = 50) {
                     const slots = document.querySelectorAll('#' + element);

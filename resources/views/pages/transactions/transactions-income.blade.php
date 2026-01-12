@@ -29,32 +29,41 @@
     </div>
 
     <div class="px-2 lg:px-8 w-full max-w-9xl flex justify-end">
-        <button id="addTransactionBtn" class="w-auto px-4 py-2 bg-purple-700 text-white text-sm font-medium rounded-lg hover:bg-purple-800 dark:bg-purple-600 dark:hover:bg-purple-700 transition-colors duration-200 flex items-center justify-center"> <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        <button id="addTransactionBtn"
+            class="w-auto px-4 py-2 bg-purple-700 text-white text-sm font-medium rounded-lg hover:bg-purple-800 dark:bg-purple-600 dark:hover:bg-purple-700 transition-colors duration-200 flex items-center justify-center">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
             <span>Add Transaction</span>
         </button>
     </div>
 
     <!-- Section Modal -->
-    <div id="sectionModal" class="fixed inset-0 hidden z-50 fill-white drop-shadow-xl/50" style="z-index: 9999; backdrop-filter: blur(4px);">
+    <div id="sectionModal" class="fixed inset-0 hidden z-50 fill-white drop-shadow-xl/50"
+        style="z-index: 9999; backdrop-filter: blur(4px);">
         <div class="flex items-center justify-center min-h-screen px-4 py-8">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative border border-gray-200 dark:border-gray-700">
+            <div
+                class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative border border-gray-200 dark:border-gray-700">
                 <div class="p-6">
                     <div class="error" id="returned-error"></div>
                     <!-- Modal Header -->
                     <div class="flex justify-between items-center mb-0">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Add New Section</h3>
-                        <button id="closeModal" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Add New
+                            {{ $transactionType }} Transaction</h3>
+                        <button id="closeModal" type="button"
+                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                         </button>
                     </div>
 
                     <!-- Add Section Form -->
                     <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <form id="transactionForm" action="{{ route('transactions.store') }}" method="POST" class="space-y-4 sm:space-y-6">
+                        <form id="transactionForm" action="{{ route('transactions.store') }}" method="POST"
+                            class="space-y-4 sm:space-y-6">
                             @csrf
                             <input type="hidden" name="transaction_type" value="{{ $transactionType }}">
 
@@ -93,50 +102,24 @@
                             <!-- Service/Expense and Amount Grid -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                 @if ($transactionType === 'Income')
-                                <!-- Service Offered -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Service Offered
-                                    </label>
-                                    <select name="service_offered" id="service_offered"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
-                                        required>
-                                        <option value="">-- Select Service --</option>
-                                        @foreach ($services as $service)
-                                        <option value="{{ $service->name }}" data-price="{{ $service->price }}" data-service-id="{{ $service->id }}">
-                                            {{ $service->name }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                    <input type="hidden" name="service_id" id="service_id" required />
-                                </div>
-                                @else
-                                <!-- Expense Category -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Expense Category
-                                    </label>
-                                    <select name="expense_type"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
-                                        required>
-                                        <option value="">-- Select Expense --</option>
-                                        <option value="Rent">Rent / Lease</option>
-                                        <option value="Salaries">Salaries & Wages</option>
-                                        <option value="Allowances">Allowances / Bonuses</option>
-                                        <option value="Training">Staff Training / Workshops</option>
-                                        <option value="Utilities">Utilities</option>
-                                        <option value="BeautyProducts">Beauty Products</option>
-                                        <option value="HairSupplies">Hair Supplies</option>
-                                        <option value="NailSupplies">Nail Supplies</option>
-                                        <option value="Cleaning">Cleaning Supplies</option>
-                                        <option value="FurnitureEquipment">Furniture & Equipment</option>
-                                        <option value="Maintenance">Maintenance</option>
-                                        <option value="Marketing">Marketing & Advertising</option>
-                                        <option value="Transport">Transport / Delivery</option>
-                                        <option value="Licenses">Licenses / Insurance</option>
-                                        <option value="Miscellaneous">Miscellaneous</option>
-                                    </select>
-                                </div>
+                                    <!-- Service Offered -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            {{ $transactionType }} Service
+                                        </label>
+                                        <select name="service_offered" id="service_offered"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                            required>
+                                            <option value="">-- Select Service --</option>
+                                            @foreach ($services as $service)
+                                                <option value="{{ $service->name }}" data-price="{{ $service->price }}"
+                                                    data-service-id="{{ $service->id }}">
+                                                    {{ $service->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <input type="hidden" name="service_id" id="service_id" required />
+                                    </div>
                                 @endif
 
                                 <!-- Amount -->
@@ -174,22 +157,45 @@
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Date
                                     </label>
-                                    <input type="date" name="date" value="{{ old('date', now()->format('Y-m-d')) }}"
+                                    <input type="date" name="date"
+                                        value="{{ old('date', now()->format('Y-m-d')) }}"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
                                         required>
                                 </div>
 
                                 <!-- Employee -->
                                 <div class="sm:col-span-2 lg:col-span-1">
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Worked On By
+                                    <label
+                                        class="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Initiated By (On Behalf of) <span class="text-red-500">*</span>
+
+                                        <div class="relative group">
+                                            <!-- Info Icon -->
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="w-8 h-8 text-purple-500 cursor-pointer" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 16h-1v-4h-1m1-4h.01M12 18a6 6 0 100-12 6 6 0 000 12z" />
+                                            </svg>
+
+                                            <!-- Tooltip aligned to LEFT -->
+                                            <div
+                                                class="absolute right-full top-1/2 -translate-y-1/2 mr-2 w-64
+                                                    rounded-lg bg-gray-900 text-white text-xs px-3 py-2
+                                                    opacity-0 group-hover:opacity-100 transition
+                                                    pointer-events-none z-50">
+                                                Select <strong>Business Account</strong> if no employee is affiliated
+                                                with this expense transaction.
+                                            </div>
+                                        </div>
                                     </label>
+
                                     <select name="employee_id"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
                                         required>
                                         <option value="">-- Select Employee --</option>
                                         @foreach ($employees as $employee)
-                                        <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
+                                            <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -215,7 +221,8 @@
                             </div>
 
                             <!-- Modal footer -->
-                            <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div
+                                class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                                 <button type="button" id="cancelBtn"
                                     class="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200 text-sm sm:text-base">
                                     Cancel
@@ -236,27 +243,36 @@
     <div class="px-2 sm:px-4 lg:px-8 py-4 sm:py-3 lg:py-4 w-full max-w-9xl mx-auto">
         <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
             <!-- Total Records -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
+            <div
+                class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
                 <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">Total Records</span>
-                <span id="totalRecordsCount" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
+                <span id="totalRecordsCount"
+                    class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
             </div>
 
             <!-- Current Page -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
+            <div
+                class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
                 <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">Current Page</span>
-                <span id="currnetPage" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
+                <span id="currnetPage"
+                    class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
             </div>
 
             <!-- All Pages Total -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
+            <div
+                class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
                 <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">All Pages Total</span>
-                <span id="totalAllPagesAmountRet" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
+                <span id="totalAllPagesAmountRet"
+                    class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
             </div>
 
             <!-- Total Income/Expense -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
-                <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">Total {{ $transactionType }}</span>
-                <span id="total{{ $transactionType }}" class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
+            <div
+                class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow p-3 sm:p-4 flex flex-col items-center min-h-[80px] sm:min-h-[100px]">
+                <span class="text-gray-500 text-xs sm:text-sm text-center leading-tight">Total
+                    {{ $transactionType }}</span>
+                <span id="total{{ $transactionType }}"
+                    class="text-purple-700 dark:text-white font-bold text-sm sm:text-lg lg:text-xl mt-1"></span>
             </div>
         </div>
     </div>
@@ -266,15 +282,19 @@
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg sm:rounded-xl overflow-hidden">
             <!-- Search and Filter Section -->
             <div class="md:p-3 p-1 sm:p-4 lg:p-6 border-b border-gray-200 dark:border-gray-700">
-                <div class="flex flex-col space-y-3 sm:space-y-4 lg:flex-row lg:space-y-0 lg:items-center lg:justify-between">
+                <div
+                    class="flex flex-col space-y-3 sm:space-y-4 lg:flex-row lg:space-y-0 lg:items-center lg:justify-between">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                         <!-- Search -->
                         <div class="flex-1 lg:max-w-md">
                             <label for="simple-search" class="sr-only">Search</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400"
+                                        fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                            clip-rule="evenodd" />
                                     </svg>
                                 </div>
                                 <input type="text" id="simple-search" name="simple-search"
@@ -293,7 +313,8 @@
                         <button type="button" id="export-button"
                             class="flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors duration-200">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             <span class="hidden sm:inline">Export PDF</span>
                             <span class="sm:hidden">Export</span>
@@ -306,11 +327,16 @@
             </div>
 
             <!-- Loading Spinner -->
-            <div id="transactions-spinner" class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-800/70 z-50 hidden">
+            <div id="transactions-spinner"
+                class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-800/70 z-50 hidden">
                 <div class="flex items-center space-x-2">
-                    <svg class="animate-spin w-6 h-6 sm:w-8 sm:h-8 text-purple-600" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg class="animate-spin w-6 h-6 sm:w-8 sm:h-8 text-purple-600" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                            stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
                     </svg>
                     <span class="text-sm text-gray-600 dark:text-gray-400">Loading...</span>
                 </div>
@@ -320,8 +346,10 @@
             <div class="relative">
                 <div class="overflow-x-auto">
                     <div id="transactions-export-wrapper">
-                        <table id="transactions-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <table id="transactions-table"
+                            class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead
+                                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
                                     <th class="px-2 sm:px-4 py-3 min-w-[100px]">Date</th>
                                     <th class="px-2 sm:px-4 py-3 min-w-[120px]">Service</th>
@@ -332,7 +360,8 @@
                                     <th class="px-2 sm:px-4 py-3 min-w-[100px] text-center">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="transactions-wrapper" class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                            <tbody id="transactions-wrapper"
+                                class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                 <!-- DataTables will populate this -->
                             </tbody>
                             <tfoot class="bg-gray-50 dark:bg-gray-700">
@@ -549,7 +578,8 @@
                             data: null,
                             defaultContent: "Walkin Client",
                             render: function(data) {
-                                return data.employee.first_name + " " + data.employee.last_name || defaultText;
+                                return data.employee.first_name + " " + data.employee.last_name ||
+                                    defaultText;
                             }
                         },
                         {
@@ -768,15 +798,15 @@
                                     const cells = $(this).find('td');
                                     if (cells.length > 0) {
                                         return `
-                                            <tr>
-                                                <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(0).text()}</td>
-                                                <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(1).text()}</td>
-                                                <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(2).text()}</td>
-                                                <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(3).text()}</td>
-                                                <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(4).text()}</td>
-                                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${cells.eq(5).text()}</td>
-                                            </tr>
-                                        `;
+                                                                                <tr>
+                                                                                    <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(0).text()}</td>
+                                                                                    <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(1).text()}</td>
+                                                                                    <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(2).text()}</td>
+                                                                                    <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(3).text()}</td>
+                                                                                    <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(4).text()}</td>
+                                                                                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${cells.eq(5).text()}</td>
+                                                                                </tr>
+                                                                            `;
                                     }
                                     return '';
                                 }).get().join('')}

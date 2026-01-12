@@ -18,7 +18,8 @@ categories ─┘
 |   categories     |        |    sections      |
 +------------------+        +------------------+
 | id (PK)          |        | id (PK)          |
-| name             |        | name             |
+| name             |        |   name           |
+| type             |        | service_type     |
 | description      |        | description      |
 +------------------+        +------------------+
          |                           |
@@ -37,83 +38,93 @@ categories ─┘
                | status       |
                +--------------+
 
+New
+alter table `services`
+add column trans_type varchar(200) not NUll after section_id
+
+update services
+set trans_type="income"
 
 
-CREATE TABLE `sections` (
-  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `name` VARCHAR(100) NOT NULL,
-  `description` VARCHAR(255) DEFAULT NULL,
-  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+alter table sections
+add column service_type varchar(200) not null	after name
+
+update sections set service_type = "income"
+
+alter TABLE categories
+add column type	varchar(100) not null after name;
+
+update categories
+set type="income"
+
+INSERT INTO `categories` (`id`, `name`, `type`, `description`)
+VALUES
+(7, 'Operational Expenses', 'expense', 'Daily running costs of the salon'),
+(8, 'Staff Expenses', 'expense', 'Payments and benefits for staff'),
+(9, 'Premises Expenses', 'expense', 'Rent, utilities and maintenance'),
+(10, 'Regulatory & Licenses', 'expense', 'Government and council fees'),
+(11, 'Miscellaneous Expenses', 'expense', 'Other uncategorized expenses');
 
 
-INSERT INTO sections (id, name, description) VALUES
-(1, 'Men Hair Team', 'Barbers handling men haircuts and beard grooming'),
-(2, 'Women Hair Team', 'Plaiting, styling, treatments for women'),
-(3, 'Nails Team', 'Manicure, pedicure, gel and nail services'),
-(4, 'Spa & Body Team', 'Massage, scrubbing, foot & leg care'),
-(5, 'Makeup & Skin Team', 'Makeup, facials and skincare'),
-(6, 'Packages Team', 'Bridal and combo services');
+INSERT INTO `sections` (`id`, `name`, `service_type`, `description`)
+VALUES
+(5, 'Utilities', 'expense', 'Electricity, water and internet bills'),
+(6, 'Supplies', 'expense', 'Consumables and salon supplies'),
+(7, 'Staff Payments', 'expense', 'Salaries and allowances'),
+(8, 'Transport', 'expense', 'Delivery and transport costs'),
+(9, 'Maintenance', 'expense', 'Repairs and servicing'),
+(10, 'Licenses & Permits', 'expense', 'Business and council licenses'),
+(11, 'Rent & Lease', 'expense', 'Premises rent payments'),
+(12, 'Miscellaneous', 'expense', 'Other small expenses');
+
+INSERT INTO services
+(service_code, name, category_id, section_id, trans_type, price, description)
+VALUES
+('ELECTRICITY', 'Electricity Bill', 9, 5, 'expense', 0.00, 'Monthly electricity charges'),
+('WATER', 'Water Bill', 9, 5, 'expense', 0.00, 'Water utility payments'),
+('INTERNET', 'Internet & Data', 9, 5, 'expense', 0.00, 'Internet and data bundles');
+
+INSERT INTO services
+(service_code, name, category_id, section_id, trans_type, price, description)
+VALUES
+('HAIR_SUPPLIES', 'Hair Supplies', 7, 6, 'expense', 0.00, 'Hair treatment and styling supplies'),
+('NAIL_SUPPLIES', 'Nail Supplies', 7, 6, 'expense', 0.00, 'Nail products and tools'),
+('BARBER_SUPPLIES', 'Barber Supplies', 7, 6, 'expense', 0.00, 'Barbering tools and consumables'),
+('CLEANING', 'Cleaning Supplies', 7, 6, 'expense', 0.00, 'Cleaning and hygiene items');
 
 
-CREATE TABLE `categories` (
-  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `name` VARCHAR(100) NOT NULL,
-  `description` VARCHAR(255) DEFAULT NULL,
-  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+INSERT INTO services
+(service_code, name, category_id, section_id, trans_type, price, description)
+VALUES
+('SALARIES', 'Staff Salaries', 8, 7, 'expense', 0.00, 'Monthly staff salary payments'),
+('ALLOWANCES', 'Staff Allowances', 8, 7, 'expense', 0.00, 'Transport and lunch allowances');
 
-INSERT INTO categories (id, name, description) VALUES
-(1, 'Hair Care & Styling', 'Haircuts, washing, coloring, plaiting and treatments'),
-(2, 'Nails & Hands', 'Manicure, pedicure, gel and nail enhancements'),
-(3, 'Skin & Beauty', 'Facials, makeup and skincare'),
-(4, 'Body & Relaxation', 'Massage, scrubs, waxing and foot care'),
-(5, 'Packages & Specials', 'Bridal and bundled services'),
-(6, 'Other Services', 'Custom or miscellaneous services');
 
-ALTER TABLE services
-ADD COLUMN category_id INT UNSIGNED NULL AFTER name,
-ADD COLUMN section_id INT UNSIGNED NULL AFTER category_id;
+INSERT INTO services
+(service_code, name, category_id, section_id, trans_type, price, description)
+VALUES
+('RENT', 'Rent / Lease', 9, 11, 'expense', 0.00, 'Monthly shop rent'),
+('MAINTENANCE', 'Maintenance & Repairs', 9, 9, 'expense', 0.00, 'Equipment and building maintenance');
 
-UPDATE services
-SET category_id = 1, section_id = 2
-WHERE service_code IN (
-  'BRAIDING', 'COLORING', 'SHAMPOO', 'HAIRTREAT',
-  'HAIRWASH', 'plaiting', 'hair style'
-);
 
-UPDATE services
-SET category_id = 2, section_id = 3
-WHERE service_code IN (
-  'NAILS', 'GELGF', 'NAILCUT', 'GEL-SCRUB', 'NAIL', 'spa'
-);
+INSERT INTO services
+(service_code, name, category_id, section_id, trans_type, price, description)
+VALUES
+('TRANSPORT', 'Transport & Delivery', 7, 8, 'expense', 0.00, 'Transport and delivery expenses');
 
-UPDATE services
-SET category_id = 4, section_id = 4
-WHERE service_code IN (
-  'MASSAGE', 'WAXING', 'FOOT-SCRUB'
-);
 
-UPDATE services
-SET category_id = 3, section_id = 5
-WHERE service_code IN (
-  'FACIAL', 'MAKEUP', 'GEL', 'scrub', 'nel'
-);
+INSERT INTO services
+(service_code, name, category_id, section_id, trans_type, price, description)
+VALUES
+('KCCA_LICENSE', 'KCCA Trading License', 10, 10, 'expense', 0.00, 'KCCA business license fees');
 
-UPDATE services
-SET category_id = 5, section_id = 6
-WHERE service_code IN ('BRIDAL', 'PACKAGES');
+INSERT INTO services
+(service_code, name, category_id, section_id, trans_type, price, description)
+VALUES
+('MISC', 'Miscellaneous Expense', 11, 12, 'expense', 0.00, 'Other uncategorized expenses');
 
-UPDATE services
-SET category_id = 6, section_id = 6
-WHERE service_code = 'OTHER';
 
-ALTER TABLE services
-ADD CONSTRAINT fk_services_category
-FOREIGN KEY (category_id) REFERENCES categories(id),
+UPDATE transactions SET service_description = CASE service_description WHEN 'Allowances' THEN 35 WHEN 'Cleaning' THEN 33 WHEN 'HairSupplies' THEN 30 WHEN 'Maintenance' THEN 37 WHEN 'Miscellaneous' THEN 40 WHEN 'NailSupplies' THEN 31 WHEN 'Rent' THEN 36 WHEN 'Salaries' THEN 34 WHEN 'Transport' THEN 38 WHEN 'Utilities' THEN 27 END WHERE transaction_type = 'Expense' AND service_description REGEXP '^[^0-9]+$';
 
-ADD CONSTRAINT fk_services_section
-FOREIGN KEY (section_id) REFERENCES sections(id);
 
-ALTER TABLE services DROP COLUMN category;
 
