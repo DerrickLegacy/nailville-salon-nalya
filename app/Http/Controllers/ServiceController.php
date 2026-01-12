@@ -272,7 +272,8 @@ class ServiceController extends Controller
             Log::error('Service deletion failed: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete service'
+                'message' => 'Failed to delete service',
+                'error' => $e->getMessage()
             ], 500);
         }
     }

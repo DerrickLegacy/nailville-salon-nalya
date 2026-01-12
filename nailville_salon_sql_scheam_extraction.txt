@@ -39,6 +39,8 @@ categories ─┘
                +--------------+
 
 New
+
+
 alter table `services`
 add column trans_type varchar(200) not NUll after section_id;
 

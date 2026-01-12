@@ -537,7 +537,7 @@
                 closeSectionModal();
 
                 Swal.fire({
-                    title: 'Delete Service?',
+                    title: 'Delete Service ?',
                     text: "This action cannot be undone!",
                     icon: 'warning',
                     showCancelButton: true,
@@ -548,7 +548,8 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: `/admin/services/${serviceId}`,
+                            url: "{{ route('admin.services.destroy', ':id') }}".replace(
+                                ':id', serviceId),
                             type: 'DELETE',
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -557,11 +558,17 @@
                                 if (response.success) {
                                     Swal.fire('Deleted!', response.message, 'success');
                                     table.ajax.reload();
+                                } else {
+                                    Swal.fire('Error!', response.message, 'error');
                                 }
                             },
                             error: function(xhr) {
-                                Swal.fire('Error!', 'Failed to delete service',
-                                    'error');
+                                Swal.fire(
+                                    'Error!',
+                                    xhr.responseJSON?.message ||
+                                    'Failed to delete service',
+                                    'error'
+                                );
                             }
                         });
                     }

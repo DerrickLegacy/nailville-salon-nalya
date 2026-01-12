@@ -30,7 +30,7 @@ class Service extends Model
      */
     public function transactions()
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(Transaction::class, 'service_description', 'id');
     }
 
     /**
