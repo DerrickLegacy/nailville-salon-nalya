@@ -118,6 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
         onChange: (selectedDates, dateStr, instance) => {
             // eslint-disable-next-line no-param-reassign
             instance.element.value = dateStr.replace('to', '-');
+            // Fire custom event so report page can react automatically
+            instance.element.dispatchEvent(new Event('dateRangeSelected', { bubbles: true }));
         },
     });
 
