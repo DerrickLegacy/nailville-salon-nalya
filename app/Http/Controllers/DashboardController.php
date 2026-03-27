@@ -238,6 +238,8 @@ class DashboardController extends Controller
     {
         $today = Carbon::today();
         $startOfMonth = Carbon::now()->startOfMonth();
+        $endDate = Carbon::now()->endOfMonth();
+
 
         // Today Invoices
         $todayInvoicesCount = Transaction::where('transaction_type', 'Income')
@@ -256,9 +258,8 @@ class DashboardController extends Controller
 
         // This Month Sales
         $monthSales = Transaction::where('transaction_type', 'Income')
-            ->whereBetween('date', [$startOfMonth, Carbon::now()])
+            ->whereBetween('date', [$startOfMonth, $endDate])
             ->sum('amount');
-
         return [
             'today_invoices' => $todayInvoicesCount,
             'month_invoices' => $monthInvoicesCount,

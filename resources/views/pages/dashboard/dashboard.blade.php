@@ -259,7 +259,7 @@
                     <div id="top-employers" class="w-full h-48 sm:h-56 md:h-64 lg:h-80"></div>
                 </div>
 
-                <h2 class="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 flex justify-start">Employee Performance Summary</h2>
+                <h2 class="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 flex justify-start">Employee Performance Summary....</h2>
                 <div class="bg-white dark:bg-gray-800 shadow-xs rounded-lg sm:rounded-xl p-3 sm:p-4">
                     <p id="month_sumary" class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center mb-3 sm:mb-4"></p>
                     <div id="employers-table" class="overflow-x-auto -mx-3 sm:mx-0"></div>
