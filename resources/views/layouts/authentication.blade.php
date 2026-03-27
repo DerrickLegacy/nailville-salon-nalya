@@ -40,7 +40,6 @@
             <div class="w-full md:w-1/2">
 
                 <div class="min-h-[100dvh] h-full flex flex-col after:flex-1">
-
                     <!-- Header -->
                     <div class="flex-1">
                         <div class="flex items-center justify-between h-20 sm:h-24 lg:h-32 px-4 sm:px-4 lg:px-8 mt-2">
@@ -54,17 +53,12 @@
                     <div class="max-w-sm mx-auto w-full px-4 py-8">
                         {{ $slot }}
                     </div>
-
                 </div>
-
             </div>
-
             <!-- Image -->
-
             <?php
             $images = ['images/nailville_logo.svg', 'images/pexels-mati-2528695.jpg', 'images/pexels-n-voitkevich-5128234.jpg', 'images/pexels-cottonbro-3993133.jpg', 'images/pexels-cottonbro-3992855.jpg', 'images/pexels-cottonbro-3992870.jpg', 'images/fahrad-norouzi-Udy1IKvjeJU-unsplash.jpg', 'images/auth-image.jpg', 'images/junior-reis-doXuH8GbUns-unsplash.jpg', 'images/facial_tools.png'];
             ?>
-
             <div class="hidden md:block absolute top-0 bottom-0 right-0 md:w-1/2" aria-hidden="true">
                 <div class="swiper mySwiper w-full h-full">
                     <div class="swiper-wrapper">
@@ -78,14 +72,11 @@
                     <div class="swiper-pagination"></div>
                 </div>
             </div>
-
         </div>
-
     </main>
 
     @livewireScriptConfig
 </body>
-
 </html>
 
 
