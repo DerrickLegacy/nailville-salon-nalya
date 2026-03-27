@@ -49,7 +49,7 @@ class ChartController extends Controller
                 DB::raw('SUM(transactions.amount) as total_amount')
             )
             ->where('transactions.transaction_type', 'Income')
-            ->whereBetween('transactions.created_at', [$startDate, $endDate]) // ✅ restrict to current month
+            ->whereBetween('transactions.date', [$startDate->toDateString(), $endDate->toDateString()])
             ->groupBy('transactions.employee_id', 'employees.first_name', 'employees.last_name')
             ->orderByDesc('total_amount')
             ->limit(10)
