@@ -34,8 +34,6 @@ class ChartController extends Controller
         return response()->json($formatted);
     }
 
-
-
     public function topEmployers()
     {
         $startDate = Carbon::now()->startOfMonth();
@@ -52,7 +50,7 @@ class ChartController extends Controller
             ->whereBetween('transactions.date', [$startDate->toDateString(), $endDate->toDateString()])
             ->groupBy('transactions.employee_id', 'employees.first_name', 'employees.last_name')
             ->orderByDesc('total_amount')
-            ->limit(10)
+            // ->limit(3)
             ->get();
 
         $formatted = $topEmployers->map(function ($row) {
@@ -164,7 +162,6 @@ class ChartController extends Controller
                 'Expense' => isset($transactions[$m]) ? (float)$transactions[$m]->Expense : 0,
             ];
         }
-
         return response()->json($chartData);
     }
 }
