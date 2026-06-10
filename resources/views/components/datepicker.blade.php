@@ -1,6 +1,6 @@
 <div class="relative">
     <input
-        class="datepicker form-input pl-9 dark:bg-gray-800 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100 font-medium w-[15.5rem]"
+        class="datepicker form-input pl-9 dark:bg-[#8200DB]  text-[#8200DB] border-purple-400   hover:text-[#8200DB] hover:bg-purple-200   dark:text-gray-300 dark:hover:text-[#8200DB]  font-medium w-[15.5rem]"
         placeholder="Select dates" id="dateSelect" name="dateSelect" data-class="flatpickr-right" />
     <div class="absolute inset-0 right-auto flex items-center pointer-events-none">
         <svg class="fill-current text-gray-400 dark:text-gray-500 ml-3" width="16" height="16" viewBox="0 0 16 16">

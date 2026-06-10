@@ -1,0 +1,132 @@
+/opt/lampp/bin/mysqldump -u root -p --no-data u547313549_nailville \
+--socket=/opt/lampp/var/mysql/mysql.sock \
+> nailville_schema.sql
+
+
+ALTER TABLE `sections` ADD COLUMN `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+
+
+category section :
+
+sections  ──┐
+            ├── services
+categories ─┘
+
+
++------------------+        +------------------+
+|   categories     |        |    sections      |
++------------------+        +------------------+
+| id (PK)          |        | id (PK)          |
+| name             |        |   name           |
+| type             |        | service_type     |
+| description      |        | description      |
++------------------+        +------------------+
+         |                           |
+         |                           |
+         +------------+--------------+
+                      |
+               +--------------+
+               |   services   |
+               +--------------+
+               | id (PK)      |
+               | service_code |
+               | name         |
+               | category_id  |
+               | section_id   |
+               | price        |
+               | status       |
+               +--------------+
+
+New
+
+
+alter table `services`
+add column trans_type varchar(200) not NUll after section_id;
+
+update services
+set trans_type="income";
+
+
+alter table sections
+add column service_type varchar(200) not null	after name;
+
+update sections set service_type = "income";
+
+alter TABLE categories
+add column type	varchar(100) not null after name;
+
+update categories
+set type="income";
+
+INSERT INTO `categories` (`id`, `name`, `type`, `description`)
+VALUES
+(7, 'Operational Expenses', 'expense', 'Daily running costs of the salon'),
+(8, 'Staff Expenses', 'expense', 'Payments and benefits for staff'),
+(9, 'Premises Expenses', 'expense', 'Rent, utilities and maintenance'),
+(10, 'Regulatory & Licenses', 'expense', 'Government and council fees'),
+(11, 'Miscellaneous Expenses', 'expense', 'Other uncategorized expenses');
+
+
+INSERT INTO `sections` (`id`, `name`, `service_type`, `description`)
+VALUES
+(5, 'Utilities', 'expense', 'Electricity, water and internet bills'),
+(6, 'Supplies', 'expense', 'Consumables and salon supplies'),
+(7, 'Staff Payments', 'expense', 'Salaries and allowances'),
+(8, 'Transport', 'expense', 'Delivery and transport costs'),
+(9, 'Maintenance', 'expense', 'Repairs and servicing'),
+(10, 'Licenses & Permits', 'expense', 'Business and council licenses'),
+(11, 'Rent & Lease', 'expense', 'Premises rent payments'),
+(12, 'Miscellaneous', 'expense', 'Other small expenses');
+
+INSERT INTO services
+(service_code, name, category_id, section_id, trans_type, price, description)
+VALUES
+('ELECTRICITY', 'Electricity Bill', 9, 5, 'expense', 0.00, 'Monthly electricity charges'),
+('WATER', 'Water Bill', 9, 5, 'expense', 0.00, 'Water utility payments'),
+('INTERNET', 'Internet & Data', 9, 5, 'expense', 0.00, 'Internet and data bundles');
+
+INSERT INTO services
+(service_code, name, category_id, section_id, trans_type, price, description)
+VALUES
+('HAIR_SUPPLIES', 'Hair Supplies', 7, 6, 'expense', 0.00, 'Hair treatment and styling supplies'),
+('NAIL_SUPPLIES', 'Nail Supplies', 7, 6, 'expense', 0.00, 'Nail products and tools'),
+('BARBER_SUPPLIES', 'Barber Supplies', 7, 6, 'expense', 0.00, 'Barbering tools and consumables'),
+('CLEANING', 'Cleaning Supplies', 7, 6, 'expense', 0.00, 'Cleaning and hygiene items');
+
+
+INSERT INTO services
+(service_code, name, category_id, section_id, trans_type, price, description)
+VALUES
+('SALARIES', 'Staff Salaries', 8, 7, 'expense', 0.00, 'Monthly staff salary payments'),
+('ALLOWANCES', 'Staff Allowances', 8, 7, 'expense', 0.00, 'Transport and lunch allowances');
+
+
+INSERT INTO services
+(service_code, name, category_id, section_id, trans_type, price, description)
+VALUES
+('RENT', 'Rent / Lease', 9, 11, 'expense', 0.00, 'Monthly shop rent'),
+('MAINTENANCE', 'Maintenance & Repairs', 9, 9, 'expense', 0.00, 'Equipment and building maintenance');
+
+
+INSERT INTO services
+(service_code, name, category_id, section_id, trans_type, price, description)
+VALUES
+('TRANSPORT', 'Transport & Delivery', 7, 8, 'expense', 0.00, 'Transport and delivery expenses');
+
+
+INSERT INTO services
+(service_code, name, category_id, section_id, trans_type, price, description)
+VALUES
+('KCCA_LICENSE', 'KCCA Trading License', 10, 10, 'expense', 0.00, 'KCCA business license fees');
+
+INSERT INTO services
+(service_code, name, category_id, section_id, trans_type, price, description)
+VALUES
+('MISC', 'Miscellaneous Expense', 11, 12, 'expense', 0.00, 'Other uncategorized expenses');
+
+
+UPDATE transactions SET service_description = CASE service_description WHEN 'Allowances' THEN 35 WHEN 'Cleaning' THEN 33 WHEN 'HairSupplies' THEN 30 WHEN 'Maintenance' THEN 37 WHEN 'Miscellaneous' THEN 40 WHEN 'NailSupplies' THEN 31 WHEN 'Rent' THEN 36 WHEN 'Salaries' THEN 34 WHEN 'Transport' THEN 38 WHEN 'Utilities' THEN 27 END WHERE transaction_type = 'Expense' AND service_description REGEXP '^[^0-9]+$';
+
+
+

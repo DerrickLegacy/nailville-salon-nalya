@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-cFNjtRSL.css",
+    "file": "assets/app-BwmDYTsz.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
@@ -10,9 +10,15 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-D6-ahZun.js",
+    "file": "assets/app-C9JpBenQ.js",
     "name": "app",
     "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/splash.js": {
+    "file": "assets/splash-mwJTX66i.js",
+    "name": "splash",
+    "src": "resources/js/splash.js",
     "isEntry": true
   }
 }

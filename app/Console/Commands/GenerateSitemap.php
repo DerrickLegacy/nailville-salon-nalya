@@ -29,7 +29,6 @@ class GenerateSitemap extends Command
             ->add(Url::create('/services')->setLastModificationDate(Carbon::yesterday()))
             ->add(Url::create('/gallery')->setLastModificationDate(Carbon::yesterday()))
             ->add(Url::create('/contact')->setLastModificationDate(Carbon::yesterday()));
-
         // Save sitemap
         $sitemap->writeToFile($path);
 

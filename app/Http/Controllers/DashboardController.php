@@ -17,9 +17,8 @@ class DashboardController extends Controller
         $getTodaysExpense = $this->calculateTodaysExpense();
         $getTodaysNetIncome = $this->calculateTodaysNetIncome();
         $monthlyBusinessGoals = $this->monthlyBusinessGoals();
-        $topIncomeTransactions = $this->topTransactions();
-        $topExpenseTransactions = $this->topExpenseTransactions();
-
+        $topIncomeTransactions = $this->getTopTransactionsByType('Income');
+        $topExpenseTransactions = $this->getTopTransactionsByType('Expense');
 
         return view('pages/dashboard/dashboard', compact(
             'cardData',
@@ -32,26 +31,33 @@ class DashboardController extends Controller
         ));
     }
 
-    public function topTransactions()
+    public function getTopTransactionsByType(string $type = 'Income')
     {
-        // Fetch top 10 highest income transactions, most recent first
-        $transactions = Transaction::with('employee')
-            ->where('transaction_type', 'Income') // ensure correct column name
-            ->orderBy('date', 'desc')      // most recent first
-            ->orderBy('amount', 'desc')          // highest amounts first
-            ->take(10)
-            ->get();
+        // Define the essential columns needed in the frontend table
+        $selectColumns = [
+            'id', // Always good to have the ID
+            'employee_id',
+            'transaction_id',
+            'amount',
+            'transaction_type',
+            'payment_method',
+            'service_description',
+            'date',
+            'created_at',
+        ];
 
-        return $transactions;
-    }
-
-    public function topExpenseTransactions()
-    {
-        // Fetch top 10 highest income transactions, most recent first
-        $transactions = Transaction::with('employee')
-            ->where('transaction_type', 'Expense') // ensure correct column name
-            ->orderBy('date', 'desc')      // most recent first
-            ->orderBy('amount', 'desc')          // highest amounts first
+        $transactions = Transaction::select($selectColumns)
+            // Only load essential employee info:
+            ->with(['employee' => function ($query) {
+                $query->select('employee_id', 'first_name', 'last_name');
+            }])
+            // Only load essential service info:
+            ->with(['service' => function ($query) {
+                $query->select('id', 'name');
+            }])
+            ->where('transaction_type', $type)
+            ->orderBy('date', 'desc')
+            ->orderBy('amount', 'desc')
             ->take(10)
             ->get();
 
@@ -232,6 +238,8 @@ class DashboardController extends Controller
     {
         $today = Carbon::today();
         $startOfMonth = Carbon::now()->startOfMonth();
+        $endDate = Carbon::now()->endOfMonth();
+
 
         // Today Invoices
         $todayInvoicesCount = Transaction::where('transaction_type', 'Income')
@@ -250,9 +258,8 @@ class DashboardController extends Controller
 
         // This Month Sales
         $monthSales = Transaction::where('transaction_type', 'Income')
-            ->whereBetween('date', [$startOfMonth, Carbon::now()])
+            ->whereBetween('date', [$startOfMonth, $endDate])
             ->sum('amount');
-
         return [
             'today_invoices' => $todayInvoicesCount,
             'month_invoices' => $monthInvoicesCount,

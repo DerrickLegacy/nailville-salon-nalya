@@ -24,7 +24,20 @@ use App\Http\Controllers\InventoryController;
 |
 */
 
-Route::redirect('/', 'login');
+
+// Route::get('/', function () {
+//     return view('splash');
+// });
+
+// Route::redirect('/login', 'login');
+
+Route::get('/', function () {
+    if (session()->has('visited')) {
+        return redirect()->route('login');
+    }
+    session(['visited' => true]);
+    return view('auth/splash');
+});
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
@@ -83,19 +96,15 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::delete('/inventory-product/{id}', [InventoryController::class, 'destroy'])
             ->name('inventory.product.destroy');
     });
-
-    //    transactions controller
+    // transactions controller
     Route::get('/finance/transactions', [TransactionController::class, 'index01'])->name('transactions');
     Route::get('/transactions/get-records', [TransactionController::class, 'getRecords'])->name('transactions.getRecords');
-
     Route::get('/transactions/income', [TransactionController::class, 'index'])
         ->name('transactions.income')
         ->defaults('transaction_type', 'Income');
-
     Route::get('/transactions/expense', [TransactionController::class, 'index'])
         ->name('transactions.expense')
         ->defaults('transaction_type', 'Expense');
-
     Route::post('/transactions/store-records', [TransactionController::class, 'store'])->name('transactions.store');
     Route::get('/transactions/delete-record/{id}', [TransactionController::class, 'delete'])
         ->name('transactions.delete');
@@ -117,9 +126,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         ->name('settings.employee.details');
     Route::get('/settings/user-management/edit-employer/{id}', [SettingController::class, 'viewEditEmployerDetails'])
         ->name('settings.edit.employer')->defaults('pageType', 'edit');
-
     Route::get('/settings/user-management/delete-employer/{id}', [SettingController::class, 'deleteEmployee'])
         ->name('settings.delete.employer');
+    Route::get('/settings/user-management/toggle-status/{id}', [SettingController::class, 'toggleEmployeeStatus'])
+        ->name('settings.toggle.employer.status');
     Route::put('/settings/user-management/update-employer/{id}', [SettingController::class, 'updateEmployee'])
         ->name('settings.update.employer');
     Route::get('/settings/user-management/create-new-employer/', [SettingController::class, 'createNewEmployee'])
@@ -128,4 +138,58 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         ->name('settings.store.employer');
     Route::post('/user/profile')
         ->name('settings.my.account');
+
+    // Admin User Management (System Users)
+    Route::prefix('admin/users')->name('admin.users.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('index');
+        Route::get('/list', [App\Http\Controllers\Admin\UserController::class, 'list'])->name('list');
+        Route::get('/create-system-user', [App\Http\Controllers\Admin\UserController::class, 'create'])->name('create');
+        Route::post('/store', [App\Http\Controllers\Admin\UserController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\UserController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Admin\UserController::class, 'update'])->name('update');
+        Route::get('/{id}/toggle-status', [App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('toggle-status');
+        Route::delete('/delete-system-user/{id}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('destroy');
+    });
+
+    // Notifications
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [App\Http\Controllers\NotificationController::class, 'index'])->name('index');
+        Route::get('/list', [App\Http\Controllers\NotificationController::class, 'list'])->name('list');
+        Route::post('/{id}/mark-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('mark-read');
+        Route::post('/mark-all-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
+        Route::delete('/{id}', [App\Http\Controllers\NotificationController::class, 'destroy'])->name('destroy');
+    });
+
+    // Services: CRUD operations
+    Route::prefix('admin/services')->name('admin.services.')->group(function () {
+        Route::get('/', [App\Http\Controllers\ServiceController::class, 'index'])->name('index');
+        Route::get('/list', [App\Http\Controllers\ServiceController::class, 'list'])->name('list');
+        Route::post('/store', [App\Http\Controllers\ServiceController::class, 'store'])->name('store');
+        Route::get('/{id}', [App\Http\Controllers\ServiceController::class, 'show'])->name('show');
+        Route::put('/{id}', [App\Http\Controllers\ServiceController::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\ServiceController::class, 'destroy'])->name('destroy');
+
+        // Bulk operations
+        Route::post('/bulk/status', [App\Http\Controllers\ServiceController::class, 'bulkUpdateStatus'])->name('bulk.status');
+        Route::delete('/bulk/delete', [App\Http\Controllers\ServiceController::class, 'bulkDelete'])->name('bulk.delete');
+        
+        // Statistics
+        Route::get('/statistics/data', [App\Http\Controllers\ServiceController::class, 'statistics'])->name('statistics');
+
+        // Categories management
+        Route::get('/categories/list', [App\Http\Controllers\ServiceController::class, 'getCategories'])->name('categories.list');
+        Route::post('/categories/store', [App\Http\Controllers\ServiceController::class, 'storeCategory'])->name('categories.store');
+        Route::put('/categories/{id}', [App\Http\Controllers\ServiceController::class, 'updateCategory'])->name('categories.update');
+        Route::delete('/categories/{id}', [App\Http\Controllers\ServiceController::class, 'destroyCategory'])->name('categories.destroy');
+
+        // Sections management
+        Route::get('/sections/list', [App\Http\Controllers\ServiceController::class, 'getSections'])->name('sections.list');
+        Route::post('/sections/store', [App\Http\Controllers\ServiceController::class, 'storeSection'])->name('sections.store');
+        Route::put('/sections/{id}', [App\Http\Controllers\ServiceController::class, 'updateSection'])->name('sections.update');
+        Route::delete('/sections/{id}', [App\Http\Controllers\ServiceController::class, 'destroySection'])->name('sections.destroy');
+
+        // Meta data for dropdowns
+        Route::get('/categories-and-sections/meta',  [App\Http\Controllers\ServiceController::class, 'meta'])
+            ->name('categories.services.meta');
+    });
 });

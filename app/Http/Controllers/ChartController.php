@@ -34,8 +34,6 @@ class ChartController extends Controller
         return response()->json($formatted);
     }
 
-
-
     public function topEmployers()
     {
         $startDate = Carbon::now()->startOfMonth();
@@ -49,10 +47,10 @@ class ChartController extends Controller
                 DB::raw('SUM(transactions.amount) as total_amount')
             )
             ->where('transactions.transaction_type', 'Income')
-            ->whereBetween('transactions.created_at', [$startDate, $endDate]) // ✅ restrict to current month
+            ->whereBetween('transactions.date', [$startDate->toDateString(), $endDate->toDateString()])
             ->groupBy('transactions.employee_id', 'employees.first_name', 'employees.last_name')
             ->orderByDesc('total_amount')
-            ->limit(10)
+            // ->limit(3)
             ->get();
 
         $formatted = $topEmployers->map(function ($row) {
@@ -73,34 +71,43 @@ class ChartController extends Controller
         $year = Carbon::now()->year;
         $month = Carbon::now()->month;
 
-        // Get transactions grouped by day and type
+        // Number of days in the current month
+        $daysInMonth = Carbon::now()->daysInMonth;
+
+        // Step 1: Fetch transactions grouped by day
         $transactions = Transaction::select(
-            DB::raw('DAY(created_at) as day'),
+            DB::raw('DAY(date) as day'),
             DB::raw('SUM(CASE WHEN transaction_type = "Income" THEN amount ELSE 0 END) as income'),
             DB::raw('SUM(CASE WHEN transaction_type = "Expense" THEN amount ELSE 0 END) as expense'),
             DB::raw('SUM(CASE WHEN transaction_type = "Income" THEN 1 ELSE 0 END) as income_count'),
             DB::raw('SUM(CASE WHEN transaction_type = "Expense" THEN 1 ELSE 0 END) as expense_count')
         )
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
+            ->whereYear('date', $year)
+            ->whereMonth('date', $month)
             ->groupBy('day')
             ->orderBy('day')
-            ->get();
+            ->get()
+            ->keyBy('day'); // key by day for easy lookup
 
-        // Prepare data for line chart
+        // Step 2: Build result with all days of month
         $chartData = [];
-        foreach ($transactions as $t) {
+
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+
+            $t = $transactions->get($day); // returns null if no record on that day
+
             $chartData[] = [
-                'day' => $t->day, // X-axis: day of the month
-                'Income' => (float) $t->income,
-                'Expense' => (float) $t->expense,
-                'IncomeCount' => (int) $t->income_count,
-                'ExpenseCount' => (int) $t->expense_count,
+                'day' => $day,
+                'Income' => $t ? (float)$t->income : 0,
+                'Expense' => $t ? (float)$t->expense : 0,
+                'IncomeCount' => $t ? (int)$t->income_count : 0,
+                'ExpenseCount' => $t ? (int)$t->expense_count : 0,
             ];
         }
 
         return $chartData;
     }
+
     public function monthlyTransactionsChart()
     {
         $currentMonth = Carbon::now()->month;
@@ -155,7 +162,6 @@ class ChartController extends Controller
                 'Expense' => isset($transactions[$m]) ? (float)$transactions[$m]->Expense : 0,
             ];
         }
-
         return response()->json($chartData);
     }
 }

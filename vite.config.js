@@ -1,13 +1,16 @@
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
+// vite.config.js
+import { defineConfig } from 'vite'
+import laravel from 'laravel-vite-plugin'
 
 export default defineConfig({
+    base: '/public/',
     plugins: [
         laravel({
             input: [
                 'resources/css/app.css',
                 'resources/css/filament-fixes.css',
                 'resources/js/app.js',
+                'resources/js/splash.js',
             ],
             refresh: true,
         }),
@@ -23,4 +26,4 @@ export default defineConfig({
             },
         },
     },
-});
+})

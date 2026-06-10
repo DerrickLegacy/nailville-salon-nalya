@@ -1,6 +1,5 @@
 /.phpunit.cache
 /node_modules
-/public/build
 /public/hot
 /public/storage
 /storage/*.key
@@ -8,6 +7,7 @@
 .env
 .env.backup
 .env.production
+.env.testing
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
@@ -17,3 +17,15 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Test databases
+database/*.sqlite
+database/*.sqlite-journal
+
+# Coverage reports
+coverage/
+.phpunit.cache/
+
+# OS files
+.DS_Store
+Thumbs.db

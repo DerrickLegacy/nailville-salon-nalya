@@ -28,6 +28,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'admin',
+        'activity'
     ];
 
     /**
@@ -49,6 +51,9 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'admin' => 'boolean',
+        'was_deleted' => 'boolean',
+
     ];
 
     /**
@@ -59,4 +64,60 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    /**
+     * Check if user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->admin === 1 || $this->admin === true;
+    }
+
+    /**
+     * Scope to get only admin users
+     */
+    public function scopeAdmins($query)
+    {
+        return $query->where('admin', 1);
+    }
+
+    /**
+     * Scope to get only non-admin users
+     */
+    public function scopeNonAdmins($query)
+    {
+        return $query->where('admin', 0);
+    }
+
+    /**
+     * Get the is_active attribute based on activity column
+     */
+    public function getIsActiveAttribute()
+    {
+        return $this->activity === 'Active';
+    }
+
+    /**
+     * Set the is_active attribute to update activity column
+     */
+    public function setIsActiveAttribute($value)
+    {
+        $this->attributes['activity'] = $value ? 'Active' : 'Inactive';
+    }
+
+    /**
+     * Scope to get only active users
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('activity', 'Active');
+    }
+
+    /**
+     * Scope to get only inactive users
+     */
+    public function scopeInactive($query)
+    {
+        return $query->where('activity', 'Inactive');
+    }
 }

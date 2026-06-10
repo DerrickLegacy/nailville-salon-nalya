@@ -22,25 +22,43 @@ class TransactionController extends Controller
         $loggedInUser = Auth::user()->name;
 
         $employees = Employee::all()->map(fn($e) => [
-            'id' => $e->employee_id,
+            'id'   => $e->employee_id,
             'name' => $e->full_name,
         ]);
 
-        $services = Service::where('status', 'Active')->orderBy('name')->get();
 
-        // Prefer route() param, fallback to query param
-        $transactionType = $request->route('transaction_type') ?? $request->get('transaction_type', 'Income');
+        // $transactionType = ;
 
-        // Pick view dynamically
+        $services = Service::where([
+            ['trans_type', strtolower($request->route('transaction_type')) ?? strtolower($request->get('transaction_type', 'Income'))],
+            ['status', 'Active']
+        ])->orderBy('name')->get();
+
+
+        $latestExpenseId = Transaction::where('transaction_type', 'Expense')
+            ->selectRaw('CAST(SUBSTRING(receipt_id, 5) AS UNSIGNED) as numeric_id')
+            ->orderByDesc('numeric_id')
+            ->value('numeric_id');
+
+        $nextNumeric = $latestExpenseId ? (int)$latestExpenseId + 1 : 1;
+        $formattedExpenseId = "EXP-" . str_pad($nextNumeric, 4, "0", STR_PAD_LEFT);
+
+        // dd($formattedExpenseId);
+
+        $transactionType = $request->route('transaction_type')
+            ?? $request->get('transaction_type', 'Income');
+
         $view = $transactionType === 'Income'
             ? 'pages.transactions.transactions-income'
             : 'pages.transactions.transactions-expense';
 
         return response()->view($view, [
-            'transactionType' => $transactionType,
-            'name'            => $loggedInUser,
-            'employees'       => $employees,
-            'services'        => $services,
+            'transactionType'       => $transactionType,
+            'name'                  => $loggedInUser,
+            'employees'             => $employees,
+            'services'              => $services,
+            'exp_transaction_id'    => $formattedExpenseId,
+            'exp_transaction_raw'   => $nextNumeric,
         ]);
     }
 
@@ -50,21 +68,23 @@ class TransactionController extends Controller
             return response()->json(['message' => 'Invalid request'], 400);
         }
 
+        // join transaction with services
         $query = Transaction::with([
             'employee:employee_id,first_name,last_name',
-            'recordedBy:id,name'
-        ]);
+            'recordedBy:id,name',
+            'service:id,name as service_name,price,category_id'
+
+        ])->orderBy('date', 'desc');
 
         // 🔹 Ordering
         $columns = [
-            0 => 'created_at',
-            1 => 'service_description',
+            0 => 'date',
+            1 => 'service_name', //issue:use sevice name from service table
             2 => 'receipt_id',
             3 => 'employee_id',
             4 => 'customer_name',
             5 => 'payment_method',
             6 => 'amount',
-            // 7 => 'date',
         ];
 
         $orderColIndex = $request->input('order.0.column');
@@ -80,8 +100,7 @@ class TransactionController extends Controller
         if ($request->filled('searchTerm')) {
             $searchTerm = $request->input('searchTerm');
             $query->where(function ($q) use ($searchTerm) {
-                $q->orWhere('customer_name', 'like', "%{$searchTerm}%")
-                    ->orWhere('transaction_type', 'like', "%{$searchTerm}%")
+                $q->orWhere('transaction_type', 'like', "%{$searchTerm}%")
                     ->orWhere('payment_method', 'like', "%{$searchTerm}%")
                     ->orWhere('service_description', 'like', "%{$searchTerm}%")
                     ->orWhere('receipt_id', 'like', "%{$searchTerm}%")
@@ -101,6 +120,13 @@ class TransactionController extends Controller
 
                 $q->orWhereHas('recordedBy', function ($userQuery) use ($searchTerm) {
                     $userQuery->where('name', 'like', "%{$searchTerm}%");
+                });
+
+                // Search in related service table
+                $q->orWhereHas('service', function ($serviceQuery) use ($searchTerm) {
+                    $serviceQuery->where('name', 'like', "%{$searchTerm}%")
+                        ->orWhere('service_code', 'like', "%{$searchTerm}%")
+                        ->orWhere('category', 'like', "%{$searchTerm}%");
                 });
             });
         }
@@ -139,6 +165,7 @@ class TransactionController extends Controller
 
         // 🔹 Format dates
         $transactionsFormatted = $transactions->map(function ($txn) {
+            $txn->date = $txn->date ? $txn->date->format('Y-m-d\TH:i:s') : null;
             $txn->created_at = $txn->created_at->format('Y-m-d\TH:i:s');
             return $txn;
         });
@@ -158,16 +185,15 @@ class TransactionController extends Controller
         ]);
     }
 
-
-
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'transaction_type'  => 'required|in:Income,Expense',
+            'employee_id'       => 'required_if:transaction_type,Income|nullable|exists:employees,employee_id',
+            'service_id'        => 'required_if:transaction_type,Income|nullable|exists:services,id',
             'receipt_id'        => 'nullable|string|max:100',
-            'employee_id'       => 'required|exists:employees,employee_id',
             'customer_name'     => 'nullable|string|max:150',
             'amount'            => 'required|numeric|min:0',
-            'transaction_type'  => 'required|in:Income,Expense',
             'payment_method'    => 'required|in:Cash,MobileMoney,Card,Bank,Other',
             'service_offered'   => 'nullable|string|max:255',
             'expense_type'      => 'nullable|string|max:255',
@@ -178,8 +204,10 @@ class TransactionController extends Controller
         // Generate a unique transaction_id
         $transactionId = strtoupper(Str::random(10));
 
+        // dd($validated);
+
         $transaction = Transaction::create([
-            'employee_id'        =>  $validated['employee_id'],
+            'employee_id'        => $validated['employee_id'] ?? null,
             'recorded_by'        => Auth::id(),
             'transaction_id'     => $transactionId,
             'receipt_id'         => $validated['receipt_id'] ?? null,
@@ -188,12 +216,11 @@ class TransactionController extends Controller
             'transaction_type'   => $validated['transaction_type'],
             'payment_method'     => $validated['payment_method'],
             'service_description' => $validated['transaction_type'] === 'Income'
-                ? ($validated['service_offered'] ?? null)
+                ? ($validated['service_id'] ?? null)
                 : ($validated['expense_type'] ?? null),
             'notes'              => $validated['notes'] ?? null,
-            'date'         => DATE('Y-m-d', strtotime($validated['date'])) ?? now(),
+            'date'               => isset($validated['date']) ? date('Y-m-d', strtotime($validated['date'])) : now(),
         ]);
-
         return redirect()->back()->with('success', 'Transaction saved successfully!');
     }
 
@@ -216,11 +243,22 @@ class TransactionController extends Controller
     public function edit($id)
     {
         // dd($id);
-        $employees = Employee::all(); // keep as objects
+        $employees = Employee::all();
+        $services = Service::where('status', 'Active')->orderBy('name')->get();
+
+        // dd($services);
 
         $transaction = Transaction::with(['employee', 'recordedBy'])->find($id);
-        return view('pages.transactions.edit', compact('transaction', 'employees'));
+        return  response()->view(
+            'pages.transactions.edit',
+            [
+                'transaction'            => $transaction,
+                'employees'       => $employees,
+                'services'        => $services,
+            ]
+        );
     }
+
     public function update(Request $request, $id)
     {
         $validated = $request->validate([

@@ -29,237 +29,274 @@ class ReportController extends Controller
 
     public function ajax_data(Request $request)
     {
-        $report_type = $request->get('report_type', 'Income');
-        $range = $request->get('range', 'today');
-        $totalNumberOfDays = 1;
-        $employee_id = $request->get('employee_id');
-        $monthlyIncomeTarget = (float) AppSetting::where(
+        $reportType  = $request->get('report_type', 'Income');
+        $range       = $request->get('range', 'Today');
+        $employeeId  = $request->get('employee_id');
+        $categoriseToSections = $request->get('categorise_services', false);
+
+        $totalDays   = 1;
+        $rangeLabel  = 'Today';
+        $expectedTarget = 0;
+
+        $monthlyTarget = (float) AppSetting::where(
             'key',
-            $report_type === 'Income' ? 'monthly_income_target' : 'monthly_expenses_target'
+            $reportType === 'Income'
+                ? 'monthly_income_target'
+                : 'monthly_expenses_target'
         )->value('value');
-        $expected_income_target = 0;
 
-        $query = Transaction::where('transaction_type', $report_type);
+        $baseQuery = Transaction::where('transaction_type', $reportType);
 
-        if ($employee_id) {
-            $query->where('employee_id', $employee_id);
+        if ($employeeId) {
+            $baseQuery->where('employee_id', $employeeId);
         }
 
         switch ($range) {
+
             case 'This Week':
-                $totalNumberOfDays = 7;
-                $query->whereBetween('date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+                $start = Carbon::now()->startOfWeek();
+                $end   = Carbon::now()->endOfWeek();
+                $totalDays = 7;
                 $rangeLabel = 'This Week';
-                if ($employee_id) {
-                    $query->where('employee_id', $employee_id);
-                }
-                // income for this week given the monthly target
-                $expected_income_target = ($monthlyIncomeTarget / 4);
+                $expectedTarget = $monthlyTarget / 4;
                 break;
 
             case 'This Month':
-                $totalNumberOfDays = Carbon::now()->daysInMonth;
-                $query->whereMonth('date', Carbon::now()->month)
-                    ->whereYear('date', Carbon::now()->year);
-                if ($employee_id) {
-                    $query->where('employee_id', $employee_id);
-                }
+                $start = Carbon::now()->startOfMonth();
+                $end   = Carbon::now()->endOfMonth();
+                $totalDays = Carbon::now()->daysInMonth;
                 $rangeLabel = 'This Month';
-                $expected_income_target = $monthlyIncomeTarget;
+                $expectedTarget = $monthlyTarget;
                 break;
 
             case 'This Year':
-                $totalNumberOfDays = Carbon::now()->isLeapYear() ? 366 : 365;
-                $query->whereYear('date', Carbon::now()->year);
+                $start = Carbon::now()->startOfYear();
+                $end   = Carbon::now()->endOfYear();
+                $totalDays = Carbon::now()->isLeapYear() ? 366 : 365;
                 $rangeLabel = 'This Year';
-                if ($employee_id) {
-                    $query->where('employee_id', $employee_id);
+                $expectedTarget = $monthlyTarget * 12;
+                break;
+            case 'All Time':
+                $firstTransactionDate = Transaction::where('transaction_type', $reportType)
+                    ->min('date');
+
+                if ($firstTransactionDate) {
+                    $start = Carbon::parse($firstTransactionDate)->startOfDay();
+                    $end   = Carbon::now()->endOfDay();
+
+                    $totalDays = $start->diffInDays($end) + 1;
+                    $rangeLabel = 'Since Business Started';
+
+                    $months = max(1, $start->diffInMonths($end));
+                    $expectedTarget = $monthlyTarget * $months;
+                } else {
+                    $start = Carbon::today();
+                    $end = Carbon::today();
+                    $totalDays = 1;
+                    $rangeLabel = 'Since Business Started';
+                    $expectedTarget = 0;
                 }
-                $expected_income_target = $monthlyIncomeTarget * 12;
                 break;
 
             case 'Filter':
-                try {
-                    if ($request->filled('start_date') && $request->filled('end_date')) {
-                        $start_input = $request->start_date;
-                        $end_input = $request->end_date;
+                if ($request->filled('start_date') && $request->filled('end_date')) {
+                    $start = Carbon::parse($request->start_date)->startOfDay();
+                    $end   = Carbon::parse($request->end_date)->endOfDay();
 
-                        // Parse dates
-                        try {
-                            $start = Carbon::createFromFormat('Y-m-d', $start_input);
-                            $end = Carbon::createFromFormat('Y-m-d', $end_input);
-                        } catch (\Exception $e) {
-                            $start = Carbon::createFromFormat('M j, Y', $start_input);
-                            $end = Carbon::createFromFormat('M j, Y', $end_input);
-                        }
-
-                        $rangeLabel = $start->format('M j, Y') . ' - ' . $end->format('M j, Y');
-                        $totalNumberOfDays = $start->diffInDays($end) + 1;
-
-                        // Base query for transactions in range
-                        $transactionQuery = Transaction::whereBetween('date', [$start, $end])
-                            ->where('transaction_type', $report_type);
-
-                        if ($employee_id) {
-                            $transactionQuery->where('employee_id', $employee_id);
-                        }
-
-                        $employeeTransactions = $transactionQuery->get();
-
-                        // Employee info
-                        $employee = Employee::find($employee_id);
-
-                        // Total income collected by this employee
-                        $totalIncome = $employeeTransactions->sum('amount');
-
-                        // Performance positions = count of transactions
-                        $performancePositions = $employeeTransactions->count();
-
-                        // rank among all employees in that period
-                        $rankQuery = Transaction::select('employee_id', DB::raw('SUM(amount) as total'))
-                            ->whereBetween('date', [$start, $end])
-                            ->where('transaction_type', $report_type)
-                            ->groupBy('employee_id')
-                            ->orderByDesc('total')
-                            ->get();
-
-                        $positions = $rankQuery->pluck('employee_id')->toArray();
-                        $employeeRank = array_search($employee_id, $positions) + 1; // 1-based rank
-
-                        // Adjust target based on range
-                        $daysInRange = $start->diffInDays($end) + 1;
-                        $expected_income_target = ($monthlyIncomeTarget / 30) * $daysInRange;
-                        // Return as JSON
-                        $selectedEmpData = [
-                            'employee_id' => $employee_id,
-                            'name' => $employee ? $employee->first_name . ' ' . $employee->last_name : 'Unknown',
-                            'expertise' => $employee ? $employee->job_title ?? $employee->department : 'N/A',
-                            'performance_positions' => $performancePositions,
-                            'total_income' => $totalIncome,
-                            'rank' => $employeeRank,
-                            'range_label' => $rangeLabel,
-                        ];
-                    } else {
-                        // fallback today
-                        $selectedEmpData = [
-                            'name' => 'N/A',
-                            'expertise' => 'N/A',
-                            'performance_positions' => 0,
-                            'total_income' => 0,
-                            'rank' => 0,
-                            'range_label' => 'Today'
-                        ];
-                    }
-                } catch (\Exception $e) {
-                    // fallback parsing error
-                    $selectedEmpData = [
-                        'name' => 'N/A',
-                        'expertise' => 'N/A',
-                        'performance_positions' => 0,
-                        'total_income' => 0,
-                        'rank' => 0,
-                        'range_label' => 'Today'
-                    ];
+                    $totalDays = $start->diffInDays($end) + 1;
+                    $rangeLabel = $start->format('M j, Y') . ' - ' . $end->format('M j, Y');
+                    $expectedTarget = ($monthlyTarget / 30) * $totalDays;
+                } else {
+                    $start = Carbon::today();
+                    $end   = Carbon::today();
+                    $rangeLabel = 'Today';
+                    $expectedTarget = $monthlyTarget / 30;
                 }
-
                 break;
 
             default: // Today
-                $query->whereDate('date', Carbon::today());
+                $start = Carbon::today();
+                $end   = Carbon::today();
                 $rangeLabel = 'Today';
-                $expected_income_target = $monthlyIncomeTarget / 30;
-
+                $expectedTarget = $monthlyTarget / 30;
                 break;
         }
 
-        // Execute query
-        $incomes = $query->orderBy('date', 'desc')->get();
+        $baseQuery->whereBetween('date', [$start, $end]);
+        $transactions = (clone $baseQuery)
+            ->orderBy('date', 'desc')
+            ->get();
 
-        // Goals and totals
-        $daily_goal = (float) ApplicationConfigurationSetting::get('daily_expected_income', 800000);
-        $daily_goal_total = $daily_goal * $totalNumberOfDays;
-        $total_income = $incomes->sum('amount');
+        $dailyGoal = (float) ApplicationConfigurationSetting::get('daily_expected_income', 800000);
+        $dailyGoalTotal = $dailyGoal * $totalDays;
+        $totalIncome = $transactions->sum('amount');
 
-        // Progress percentage
-        $daily_percentage = $daily_goal_total > 0
-            ? min(($total_income / $daily_goal_total) * 100, 1000)
+        $dailyPercentage = $dailyGoalTotal > 0
+            ? min(($totalIncome / $dailyGoalTotal) * 100, 100)
             : 0;
-        // $dailyPe= monthlyIncomeTarget
 
-        // Group data by time period
-        if ($range === 'This Year') {
-            $grouped_by_period = $incomes->groupBy(fn($t) => Carbon::parse($t->date)->format('M'))
+        if (in_array($range, ['This Year', 'All Time'])) {
+            $groupedByPeriod = $transactions
+                ->groupBy(fn($t) => Carbon::parse($t->date)->format('Y-M'))
                 ->map(fn($g) => $g->sum('amount'));
         } else {
-            $grouped_by_period = $incomes->groupBy(fn($t) => Carbon::parse($t->date)->format('Y-m-d'))
+            $groupedByPeriod = $transactions
+                ->groupBy(fn($t) => Carbon::parse($t->date)->format('Y-m-d'))
                 ->map(fn($g) => $g->sum('amount'));
         }
 
-        // Response payload
-        $data = [
-            'range_label' => $rangeLabel,
-            'total_income' => $total_income,
-            'grouped' => $incomes->groupBy('service_description')->map->sum('amount'),
-            'grouped_by_period' => $grouped_by_period,
-            'daily_goal' => $daily_goal_total,
-            'daily_percentage' => round($daily_percentage, 0),
-            'total_days' => $totalNumberOfDays,
-            'request' => $request->all(),
-            'selectedEmpData' => $selectedEmpData ?? null,
-            'monthlyIncomeTarget' => $monthlyIncomeTarget,
-            'expected_income_target' => $expected_income_target,
-            'report_type' => $report_type,
-        ];
 
-        return response()->json($data);
+        if ($categoriseToSections) {
+            // Return section, category and total amount eg Men Hair Team - 50000, Women Hair Team - 70000
+            $groupedByService = $transactions
+                ->groupBy('service_description')
+                ->map(function ($items, $serviceId) {
+                    $service = \App\Models\Service::with(['section', 'category'])->find($serviceId);
+                    return [
+                        'service_id'   => $service->id ?? $serviceId,
+                        'service_name' => $service->name ?? 'Unknown',
+                        'service_code' => $service->service_code ?? null,
+                        'section_name' => $service->section->name ?? 'Unknown Section',
+                        'category_name' => $service->category->name ?? 'Unknown Category',
+                        'total_amount' => $items->sum('amount'),
+                        'items' => $items,
+                    ];
+                })
+                ->groupBy('section_name')
+                ->map(function ($sectionItems, $sectionName) {
+                    return [
+                        'section_name' => $sectionName,
+                        'total_amount' => $sectionItems->sum('total_amount'),
+                        'services' => $sectionItems->values()
+                    ];
+                });
+        } else {
+            // Return service and total amount
+            $groupedByService = $transactions
+                ->groupBy('service_description')
+                ->map(function ($items, $serviceId) {
+                    $service = \App\Models\Service::with(['section', 'category'])->find($serviceId);
+                    return [
+                        'service_id'   => $service->id ?? $serviceId,
+                        'service_name' => $service->name ?? 'Unknown......',
+                        'service_code' => $service->service_code ?? null,
+                        'section_name' => $service->section->name ?? null,
+                        'category_name' => $service->category->name ?? null,
+                        'total_amount' => $items->sum('amount'),
+                        'item' => $items,
+                    ];
+                });
+        }
+
+        $selectedEmpData = null;
+
+        if ($employeeId) {
+            $employeeTx = (clone $baseQuery)->get();
+            $employee = Employee::find($employeeId);
+
+            $rankings = Transaction::select('employee_id', DB::raw('SUM(amount) total'))
+                ->whereBetween('date', [$start, $end])
+                ->where('transaction_type', $reportType)
+                ->groupBy('employee_id')
+                ->orderByDesc('total')
+                ->pluck('employee_id')
+                ->toArray();
+
+            $selectedEmpData = [
+                'employee_id' => $employeeId,
+                'name' => $employee ? $employee->first_name . ' ' . $employee->last_name : 'Unknown',
+                'expertise' => $employee->job_title ?? $employee->department ?? 'N/A',
+                'performance_positions' => $employeeTx->count(),
+                'total_income' => $employeeTx->sum('amount'),
+                'rank' => array_search($employeeId, $rankings) !== false
+                    ? array_search($employeeId, $rankings) + 1
+                    : null,
+                'range_label' => $rangeLabel,
+            ];
+        }
+
+        /* -------------------------------------------------
+     | 9. Response
+     -------------------------------------------------*/
+        return response()->json([
+            'range_label' => $rangeLabel,
+            'total_income' => $totalIncome,
+            'grouped' => $groupedByService,
+            'grouped_by_period' => $groupedByPeriod,
+            'daily_goal' => $dailyGoalTotal,
+            'daily_percentage' => round($dailyPercentage),
+            'total_days' => $totalDays,
+            'selectedEmpData' => $selectedEmpData,
+            'monthlyIncomeTarget' => $monthlyTarget,
+            'expected_income_target' => $expectedTarget,
+            'report_type' => $reportType,
+        ]);
     }
+
 
     public function EmployerContribution(Request $request)
     {
-        $range = $request->input('range', 'Today');
+        $range       = $request->input('range', 'Today');
         $employee_id = $request->input('employee_id', null);
         $report_type = $request->input('report_type', 'Income');
 
-        $query = Transaction::query()
+
+        $baseQuery = Transaction::query()
             ->where('transaction_type', $report_type);
 
-        $rangeLabel = '';
+        $rangeLabel = 'Today';
 
         switch ($range) {
+
             case 'This Week':
-                $startDate = Carbon::now()->startOfWeek()->startOfDay();
-                $endDate   = Carbon::now()->endOfWeek()->endOfDay();
+                $startDate  = Carbon::now()->startOfWeek()->startOfDay();
+                $endDate    = Carbon::now()->endOfWeek()->endOfDay();
                 $rangeLabel = 'This Week';
                 break;
 
             case 'This Month':
-                $startDate = Carbon::now()->startOfMonth()->startOfDay();
-                $endDate   = Carbon::now()->endOfMonth()->endOfDay();
+                $startDate  = Carbon::now()->startOfMonth()->startOfDay();
+                $endDate    = Carbon::now()->endOfMonth()->endOfDay();
                 $rangeLabel = 'This Month';
                 break;
 
             case 'This Year':
-                $startDate = Carbon::now()->startOfYear()->startOfDay();
-                $endDate   = Carbon::now()->endOfYear()->endOfDay();
+                $startDate  = Carbon::now()->startOfYear()->startOfDay();
+                $endDate    = Carbon::now()->endOfYear()->endOfDay();
                 $rangeLabel = 'This Year';
                 break;
 
+            case 'All Time':
+                // Get earliest transaction date (employee-aware)
+                $firstQuery = clone $baseQuery;
+
+                if ($employee_id) {
+                    $firstQuery->where('employee_id', $employee_id);
+                }
+
+                $firstDate = $firstQuery->min('date');
+
+                if ($firstDate) {
+                    $startDate = Carbon::parse($firstDate)->startOfDay();
+                } else {
+                    $startDate = Carbon::today()->startOfDay();
+                }
+
+                $endDate    = Carbon::now()->endOfDay();
+                $rangeLabel = 'Since Business Started';
+                break;
+
             case 'Filter':
-                $start_input = $request->input('start_date');
-                $end_input   = $request->input('end_date');
+                $startInput = $request->input('start_date');
+                $endInput   = $request->input('end_date');
 
-                if ($start_input && $end_input) {
-                    try {
-                        $startDate = Carbon::createFromFormat('Y-m-d', $start_input)->startOfDay();
-                        $endDate   = Carbon::createFromFormat('Y-m-d', $end_input)->endOfDay();
-                    } catch (\Exception $e) {
-                        $startDate = Carbon::parse($start_input)->startOfDay();
-                        $endDate   = Carbon::parse($end_input)->endOfDay();
-                    }
-
+                if ($startInput && $endInput) {
+                    $startDate = Carbon::parse($startInput)->startOfDay();
+                    $endDate   = Carbon::parse($endInput)->endOfDay();
                     $rangeLabel = $startDate->format('M j, Y') . ' - ' . $endDate->format('M j, Y');
                 } else {
-                    $startDate = $endDate = Carbon::today();
+                    $startDate = Carbon::today()->startOfDay();
+                    $endDate   = Carbon::today()->endOfDay();
                     $rangeLabel = 'Today';
                 }
                 break;
@@ -271,43 +308,55 @@ class ReportController extends Controller
                 break;
         }
 
-        // Apply report_type filter
+        // Apply Filters (IMPORTANT: BEFORE JOIN)
+        $baseQuery->whereBetween('date', [$startDate, $endDate]);
 
-        // Apply date filter with table prefix to avoid ambiguity
-        $query->whereBetween('transactions.date', [$startDate, $endDate]);
-
-        // Optional filter by employee
         if ($employee_id) {
-            $query->where('transactions.employee_id', $employee_id);
+            $baseQuery->where('transactions.employee_id', $employee_id);
         }
 
-        // Aggregate top employers
-        $topEmployers = $query->join('employees', 'transactions.employee_id', '=', 'employees.employee_id')
+        $topEmployers = $baseQuery
+            ->join('employees', 'transactions.employee_id', '=', 'employees.employee_id')
             ->select(
-                DB::raw("CONCAT(employees.first_name, ' ', employees.last_name) as label"),
-                DB::raw('COUNT(transactions.id) as invoice_count'),
-                DB::raw('SUM(transactions.amount) as total_amount')
+                DB::raw("CONCAT(employees.first_name, ' ', employees.last_name) AS label"),
+                DB::raw('COUNT(transactions.id) AS invoice_count'),
+                DB::raw('SUM(transactions.amount) AS total_amount')
             )
-            ->groupBy('transactions.employee_id', 'employees.first_name', 'employees.last_name')
+            ->groupBy(
+                'transactions.employee_id',
+                'employees.first_name',
+                'employees.last_name'
+            )
             ->orderByDesc('total_amount')
             ->limit(10)
             ->get();
 
-        // Format for table
-        $formatted = $topEmployers->map(function ($row) {
+        $rankings = Transaction::select('employee_id', DB::raw('SUM(amount) AS total'))
+            ->whereBetween('date', [$startDate, $endDate])
+            ->where('transaction_type', $report_type)
+            ->groupBy('employee_id')
+            ->orderByDesc('total')
+            ->pluck('employee_id')
+            ->toArray();
+
+        $data = $topEmployers->map(function ($row) use ($rankings) {
             return [
-                'Employee' => $row->label,
-                'Invoices' => (int) $row->invoice_count,
-                'totalIncome' => number_format((float) $row->total_amount, 2), // formatted with comma
+                'Employee'    => $row->label,
+                'Invoices'    => (int) $row->invoice_count,
+                'totalIncome' => number_format((float) $row->total_amount, 2),
+                'rank'        => array_search($row->employee_id, $rankings) + 1,
             ];
         });
 
-        // Return JSON response
         return response()->json([
+            'status'      => 'success',
             'range_label' => $rangeLabel,
-            'data' => $formatted
+            'start_date'  => $startDate->toDateString(),
+            'end_date'    => $endDate->toDateString(),
+            'data'        => $data,
         ]);
     }
+
     public function expense()
     {
         $services = Service::where('status', 'Active')->orderBy('name')->get();
@@ -325,6 +374,8 @@ class ReportController extends Controller
         $report_type =  "Net Income";
         return view('pages.reports.netincome', compact('report_type'));
     }
+
+
     public function getNetIncomeData(Request $request)
     {
         $selectedPeriod = $request->input('selectedPeriod', 'Today');

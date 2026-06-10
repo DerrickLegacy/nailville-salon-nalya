@@ -24,9 +24,14 @@ class Transaction extends Model
         'created_at',
         'updated_at'
     ];
-    public $timestamps = true; // make sure this is enabled
+    public $timestamps = true;
 
-    protected $dates = ['created_at', 'updated_at'];
+    protected $casts = [
+        'date' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'amount' => 'decimal:2',
+    ];
 
     // Relationship to Employee
     public function employee()
@@ -38,5 +43,11 @@ class Transaction extends Model
     public function recordedBy()
     {
         return $this->belongsTo(User::class, 'recorded_by', 'id');
+    }
+
+    // Relationship to Service (if applicable)
+    public function service()
+    {
+        return $this->belongsTo(Service::class, 'service_description', 'id');
     }
 }

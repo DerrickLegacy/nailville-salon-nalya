@@ -118,40 +118,56 @@ document.addEventListener('DOMContentLoaded', () => {
         onChange: (selectedDates, dateStr, instance) => {
             // eslint-disable-next-line no-param-reassign
             instance.element.value = dateStr.replace('to', '-');
+            // Fire custom event so report page can react automatically
+            instance.element.dispatchEvent(new Event('dateRangeSelected', { bubbles: true }));
         },
     });
 
-    // Inline small weekly calendar
-    const weekPicker = document.getElementById('weekRangePicker');
-    if (weekPicker) {
-        const today = new Date();
-        const dayOfWeek = today.getDay();
-        const monday = new Date(today);
-        monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-        const sunday = new Date(monday);
-        sunday.setDate(monday.getDate() + 6);
+  const weekPicker = document.getElementById('weekRangePicker');
+if (weekPicker) {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
 
-        flatpickr(weekPicker, {
-            mode: 'range',
-            dateFormat: 'Y-m-d',
-            defaultDate: [monday, sunday],
-            allowInput: false,
-            inline: true,
-            monthSelectorType: 'static',
-            onReady: (selectedDates, dateStr, instance) => {
-                if (selectedDates.length === 2) {
-                    const [start, end] = selectedDates;
-                    instance.input.value = `${instance.formatDate(start, 'Y-m-d')} - ${instance.formatDate(end, 'Y-m-d')}`;
-                }
-            },
-            onChange: (selectedDates, dateStr, instance) => {
-                if (selectedDates.length === 2) {
-                    const [start, end] = selectedDates;
-                    instance.input.value = `${instance.formatDate(start, 'Y-m-d')} - ${instance.formatDate(end, 'Y-m-d')}`;
-                }
-            },
-        });
-    }
+    flatpickr(weekPicker, {
+        mode: 'range',
+        dateFormat: 'Y-m-d',
+        defaultDate: [monday, sunday],
+        allowInput: false,
+        inline: true,
+        monthSelectorType: 'static',
+        onReady: (selectedDates, dateStr, instance) => {
+            // Force full width
+            instance.calendarContainer.style.width = '100%';
+            instance.calendarContainer.style.maxWidth = '100%';
+            instance.calendarContainer.style.boxSizing = 'border-box';
+
+            // Stretch days evenly
+            const daysContainer = instance.calendarContainer.querySelector('.flatpickr-days');
+            if (daysContainer) {
+                daysContainer.style.display = 'grid';
+                daysContainer.style.gridTemplateColumns = 'repeat(7, 1fr)';
+                daysContainer.style.gap = '0';
+            }
+
+            // Initialize date input
+            if (selectedDates.length === 2) {
+                const [start, end] = selectedDates;
+                instance.input.value = `${instance.formatDate(start, 'Y-m-d')} - ${instance.formatDate(end, 'Y-m-d')}`;
+            }
+        },
+        onChange: (selectedDates, dateStr, instance) => {
+            if (selectedDates.length === 2) {
+                const [start, end] = selectedDates;
+                instance.input.value = `${instance.formatDate(start, 'Y-m-d')} - ${instance.formatDate(end, 'Y-m-d')}`;
+            }
+        },
+    });
+}
+
 
 
     dashboardCard01();

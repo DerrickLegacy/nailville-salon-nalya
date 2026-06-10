@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import './additional-styles/flatpickr.css';
 @import './additional-styles/utility-patterns.css' layer(components);
+@import './additional-styles/responsive-improvements.css';
 @import "dataTables.tailwind.css";
 
 
@@ -129,6 +130,7 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
+
   *,
   ::after,
   ::before,
@@ -137,3 +139,12 @@
     border-color: var(--color-gray-200, currentColor);
   }
 }
+
+
+#moving-box {
+    offset-path: path(
+        "M 239 17 C 142 17 48.5 103 48.5 213.5 C 48.5 324 126 408 244 408 C 362 408 412 319 412 213.5"
+    );
+    offset-rotate: auto;
+}
+
