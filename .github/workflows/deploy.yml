@@ -58,17 +58,80 @@ jobs:
             cp $ENV_FILE .env
             echo "✔ Environment file updated ($ENV_FILE → .env)"
 
+            # Fix 419 Error - Ensure SESSION_DRIVER is set to file
+            echo "----------------------------------------"
+            echo "🔧 Fixing session configuration for 419 errors"
+            echo "----------------------------------------"
+            
+            # Update SESSION_DRIVER to file in .env
+            if grep -q "SESSION_DRIVER=database" .env; then
+                sed -i 's/SESSION_DRIVER=database/SESSION_DRIVER=file/g' .env
+                echo "✔ Changed SESSION_DRIVER from database to file"
+            elif ! grep -q "SESSION_DRIVER" .env; then
+                echo "SESSION_DRIVER=file" >> .env
+                echo "✔ Added SESSION_DRIVER=file to .env"
+            else
+                echo "✔ SESSION_DRIVER already set correctly"
+            fi
+
+            # Ensure SESSION_LIFETIME is adequate
+            if ! grep -q "SESSION_LIFETIME=240" .env; then
+                if grep -q "SESSION_LIFETIME=" .env; then
+                    sed -i 's/SESSION_LIFETIME=.*/SESSION_LIFETIME=240/g' .env
+                    echo "✔ Updated SESSION_LIFETIME to 240 minutes"
+                else
+                    echo "SESSION_LIFETIME=240" >> .env
+                    echo "✔ Added SESSION_LIFETIME=240 to .env"
+                fi
+            fi
+
+            # Remove problematic SESSION_DOMAIN if present
+            if grep -q "SESSION_DOMAIN=" .env; then
+                sed -i '/SESSION_DOMAIN=/d' .env
+                echo "✔ Removed SESSION_DOMAIN (causes issues)"
+            fi
+
+            # Create and fix storage directories
+            echo "Fixing storage directories and permissions..."
+            mkdir -p storage/framework/sessions
+            mkdir -p storage/framework/cache/data
+            mkdir -p storage/framework/views
+            mkdir -p storage/logs
+            mkdir -p bootstrap/cache
+            
+            # Set proper permissions
+            chmod -R 775 storage
+            chmod -R 775 bootstrap/cache
+            echo "✔ Storage permissions updated"
+
             # Install composer dependencies
             composer update
             composer install --no-dev --optimize-autoloader
 
-            # Laravel clear + optimize
+            # Clear all Laravel caches and old sessions
+            echo "Clearing caches and old sessions..."
+            rm -rf storage/framework/sessions/* 2>/dev/null
+            rm -rf storage/framework/cache/data/* 2>/dev/null
+            rm -rf storage/framework/views/* 2>/dev/null
+            find bootstrap/cache -type f -name '*.php' ! -name '.gitignore' -delete 2>/dev/null
+            
             php artisan config:clear
             php artisan cache:clear
             php artisan route:clear
             php artisan view:clear
             php artisan optimize
+            
+            echo "✔ All caches cleared"
+
+            # Test session write capability
+            if touch storage/framework/sessions/deploy_test 2>/dev/null; then
+                rm storage/framework/sessions/deploy_test
+                echo "✔ Session directory is writable"
+            else
+                echo "⚠ Warning: Session directory may not be writable"
+            fi
 
             echo "----------------------------------------"
             echo "🎉 Deployment Completed Successfully!"
+            echo "📝 Session fixes applied automatically"
             echo "----------------------------------------"
