@@ -93,7 +93,7 @@
     <x-validation-errors class="mb-4" />
 
     <!-- Form -->
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login') }}" id="loginForm">
         @csrf
         <div class="space-y-4">
             <div>
@@ -113,11 +113,46 @@
                 </a>
             </div>
             @endif
-            <x-button class="ml-3">
-                {{ __('Sign in') }}
+            <x-button class="ml-3" id="loginButton">
+                <span id="loginButtonText">{{ __('Sign in') }}</span>
+                <span id="loginSpinner" class="hidden">
+                    <svg class="animate-spin h-5 w-5 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Signing in...
+                </span>
             </x-button>
         </div>
     </form>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const button = document.getElementById('loginButton');
+            const buttonText = document.getElementById('loginButtonText');
+            const spinner = document.getElementById('loginSpinner');
+            
+            // Disable button and show loading state
+            button.disabled = true;
+            button.classList.add('opacity-75', 'cursor-not-allowed');
+            buttonText.classList.add('hidden');
+            spinner.classList.remove('hidden');
+        });
+
+        // Re-enable button if validation errors occur (page reloads)
+        window.addEventListener('pageshow', function(event) {
+            const button = document.getElementById('loginButton');
+            const buttonText = document.getElementById('loginButtonText');
+            const spinner = document.getElementById('loginSpinner');
+            
+            if (button) {
+                button.disabled = false;
+                button.classList.remove('opacity-75', 'cursor-not-allowed');
+                buttonText.classList.remove('hidden');
+                spinner.classList.add('hidden');
+            }
+        });
+    </script>
     <!-- Footer -->
     <div class="pt-5 mt-6 border-t border-gray-100 dark:border-gray-700/60">
         <!-- Warning -->

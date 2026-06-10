@@ -14,6 +14,9 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('sitemap:generate')->daily();
+        
+        // Clean up old sessions every hour to prevent database bloat
+        $schedule->command('sessions:cleanup --hours=24')->hourly();
     }
 
     /**

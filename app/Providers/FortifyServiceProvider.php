@@ -35,11 +35,22 @@ class FortifyServiceProvider extends ServiceProvider
 
         // Custom authentication logic to check user activity status
         Fortify::authenticateUsing(function (Request $request) {
-            $user = \App\Models\User::where('email', $request->email)->first();
+            // Cache key for user lookup
+            $cacheKey = 'user_login_' . md5($request->email);
+            
+            // Try to get user from cache (1 minute cache)
+            $user = \Illuminate\Support\Facades\Cache::remember($cacheKey, 60, function () use ($request) {
+                return \App\Models\User::where('email', $request->email)
+                    ->select('id', 'name', 'email', 'password', 'activity', 'admin')
+                    ->first();
+            });
 
             if ($user && \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
                 // Check if user account is active
                 if ($user->activity !== 'Active') {
+                    // Clear cache on inactive account
+                    \Illuminate\Support\Facades\Cache::forget($cacheKey);
+                    
                     throw \Illuminate\Validation\ValidationException::withMessages([
                         'email' => ['Your account is inactive. Please contact admin.'],
                     ]);
