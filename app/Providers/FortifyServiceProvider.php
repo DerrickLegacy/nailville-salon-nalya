@@ -35,31 +35,31 @@ class FortifyServiceProvider extends ServiceProvider
 
         // Custom authentication logic to check user activity status
         Fortify::authenticateUsing(function (Request $request) {
-            // Cache key for user lookup
-            $cacheKey = 'user_login_' . md5($request->email);
+            // Normalize email to lowercase to match Fortify's lowercase_usernames setting
+            $email = strtolower(trim($request->email));
             
-            // Try to get user from cache (1 minute cache)
-            $user = \Illuminate\Support\Facades\Cache::remember($cacheKey, 60, function () use ($request) {
-                return \App\Models\User::where('email', $request->email)
-                    ->select('id', 'name', 'email', 'password', 'activity', 'admin')
-                    ->first();
-            });
+            // Get fresh user data directly from database (no caching for auth to avoid stale data)
+            $user = \App\Models\User::where('email', $email)
+                ->select('id', 'name', 'email', 'password', 'activity', 'admin')
+                ->first();
 
-            if ($user && \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
-                // Check if user account is active
-                if ($user->activity !== 'Active') {
-                    // Clear cache on inactive account
-                    \Illuminate\Support\Facades\Cache::forget($cacheKey);
-                    
-                    throw \Illuminate\Validation\ValidationException::withMessages([
-                        'email' => ['Your account is inactive. Please contact admin.'],
-                    ]);
-                }
-
-                return $user;
+            if (!$user) {
+                return null;
             }
 
-            return null;
+            // Verify password
+            if (!\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+                return null;
+            }
+
+            // Check if user account is active
+            if ($user->activity !== 'Active') {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'email' => ['Your account is inactive. Please contact the administrator.'],
+                ]);
+            }
+
+            return $user;
         });
 
         RateLimiter::for('login', function (Request $request) {

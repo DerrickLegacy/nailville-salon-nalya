@@ -114,6 +114,10 @@ jobs:
             rm -rf storage/framework/cache/data/* 2>/dev/null
             rm -rf storage/framework/views/* 2>/dev/null
             find bootstrap/cache -type f -name '*.php' ! -name '.gitignore' -delete 2>/dev/null
+
+            # Step 2: Clear sessions (use one of these)
+            php artisan sessions:cleanup
+            rm -rf storage/framework/sessions/*
             
             php artisan config:clear
             php artisan cache:clear
