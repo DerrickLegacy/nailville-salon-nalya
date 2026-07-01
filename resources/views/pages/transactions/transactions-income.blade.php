@@ -50,7 +50,8 @@
                     <!-- Modal Header -->
                     <div class="flex justify-between items-center mb-0">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Add New
-                            {{ $transactionType }} Transaction</h3>
+                            {{ $transactionType }} Transaction
+                        </h3>
                         <button id="closeModal" type="button"
                             class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,24 +103,24 @@
                             <!-- Service/Expense and Amount Grid -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                 @if ($transactionType === 'Income')
-                                    <!-- Service Offered -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            {{ $transactionType }} Service
-                                        </label>
-                                        <select name="service_offered" id="service_offered"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
-                                            required>
-                                            <option value="">-- Select Service --</option>
-                                            @foreach ($services as $service)
-                                                <option value="{{ $service->name }}" data-price="{{ $service->price }}"
-                                                    data-service-id="{{ $service->id }}">
-                                                    {{ $service->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <input type="hidden" name="service_id" id="service_id" required />
-                                    </div>
+                                <!-- Service Offered -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        {{ $transactionType }} Service
+                                    </label>
+                                    <select name="service_offered" id="service_offered"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                        required>
+                                        <option value="">-- Select Service --</option>
+                                        @foreach ($services as $service)
+                                        <option value="{{ $service->name }}" data-price="{{ $service->price }}"
+                                            data-service-id="{{ $service->id }}">
+                                            {{ $service->name }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                    <input type="hidden" name="service_id" id="service_id" required />
+                                </div>
                                 @endif
 
                                 <!-- Amount -->
@@ -195,7 +196,7 @@
                                         required>
                                         <option value="">-- Select Employee --</option>
                                         @foreach ($employees as $employee)
-                                            <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
+                                        <option value="{{ $employee['id'] }}" data-salary="{{ $employee['salary'] }}">{{ $employee['name'] }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -284,7 +285,7 @@
             <div class="md:p-3 p-1 sm:p-4 lg:p-6 border-b border-gray-200 dark:border-gray-700">
                 <div
                     class="flex flex-col space-y-3 sm:space-y-4 lg:flex-row lg:space-y-0 lg:items-center lg:justify-between">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                         <!-- Search -->
                         <div class="flex-1 lg:max-w-md">
                             <label for="simple-search" class="sr-only">Search</label>
@@ -300,6 +301,19 @@
                                 <input type="text" id="simple-search" name="simple-search"
                                     class="w-full pl-8 sm:pl-10 pr-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                     placeholder="Search transactions...">
+                            </div>
+                        </div>
+                        <!-- Service Type Filter -->
+                        <div class="flex-1 lg:max-w-md">
+                            <label for="service-type-filter" class="sr-only">Service Type</label>
+                            <div class="relative">
+                                <select id="service-type-filter" name="service-type-filter"
+                                    class="w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">All Service Types</option>
+                                    @foreach ($services as $service)
+                                    <option value="{{ $service->id }}">{{ $service->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="w-full sm:w-auto sm:flex-1 sm:max-w-xs">
@@ -423,6 +437,7 @@
             let searchTimeout;
             let searchInput = '';
             let cashTypeFilter = '';
+            let serviceTypeFilter = '';
             let recordCountTotal = '';
             var transaction_type = $('#transaction_type').val();
             var defaultText = ''
@@ -437,6 +452,21 @@
             const baseUrl = "{{ url('/') }}";
 
             loadTransactions();
+
+            // Search input
+            $(document).on('input', '#simple-search', function() {
+                clearTimeout(searchTimeout);
+                searchInput = $(this).val();
+                searchTimeout = setTimeout(() => {
+                    loadTransactions(1); // restart at first page
+                }, 300);
+            });
+
+            // Service type filter
+            $(document).on('change', '#service-type-filter', function() {
+                serviceTypeFilter = $(this).val();
+                loadTransactions();
+            });
 
             function openSectionModal() {
                 const modal = document.getElementById('sectionModal');
@@ -510,6 +540,7 @@
                             perPage: perPage,
                             searchTerm: searchInput,
                             cashTypeFilter: cashTypeFilter,
+                            expenseTypeFilter: serviceTypeFilter,
                             fromDate: fromDate,
                             toDate: toDate
                         },
