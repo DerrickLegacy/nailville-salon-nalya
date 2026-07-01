@@ -19,7 +19,7 @@ class ReportController extends Controller
     {
         $report_type = 'Income';
         $services = Service::where('status', 'Active')->orderBy('name')->get();
-        $employees = Employee::all()->map(fn($e) => [
+        $employees = Employee::where('work_status', 'Active')->get()->map(fn($e) => [
             'id' => $e->employee_id,
             'name' => $e->full_name,
         ]);
@@ -360,7 +360,7 @@ class ReportController extends Controller
     public function expense()
     {
         $services = Service::where('status', 'Active')->orderBy('name')->get();
-        $employees = Employee::all()->map(fn($e) => [
+        $employees = Employee::where('work_status', 'Active')->get()->map(fn($e) => [
             'id' => $e->employee_id,
             'name' => $e->full_name,
         ]);

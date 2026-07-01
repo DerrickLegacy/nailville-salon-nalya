@@ -21,9 +21,10 @@ class TransactionController extends Controller
     {
         $loggedInUser = Auth::user()->name;
 
-        $employees = Employee::all()->map(fn($e) => [
+        $employees = Employee::where('work_status', 'Active')->get()->map(fn($e) => [
             'id'   => $e->employee_id,
             'name' => $e->full_name,
+            'salary' => $e->salary,
         ]);
 
 
@@ -125,8 +126,7 @@ class TransactionController extends Controller
                 // Search in related service table
                 $q->orWhereHas('service', function ($serviceQuery) use ($searchTerm) {
                     $serviceQuery->where('name', 'like', "%{$searchTerm}%")
-                        ->orWhere('service_code', 'like', "%{$searchTerm}%")
-                        ->orWhere('category', 'like', "%{$searchTerm}%");
+                        ->orWhere('service_code', 'like', "%{$searchTerm}%");
                 });
             });
         }
@@ -134,6 +134,10 @@ class TransactionController extends Controller
         // 🔹 Filters
         if ($request->filled('cashTypeFilter')) {
             $query->where('payment_method', $request->cashTypeFilter);
+        }
+
+        if ($request->filled('expenseTypeFilter')) {
+            $query->where('service_description', $request->expenseTypeFilter);
         }
 
         if ($request->filled('fromDate') || $request->filled('toDate')) {
@@ -243,7 +247,7 @@ class TransactionController extends Controller
     public function edit($id)
     {
         // dd($id);
-        $employees = Employee::all();
+        $employees = Employee::where('work_status', 'Active')->get();
         $services = Service::where('status', 'Active')->orderBy('name')->get();
 
         // dd($services);

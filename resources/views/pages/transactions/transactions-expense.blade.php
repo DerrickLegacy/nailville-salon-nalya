@@ -55,7 +55,8 @@
                     <!-- Modal Header -->
                     <div class="flex justify-between items-center mb-0">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Add New
-                            {{ $transactionType }} Transaction</h3>
+                            {{ $transactionType }} Transaction
+                        </h3>
                         <button id="closeModal" type="button"
                             class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,15 +73,27 @@
                             class="space-y-4 sm:space-y-6">
                             @csrf
                             <input type="hidden" name="transaction_type" value="{{ $transactionType }}">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
 
-                            <!-- Customer Name -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Customer Name
-                                </label>
-                                <input type="text" name="customer_name" value="Walkin Client"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
-                                    required>
+                                <!-- Customer Name -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Customer Name
+                                    </label>
+                                    <input type="text" name="customer_name" value="Walkin Client"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                        required>
+                                </div>
+                                <!-- Date -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Date
+                                    </label>
+                                    <input type="date" name="date"
+                                        value="{{ old('date', now()->format('Y-m-d')) }}"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                        required>
+                                </div>
                             </div>
 
                             <!-- Two Column Grid for smaller fields -->
@@ -118,30 +131,14 @@
                                         required>
                                         <option value="">-- Select Expense --</option>
                                         @foreach ($services as $service)
-                                            <option value="{{ $service->id }}" data-name="{{ $service->name }}"
-                                                data-price="{{ $service->price }}"
-                                                data-service-id="{{ $service->id }}">
-                                                {{ $service->name }}
-                                            </option>
+                                        <option value="{{ $service->id }}" data-name="{{ $service->name }}"
+                                            data-price="{{ $service->price }}"
+                                            data-service-id="{{ $service->id }}">
+                                            {{ $service->name }}
+                                        </option>
                                         @endforeach
                                     </select>
                                 </div>
-
-                                <!-- Amount -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Amount
-                                    </label>
-                                    <input type="text" id="amount_display"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
-                                        required>
-                                    <input type="hidden" id="amount" name="amount">
-                                </div>
-                            </div>
-
-                            <!-- Payment Method, Date, Employee Grid -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                                <!-- Payment Method -->
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Payment Method
@@ -156,56 +153,37 @@
                                         <option value="Other">Other</option>
                                     </select>
                                 </div>
+                            </div>
 
-                                <!-- Date -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Date
-                                    </label>
-                                    <input type="date" name="date"
-                                        value="{{ old('date', now()->format('Y-m-d')) }}"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
-                                        required>
-                                </div>
-
+                            <!-- Payment Method, Date, Employee Grid -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                 <div class="sm:col-span-2 lg:col-span-1">
                                     <label
                                         class="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Initiated By (On Behalf of) <span class="text-red-500">*</span>
-
-                                        <div class="relative group">
-                                            <!-- Info Icon -->
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="w-8 h-8 text-purple-500 cursor-pointer" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M13 16h-1v-4h-1m1-4h.01M12 18a6 6 0 100-12 6 6 0 000 12z" />
-                                            </svg>
-
-                                            <!-- Tooltip aligned to LEFT -->
-                                            <div
-                                                class="absolute right-full top-1/2 -translate-y-1/2 mr-2 w-64
-                                                    rounded-lg bg-gray-900 text-white text-xs px-3 py-2
-                                                    opacity-0 group-hover:opacity-100 transition
-                                                    pointer-events-none z-50">
-                                                Select <strong>Business Account</strong> if no employee is affiliated
-                                                with this expense transaction.
-                                            </div>
-                                        </div>
                                     </label>
-
-
                                     <select name="employee_id"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500
                                             dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
                                         required>
                                         <option value="">-- Select Employee --</option>
                                         @foreach ($employees as $employee)
-                                            <option value="{{ $employee['id'] }}">{{ $employee['name'] }}</option>
+                                        <option value="{{ $employee['id'] }}" data-salary="{{ $employee['salary'] }}">{{ $employee['name'] }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
+
+                                <!-- Amount -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Amount
+                                    </label>
+                                    <input type="text" id="amount_display"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-sm sm:text-base"
+                                        required>
+                                    <input type="hidden" id="amount" name="amount">
+                                </div>
                             </div>
 
                             <!-- Notes -->
@@ -291,7 +269,7 @@
             <div class="p-3 sm:p-4 lg:p-6 border-b border-gray-200 dark:border-gray-700">
                 <div
                     class="flex flex-col space-y-3 sm:space-y-4 lg:flex-row lg:space-y-0 lg:items-center lg:justify-between">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                         <!-- Search -->
                         <div class="flex-1 lg:max-w-md">
                             <label for="simple-search" class="sr-only">Search</label>
@@ -309,10 +287,22 @@
                                     placeholder="Search transactions...">
                             </div>
                         </div>
+                        <!-- Expense Type Filter -->
+                        <div class="flex-1 lg:max-w-md">
+                            <label for="expense-type-filter" class="sr-only">Expense Type</label>
+                            <div class="relative">
+                                <select id="expense-type-filter" name="expense-type-filter"
+                                    class="w-full pl-3 pr-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">All Expense Types</option>
+                                    @foreach ($services as $service)
+                                    <option value="{{ $service->id }}">{{ $service->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                         <div class="w-full sm:w-auto sm:flex-1 sm:max-w-xs">
                             <x-datepicker class="w-full" />
                         </div>
-
                     </div>
                     <!-- Action Buttons -->
                     <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
@@ -414,6 +404,7 @@
             let searchTimeout;
             let searchInput = '';
             let cashTypeFilter = '';
+            let expenseTypeFilter = '';
             let recordCountTotal = '';
             var transaction_type = $('#transaction_type').val();
             var defaultText = ''
@@ -447,6 +438,7 @@
                 $('.error-message').text('');
                 isSectionEditMode = false;
                 currentSectionId = null;
+                isSalaryExpense = false;
             }
 
             function closeModal() {
@@ -460,11 +452,28 @@
             $('#amount').val(parseFloat($('#amount_display').val().replace(/,/g, '')));
 
 
+            // Flag to track if salary-related expense type is selected
+            let isSalaryExpense = false;
+
             $('#expense_type').on('change', function() {
                 let selectedOption = $(this).find('option:selected');
                 let rawPrice = selectedOption.data('price');
                 let service_id = selectedOption.data('service-id'); // use data-service-id
-                if (rawPrice) {
+                let serviceName = selectedOption.data('name');
+
+                // Check if it's a salary-related expense type
+                isSalaryExpense = serviceName && (serviceName.toLowerCase().includes('staff salary') || serviceName.toLowerCase().includes('salary') || serviceName.toLowerCase().includes('Staff Salaries'));
+
+                if (isSalaryExpense) {
+                    let employeeSelect = $('select[name="employee_id"]');
+                    let selectedEmployee = employeeSelect.find('option:selected');
+                    let employeeSalary = selectedEmployee.data('salary');
+                    if (employeeSalary) {
+                        let formattedSalary = Number(employeeSalary).toLocaleString('en-US');
+                        $('#amount_display').val(formattedSalary);
+                        $('#amount').val(employeeSalary);
+                    }
+                } else if (rawPrice) {
                     let formatted = Number(rawPrice).toLocaleString('en-US');
                     $('#amount_display').val(formatted);
                     $('#amount').val(rawPrice);
@@ -476,6 +485,18 @@
                     $('#amount_display').val('');
                     $('#service_id').val('');
                     $('#amount').val('');
+                }
+            });
+
+            // Auto-fill salary when employee is selected and salary expense flag is set
+            $('select[name="employee_id"]').on('change', function() {
+                let selectedEmployee = $(this).find('option:selected');
+                let employeeSalary = selectedEmployee.data('salary');
+
+                if (isSalaryExpense && employeeSalary) {
+                    let formattedSalary = Number(employeeSalary).toLocaleString('en-US');
+                    $('#amount_display').val(formattedSalary);
+                    $('#amount').val(employeeSalary);
                 }
             });
 
@@ -542,6 +563,7 @@
                             perPage: perPage,
                             searchTerm: searchInput,
                             cashTypeFilter: cashTypeFilter,
+                            expenseTypeFilter: expenseTypeFilter,
                             fromDate: fromDate,
                             toDate: toDate
                         },
@@ -800,6 +822,12 @@
                 }, 300);
             });
 
+            // Expense type filter
+            $(document).on('change', '#expense-type-filter', function() {
+                expenseTypeFilter = $(this).val();
+                loadTransactions();
+            });
+
             // Export button functionality
             $(document).on("click", "#export-button", function() {
                 // Create a temporary element for PDF generation
@@ -829,15 +857,15 @@
                                     const cells = $(this).find('td');
                                     if (cells.length > 0) {
                                         return `
-                                                                                                                                                                                                                                                                                                                                                                                                    <tr>
-                                                                                                                                                                                                                                                                                                                                                                                                        <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(0).text()}</td>
-                                                                                                                                                                                                                                                                                                                                                                                                        <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(1).text()}</td>
-                                                                                                                                                                                                                                                                                                                                                                                                        <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(2).text()}</td>
-                                                                                                                                                                                                                                                                                                                                                                                                        <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(3).text()}</td>
-                                                                                                                                                                                                                                                                                                                                                                                                        <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(4).text()}</td>
-                                                                                                                                                                                                                                                                                                                                                                                                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${cells.eq(5).text()}</td>
-                                                                                                                                                                                                                                                                                                                                                                                                    </tr>
-                                                                                                                                                                                                                                                                                                                                                                                                `;
+                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                        <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(0).text()}</td>
+                                                                                                                                                                                                                                                                                                        <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(1).text()}</td>
+                                                                                                                                                                                                                                                                                                        <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(2).text()}</td>
+                                                                                                                                                                                                                                                                                                        <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(3).text()}</td>
+                                                                                                                                                                                                                                                                                                        <td style="border: 1px solid #ddd; padding: 8px;">${cells.eq(4).text()}</td>
+                                                                                                                                                                                                                                                                                                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${cells.eq(5).text()}</td>
+                                                                                                                                                                                                                                                                                                    </tr>
+                                                                                                                                                                                                                                                                                                `;
                                     }
                                     return '';
                                 }).get().join('')}
