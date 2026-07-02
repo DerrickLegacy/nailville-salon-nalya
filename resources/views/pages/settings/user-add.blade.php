@@ -211,6 +211,21 @@
                             <input type="number" name="salary" value="{{ old('salary') }}"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                         </div>
+                        <div>
+                            <label class="block text-xs text-gray-500 font-medium mb-1">Payroll Type</label>
+                            <select name="payroll_type" id="payrollTypeSelect"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                <option value="commission" {{ old('payroll_type') == 'commission' ? 'selected' : '' }}>Commission</option>
+                                <option value="fixed" {{ old('payroll_type') == 'fixed' ? 'selected' : '' }}>Fixed</option>
+                                <option value="hybrid" {{ old('payroll_type') == 'hybrid' ? 'selected' : '' }}>Hybrid</option>
+                            </select>
+                        </div>
+                        <div id="commissionRateDiv">
+                            <label class="block text-xs text-gray-500 font-medium mb-1">Commission Rate (%)</label>
+                            <input type="number" name="commission_rate" value="{{ old('commission_rate', 60.00) }}"
+                                step="0.01" min="0" max="100"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        </div>
                     </div>
 
                     <!-- Contact Info -->
@@ -370,6 +385,24 @@
         });
         // Update preview information as user types
         document.addEventListener('DOMContentLoaded', function() {
+            // Handle payroll type change to show/hide commission rate
+            const payrollTypeSelect = document.getElementById('payrollTypeSelect');
+            const commissionRateDiv = document.getElementById('commissionRateDiv');
+
+            function toggleCommissionRate() {
+                if (payrollTypeSelect.value === 'commission' || payrollTypeSelect.value === 'hybrid') {
+                    commissionRateDiv.style.display = 'block';
+                } else {
+                    commissionRateDiv.style.display = 'none';
+                }
+            }
+
+            // Initial call
+            toggleCommissionRate();
+
+            // Add change listener
+            payrollTypeSelect.addEventListener('change', toggleCommissionRate);
+
             // Update name preview
             const nameFields = document.querySelectorAll('.basic-info-field');
             nameFields.forEach(field => {

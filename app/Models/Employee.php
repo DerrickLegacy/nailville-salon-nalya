@@ -44,6 +44,8 @@ class Employee extends Model
         'work_status',
         'shift',
         'work_location',
+        'payroll_type',
+        'commission_rate',
         'emergency_contact_name',
         'emergency_contact_phone',
         'emergency_contact_relation',
@@ -63,6 +65,22 @@ class Employee extends Model
     public function transactions()
     {
         return $this->hasMany(Transaction::class, 'employee_id', 'employee_id');
+    }
+
+    /**
+     * Relationship with PayrollRun (one employee has many payroll runs).
+     */
+    public function payrollRuns()
+    {
+        return $this->hasMany(PayrollRun::class, 'employee_id', 'employee_id');
+    }
+
+    /**
+     * Relationship with SalaryAdvance (one employee has many salary advances).
+     */
+    public function salaryAdvances()
+    {
+        return $this->hasMany(SalaryAdvance::class, 'employee_id', 'employee_id');
     }
 
     /**

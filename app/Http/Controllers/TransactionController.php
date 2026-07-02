@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Transaction;
 use App\Models\Employee;
 use App\Models\Service;
+use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -208,8 +209,6 @@ class TransactionController extends Controller
         // Generate a unique transaction_id
         $transactionId = strtoupper(Str::random(10));
 
-        // dd($validated);
-
         $transaction = Transaction::create([
             'employee_id'        => $validated['employee_id'] ?? null,
             'recorded_by'        => Auth::id(),
@@ -225,6 +224,18 @@ class TransactionController extends Controller
             'notes'              => $validated['notes'] ?? null,
             'date'               => isset($validated['date']) ? date('Y-m-d', strtotime($validated['date'])) : now(),
         ]);
+
+        // Create notification
+        Notification::create([
+            'type' => 'transaction',
+            'title' => "New {$transaction->transaction_type} Created",
+            'message' => "A new {$transaction->transaction_type} transaction of {$transaction->amount} has been recorded.",
+            'data' => ['transaction_id' => $transaction->id, 'action' => 'create'],
+            'priority' => 'medium',
+            'category' => $transaction->transaction_type === 'Income' ? 'income' : 'expense',
+            'is_read' => false
+        ]);
+
         return redirect()->back()->with('success', 'Transaction saved successfully!');
     }
 
@@ -238,7 +249,20 @@ class TransactionController extends Controller
     {
         $transaction = Transaction::find($id);
         if ($transaction) {
+            $transactionData = $transaction->toArray();
             $transaction->delete();
+
+            // Create notification
+            Notification::create([
+                'type' => 'transaction',
+                'title' => "Transaction Deleted",
+                'message' => "A {$transactionData['transaction_type']} transaction of {$transactionData['amount']} has been deleted.",
+                'data' => ['transaction_id' => $transactionData['id'], 'action' => 'delete'],
+                'priority' => 'medium',
+                'category' => $transactionData['transaction_type'] === 'Income' ? 'income' : 'expense',
+                'is_read' => false
+            ]);
+
             return redirect()->back()->with('success', 'Transaction deleted successfully!');
         }
         return redirect()->back()->with('error', 'Transaction not found.');
@@ -280,6 +304,7 @@ class TransactionController extends Controller
         // dd($validated);
 
         $transaction = Transaction::findOrFail($id); // safer than find
+        $oldAmount = $transaction->amount;
         $transaction->update([
             'employee_id'        =>  $validated['employee_id'],
             'recorded_by'        => Auth::id(),
@@ -293,6 +318,17 @@ class TransactionController extends Controller
                 : ($validated['expense_type'] ?? null),
             'notes'              => $validated['notes'] ?? null,
             'date'               => DATE('Y-m-d', strtotime($validated['date'])) ?? now(),
+        ]);
+
+        // Create notification
+        Notification::create([
+            'type' => 'transaction',
+            'title' => "Transaction Updated",
+            'message' => "A {$transaction->transaction_type} transaction has been updated from {$oldAmount} to {$transaction->amount}.",
+            'data' => ['transaction_id' => $transaction->id, 'action' => 'update'],
+            'priority' => 'medium',
+            'category' => $transaction->transaction_type === 'Income' ? 'income' : 'expense',
+            'is_read' => false
         ]);
 
 
