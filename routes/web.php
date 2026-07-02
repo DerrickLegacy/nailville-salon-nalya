@@ -11,6 +11,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StockAlertController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\PayrollController;
 
 
 /*
@@ -160,6 +161,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::delete('/{id}', [App\Http\Controllers\NotificationController::class, 'destroy'])->name('destroy');
     });
 
+    // Payroll
+    Route::resource('payrolls', PayrollController::class);
+    Route::put('payrolls/{payroll}/status', [PayrollController::class, 'updateStatus'])->name('payrolls.update-status');
+    Route::post('payrolls/{payroll}/deductions', [PayrollController::class, 'storeDeduction'])->name('payrolls.deductions.store');
+    Route::delete('payrolls/{payroll}/deductions/{deduction}', [PayrollController::class, 'destroyDeduction'])->name('payrolls.deductions.destroy');
+    Route::post('payrolls/{payroll}/recalculate', [PayrollController::class, 'recalculate'])->name('payrolls.recalculate');
+
     // Services: CRUD operations
     Route::prefix('admin/services')->name('admin.services.')->group(function () {
         Route::get('/', [App\Http\Controllers\ServiceController::class, 'index'])->name('index');
@@ -172,7 +180,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         // Bulk operations
         Route::post('/bulk/status', [App\Http\Controllers\ServiceController::class, 'bulkUpdateStatus'])->name('bulk.status');
         Route::delete('/bulk/delete', [App\Http\Controllers\ServiceController::class, 'bulkDelete'])->name('bulk.delete');
-        
+
         // Statistics
         Route::get('/statistics/data', [App\Http\Controllers\ServiceController::class, 'statistics'])->name('statistics');
 

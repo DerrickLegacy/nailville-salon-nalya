@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use  \Illuminate\Http\RedirectResponse;
 use App\Models\Employee;
 use App\Models\ApplicationConfigurationSetting;
+use App\Models\Notification;
 use Illuminate\Support\Str;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class SettingController extends Controller
 {
@@ -22,18 +24,58 @@ class SettingController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getList()
+    public function getList(Request $request)
     {
-        // Fetch all employees with their work status
-        $employees = Employee::all();
+        // Log incoming filters
+        Log::info('getList called with filters:', [
+            'status' => $request->input('status'),
+            'department' => $request->input('department'),
+            'job_title' => $request->input('job_title'),
+            'all_request_params' => $request->all()
+        ]);
 
-        // Calculate total salary for active employees only
-        $totalActiveSalary = Employee::where('work_status', 'Active')->sum('salary');
+        // Start with query
+        $query = Employee::query();
+
+        // Apply filters - use has() instead of filled() to account for null values from empty strings
+        if ($request->has('status') && $request->input('status') !== null && $request->input('status') !== '') {
+            $query->where('work_status', $request->input('status'));
+        }
+        if ($request->has('department') && $request->input('department') !== null && $request->input('department') !== '') {
+            $query->where('department', $request->input('department'));
+        }
+        if ($request->has('job_title') && $request->input('job_title') !== null && $request->input('job_title') !== '') {
+            $query->where('job_title', $request->input('job_title'));
+        }
+
+        // Fetch filtered employees
+        $employees = $query->get();
+        Log::info('Number of employees after filtering:', ['count' => $employees->count()]);
+
+        // Calculate total salary for active employees only (applying same filters)
+        $totalActiveSalaryQuery = Employee::where('work_status', 'Active');
+        if ($request->has('department') && $request->input('department') !== null && $request->input('department') !== '') {
+            $totalActiveSalaryQuery->where('department', $request->input('department'));
+        }
+        if ($request->has('job_title') && $request->input('job_title') !== null && $request->input('job_title') !== '') {
+            $totalActiveSalaryQuery->where('job_title', $request->input('job_title'));
+        }
+        $totalActiveSalary = $totalActiveSalaryQuery->sum('salary');
+
+        // Get unique values for filters
+        $statuses = Employee::distinct()->pluck('work_status')->filter();
+        $departments = Employee::distinct()->pluck('department')->filter();
+        $jobTitles = Employee::distinct()->pluck('job_title')->filter();
 
         return response()->json([
             'status' => 'success',
             'data' => $employees,
-            'totalActiveSalary' => $totalActiveSalary
+            'totalActiveSalary' => $totalActiveSalary,
+            'filters' => [
+                'statuses' => $statuses,
+                'departments' => $departments,
+                'jobTitles' => $jobTitles
+            ]
         ]);
     }
 
@@ -113,6 +155,17 @@ class SettingController extends Controller
             // Update employee
             $employee->update($validated);
 
+            // Create notification
+            Notification::create([
+                'type' => 'user_management',
+                'title' => 'Employee Updated',
+                'message' => "Employee {$employee->first_name} {$employee->last_name}'s information has been updated.",
+                'data' => ['employee_id' => $employee->employee_id, 'action' => 'update'],
+                'priority' => 'medium',
+                'category' => 'system',
+                'is_read' => false
+            ]);
+
             return redirect()
                 ->route('settings.employee.details', $employee->employee_id)
                 ->with('success', 'Employee updated successfully!');
@@ -136,6 +189,7 @@ class SettingController extends Controller
     public function toggleEmployeeStatus($id)
     {
         $employee = Employee::findOrFail($id);
+        $oldStatus = $employee->work_status;
 
         // Toggle between Active and Terminated
         if ($employee->work_status === 'Active') {
@@ -147,6 +201,17 @@ class SettingController extends Controller
         }
 
         $employee->save();
+
+        // Create notification
+        Notification::create([
+            'type' => 'user_management',
+            'title' => 'Employee Status Changed',
+            'message' => "Employee {$employee->first_name} {$employee->last_name}'s status has been changed from {$oldStatus} to {$employee->work_status}.",
+            'data' => ['employee_id' => $employee->employee_id, 'old_status' => $oldStatus, 'new_status' => $employee->work_status],
+            'priority' => 'medium',
+            'category' => 'system',
+            'is_read' => false
+        ]);
 
         return redirect()->back()->with('success', $message);
     }
@@ -227,6 +292,17 @@ class SettingController extends Controller
                 $employee->save();
             }
 
+            // Create notification
+            Notification::create([
+                'type' => 'user_management',
+                'title' => 'Employee Created',
+                'message' => "Employee {$employee->first_name} {$employee->last_name} has been added to the system.",
+                'data' => ['employee_id' => $employee->employee_id, 'action' => 'create'],
+                'priority' => 'medium',
+                'category' => 'system',
+                'is_read' => false
+            ]);
+
             return redirect()
                 ->route('settings.employee.details', $employee->employee_id)
                 ->with('success', 'Employee created successfully!');
@@ -292,12 +368,21 @@ class SettingController extends Controller
             'type'        => 'nullable|in:string,integer,decimal,boolean,json',
         ]);
 
-        // dd($validated);
-
         // auto-generate key from title
         $validated['key'] = Str::slug($request->title, '_');
 
         $setting = ApplicationConfigurationSetting::create($validated);
+
+        // Create notification
+        Notification::create([
+            'type' => 'settings',
+            'title' => 'Configuration Created',
+            'message' => "New configuration '{$setting->title}' has been added to the system.",
+            'data' => ['setting_id' => $setting->id, 'action' => 'create'],
+            'priority' => 'low',
+            'category' => 'system',
+            'is_read' => false
+        ]);
 
         return redirect()
             ->back()
@@ -323,6 +408,17 @@ class SettingController extends Controller
 
         $setting->update($validated);
 
+        // Create notification
+        Notification::create([
+            'type' => 'settings',
+            'title' => 'Configuration Updated',
+            'message' => "Configuration '{$setting->title}' has been updated.",
+            'data' => ['setting_id' => $setting->id, 'action' => 'update'],
+            'priority' => 'low',
+            'category' => 'system',
+            'is_read' => false
+        ]);
+
         return response()->json([
             'success' => true,
             'message' => 'Configuration updated successfully.',
@@ -336,7 +432,19 @@ class SettingController extends Controller
     public function destroyConfigurations($id)
     {
         $setting = ApplicationConfigurationSetting::findOrFail($id);
+        $settingTitle = $setting->title;
         $setting->delete();
+
+        // Create notification
+        Notification::create([
+            'type' => 'settings',
+            'title' => 'Configuration Deleted',
+            'message' => "Configuration '{$settingTitle}' has been removed from the system.",
+            'data' => ['setting_title' => $settingTitle, 'action' => 'delete'],
+            'priority' => 'low',
+            'category' => 'system',
+            'is_read' => false
+        ]);
 
         return response()->json([
             'success' => true,

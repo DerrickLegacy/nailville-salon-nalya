@@ -183,6 +183,20 @@
                 </div>
             </div>
 
+            <!-- Payroll -->
+            <a href="{{ route('payrolls.index') }}"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200
+                      {{ Request::is('payrolls*') ? 'bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                    <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd" />
+                </svg>
+                <span class="font-medium text-sm transition-opacity duration-300"
+                    :class="sidebarExpanded ? 'opacity-100' : 'opacity-0 w-0'">
+                    Payroll
+                </span>
+            </a>
+
             <!-- Inventory -->
             <a href="{{ route('inventory.manage') }}"
                 class="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200

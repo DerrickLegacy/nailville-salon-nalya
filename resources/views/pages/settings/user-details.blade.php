@@ -30,14 +30,14 @@
                     </svg>
                     <span>Edit Profile</span>
                 </a>
-                <button onclick="deleteEmployee({{ $employee->employee_id }})"
-                    class="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg shadow-sm flex items-center space-x-2 transition-all duration-300 hover:shadow-md">
+                <button onclick="confirmStatusToggle({{ $employee->employee_id }}, '{{ $employee->work_status === 'Active' ? 'deactivate' : 'activate' }}')"
+
+                    class="px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg shadow-sm flex items-center space-x-2 transition-all duration-300 hover:shadow-md">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728" />
                     </svg>
-                    <span>Delete</span>
+                    <span>{{ $employee->work_status === 'Active' ? 'Deactivate' : 'Activate' }}</span>
                 </button>
             </div>
         </div>
@@ -58,7 +58,8 @@
 
                         <div class="text-center mb-6">
                             <h2 class="text-xl font-semibold text-gray-800">{{ $employee->first_name }}
-                                {{ $employee->last_name }}</h2>
+                                {{ $employee->last_name }}
+                            </h2>
                             <p class="text-blue-600 font-medium">{{ $employee->job_title ?? 'No job title' }}</p>
                             <p class="text-gray-500 text-sm mt-1">{{ $employee->department ?? 'No department' }}</p>
                         </div>
@@ -171,7 +172,18 @@
                         <div class="info-group p-3 rounded-lg">
                             <label class="block text-xs text-gray-500 font-medium">Salary</label>
                             <p class="text-sm text-gray-900">
-                                {{ $employee->salary ? 'Shs.' . number_format($employee->salary) : '-' }}</p>
+                                {{ $employee->salary ? 'Shs.' . number_format($employee->salary) : '-' }}
+                            </p>
+                        </div>
+                        <div class="info-group p-3 rounded-lg">
+                            <label class="block text-xs text-gray-500 font-medium">Payroll Type</label>
+                            <p class="text-sm text-gray-900">{{ $employee->payroll_type ?? '-' }}</p>
+                        </div>
+                        <div class="info-group p-3 rounded-lg">
+                            <label class="block text-xs text-gray-500 font-medium">Commission Rate</label>
+                            <p class="text-sm text-gray-900">
+                                {{ $employee->commission_rate ? $employee->commission_rate . '%' : '-' }}
+                            </p>
                         </div>
                     </div>
 
@@ -267,8 +279,50 @@
                 class="mt-8 pt-6 border-t border-gray-200 flex flex-col sm:flex-row justify-between text-xs text-gray-500">
                 <p>Created at: {{ \Carbon\Carbon::parse($employee->created_at)->format('M d, Y H:i') }}</p>
                 <p class="mt-2 sm:mt-0">Updated at:
-                    {{ \Carbon\Carbon::parse($employee->updated_at)->format('M d, Y H:i') }}</p>
+                    {{ \Carbon\Carbon::parse($employee->updated_at)->format('M d, Y H:i') }}
+                </p>
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmStatusToggle(employeeId, action) {
+            const isActivating = action === 'activate';
+            const title = isActivating ? 'Activate Employee?' : 'Deactivate Employee?';
+            const text = isActivating ?
+                'This employee will be included in salary calculations and can work again.' :
+                'This employee will be excluded from salary calculations and cannot work until reactivated.';
+            const confirmButtonText = isActivating ? 'Yes, activate!' : 'Yes, deactivate!';
+            const confirmButtonColor = isActivating ? '#10b981' : '#f59e0b';
+            const icon = isActivating ? 'question' : 'warning';
+
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: icon,
+                showCancelButton: true,
+                confirmButtonColor: confirmButtonColor,
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: confirmButtonText,
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Processing...',
+                        text: 'Please wait while we update the employee status.',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Redirect to toggle status route
+                    window.location.href = `/settings/user-management/toggle-status/${employeeId}`;
+                }
+            });
+        }
+    </script>
 </x-app-layout>

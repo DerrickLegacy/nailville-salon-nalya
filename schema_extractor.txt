@@ -1,0 +1,18 @@
+/opt/lampp/bin/mysqldump -u root -p --no-data \
+--compact \
+--skip-comments \
+--socket=/opt/lampp/var/mysql/mysql.sock u547313549_nailville \
+> u547313549_nailville.sql
+
+
+specific tables
+
+/opt/lampp/bin/mysqldump -u root -p \
+--no-data \
+--compact \
+--skip-comments \
+--socket=/opt/lampp/var/mysql/mysql.sock \
+jpos table1 table2 table3 \
+> jpos_schema.sql
+
+	

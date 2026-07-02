@@ -3,17 +3,17 @@
 
 
         @if (session('error'))
-            Service Offered
+        Service Offered
         @endif
 
         @if ($errors->any())
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 fade-in" role="alert">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 fade-in" role="alert">
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
         @endif
 
         <!-- Page Header -->
@@ -75,7 +75,8 @@
 
                         <div class="text-center mb-6">
                             <h2 class="text-xl font-semibold text-gray-800">{{ $employee->first_name }}
-                                {{ $employee->last_name }}</h2>
+                                {{ $employee->last_name }}
+                            </h2>
                             <p class="text-blue-600 font-medium">{{ $employee->job_title ?? 'No job title' }}</p>
                             <p class="text-gray-500 text-sm mt-1">{{ $employee->department ?? 'No department' }}</p>
                         </div>
@@ -234,6 +235,21 @@
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                         </div>
                         <div>
+                            <label class="block text-xs text-gray-500 font-medium mb-1">Payroll Type</label>
+                            <select name="payroll_type" id="payrollTypeSelect"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                <option value="commission" {{ old('payroll_type', $employee->payroll_type) == 'commission' ? 'selected' : '' }}>Commission</option>
+                                <option value="fixed" {{ old('payroll_type', $employee->payroll_type) == 'fixed' ? 'selected' : '' }}>Fixed</option>
+                                <option value="hybrid" {{ old('payroll_type', $employee->payroll_type) == 'hybrid' ? 'selected' : '' }}>Hybrid</option>
+                            </select>
+                        </div>
+                        <div id="commissionRateDiv">
+                            <label class="block text-xs text-gray-500 font-medium mb-1">Commission Rate (%)</label>
+                            <input type="number" name="commission_rate" value="{{ old('commission_rate', $employee->commission_rate) }}"
+                                step="0.01" min="0" max="100"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
                             <label class="block text-xs text-gray-500 font-medium mb-1">Employee Code</label>
                             <input type="text" name="employee_code"
                                 value="{{ old('employee_code', $employee->employee_code) }}"
@@ -374,7 +390,7 @@
 
             <!-- Form Actions -->
             <div class="mt-8 pt-6 border-t border-gray-200 flex justify-end space-x-3">
-                <a href=""
+                <a href="{{ route('settings.management') }}"
                     class="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg shadow-sm flex items-center space-x-2 transition-all duration-300 hover:shadow-md">
                     <span>Cancel</span>
                 </a>
@@ -405,6 +421,24 @@
 
         // Add fade-in animation to form elements
         document.addEventListener('DOMContentLoaded', function() {
+            // Handle payroll type change to show/hide commission rate
+            const payrollTypeSelect = document.getElementById('payrollTypeSelect');
+            const commissionRateDiv = document.getElementById('commissionRateDiv');
+
+            function toggleCommissionRate() {
+                if (payrollTypeSelect.value === 'commission' || payrollTypeSelect.value === 'hybrid') {
+                    commissionRateDiv.style.display = 'block';
+                } else {
+                    commissionRateDiv.style.display = 'none';
+                }
+            }
+
+            // Initial call
+            toggleCommissionRate();
+
+            // Add change listener
+            payrollTypeSelect.addEventListener('change', toggleCommissionRate);
+
             const formElements = document.querySelectorAll('input, select');
             formElements.forEach((element, index) => {
                 element.style.animationDelay = `${index * 0.05}s`;
