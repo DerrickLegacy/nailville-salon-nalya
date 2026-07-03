@@ -16,10 +16,31 @@ class PayrollController extends Controller
     /**
      * Display a listing of payroll runs.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $payrolls = PayrollRun::with(['employee', 'createdBy'])->latest()->paginate(20);
-        return view('payrolls.index', compact('payrolls'));
+        $query = PayrollRun::with(['employee', 'createdBy']);
+
+        // Filter by employee
+        if ($request->has('employee_id') && $request->employee_id) {
+            $query->where('employee_id', $request->employee_id);
+        }
+
+        // Filter by status
+        if ($request->has('status') && $request->status) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by payroll month (year + month)
+        if ($request->has('payroll_month') && $request->payroll_month) {
+            $date = \Carbon\Carbon::parse($request->payroll_month);
+            $query->whereYear('payroll_month', $date->year)
+                ->whereMonth('payroll_month', $date->month);
+        }
+
+        $payrolls = $query->latest()->paginate(20);
+        $employees = Employee::where('work_status', 'Active')->get();
+
+        return view('payrolls.index', compact('payrolls', 'employees'));
     }
 
     /**
@@ -128,10 +149,11 @@ class PayrollController extends Controller
         $employee = Employee::findOrFail($validated['employee_id']);
         $payrollMonth = Carbon::parse($validated['payroll_month'])->startOfMonth();
 
-        // Check for existing payroll run for the same employee and month
+        // Check for existing payroll run for the same employee and month (excluding cancelled/reversed)
         $existingPayroll = PayrollRun::where('employee_id', $validated['employee_id'])
             ->whereYear('payroll_month', $payrollMonth->year)
             ->whereMonth('payroll_month', $payrollMonth->month)
+            ->whereNotIn('status', ['cancelled', 'reversed'])
             ->first();
 
         if ($existingPayroll) {
@@ -144,6 +166,11 @@ class PayrollController extends Controller
 
         // Calculate gross salary based on payroll type
         $grossSalary = $this->calculateGrossSalary($employee, $totalSales);
+
+        if ($grossSalary === null) {
+            return back()->withErrors(['employee_id' => 'This employee has no salary set. Please set their salary before creating a payroll.'])
+                ->withInput();
+        }
 
         $payroll = PayrollRun::create([
             'employee_id' => $validated['employee_id'],
@@ -208,11 +235,22 @@ class PayrollController extends Controller
     {
         switch ($employee->payroll_type) {
             case 'commission':
+                // Check if commission rate is set
+                if (empty($employee->commission_rate) || $employee->commission_rate <= 0) {
+                    return null;
+                }
                 return $totalSales * ($employee->commission_rate / 100);
             case 'fixed':
+                // Check if salary is set
+                if (empty($employee->salary) || $employee->salary <= 0) {
+                    return null;
+                }
                 return $employee->salary;
             case 'hybrid':
-                // For hybrid, you can implement your own logic here
+                // Check if both salary and commission rate are set
+                if (empty($employee->salary) || $employee->salary <= 0 || empty($employee->commission_rate) || $employee->commission_rate <= 0) {
+                    return null;
+                }
                 return $employee->salary + ($totalSales * ($employee->commission_rate / 100));
             default:
                 return $totalSales * 0.6; // Default to 60% commission
@@ -349,5 +387,44 @@ class PayrollController extends Controller
         ]);
 
         return back()->with('success', 'Payroll status updated successfully.');
+    }
+
+    /**
+     * Delete a payroll run.
+     */
+    public function destroy(PayrollRun $payroll)
+    {
+        // If payroll was paid, delete the associated transaction
+        if ($payroll->status === 'paid') {
+            $transaction = Transaction::where('notes', 'like', "%Payroll Run ID: {$payroll->id}%")
+                ->where('transaction_type', 'Expense')
+                ->first();
+            if ($transaction) {
+                $transaction->delete();
+            }
+        }
+
+        // Delete all deductions
+        $payroll->deductions()->delete();
+
+        // Delete all audit logs
+        $payroll->auditLogs()->delete();
+
+        // Delete the payroll
+        $payroll->delete();
+
+        // Create notification
+        Notification::create([
+            'type' => 'payroll',
+            'title' => 'Payroll Run Deleted',
+            'message' => "Payroll run for {$payroll->employee->first_name} {$payroll->employee->last_name} for " . Carbon::parse($payroll->payroll_month)->format('F Y') . " has been deleted.",
+            'data' => ['payroll_run_id' => $payroll->id],
+            'priority' => 'medium',
+            'category' => 'system',
+            'is_read' => false,
+        ]);
+
+        return redirect()->route('payrolls.index')
+            ->with('success', 'Payroll deleted successfully.');
     }
 }
