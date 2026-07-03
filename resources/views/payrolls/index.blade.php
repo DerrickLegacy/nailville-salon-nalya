@@ -33,6 +33,43 @@
     </div>
 
     <div class="px-2 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 w-full max-w-9xl mx-auto">
+        <!-- Filter Section -->
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg sm:rounded-xl p-4 mb-6">
+            <form action="{{ route('payrolls.index') }}" method="GET" class="flex flex-wrap gap-4 items-end">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Employee</label>
+                    <select name="employee_id" class="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
+                        <option value="">All Employees</option>
+                        @foreach ($employees as $employee)
+                        <option value="{{ $employee->employee_id }}" {{ request('employee_id') == $employee->employee_id ? 'selected' : '' }}>
+                            {{ $employee->first_name }} {{ $employee->last_name }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Payroll Month</label>
+                    <input type="month" name="payroll_month" value="{{ request('payroll_month') }}" class="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                    <select name="status" class="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
+                        <option value="">All Statuses</option>
+                        <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                        <option value="pending_approval" {{ request('status') == 'pending_approval' ? 'selected' : '' }}>Pending Approval</option>
+                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                        <option value="paid" {{ request('status') == 'paid' ? 'selected' : '' }}>Paid</option>
+                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        <option value="reversed" {{ request('status') == 'reversed' ? 'selected' : '' }}>Reversed</option>
+                    </select>
+                </div>
+                <div class="flex gap-2">
+                    <button type="submit" class="px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-all">Filter</button>
+                    <a href="{{ route('payrolls.index') }}" class="px-4 py-2 bg-gray-500 text-white font-medium rounded-lg hover:bg-gray-600 transition-all">Clear</a>
+                </div>
+            </form>
+        </div>
+
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg sm:rounded-xl overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -43,6 +80,7 @@
                             <th class="px-4 py-3">Payroll Month</th>
                             <th class="px-4 py-3">Total Sales</th>
                             <th class="px-4 py-3">Gross Salary</th>
+                            <th class="px-4 py-3">Total Deductions</th>
                             <th class="px-4 py-3">Net Salary</th>
                             <th class="px-4 py-3">Status</th>
                             <th class="px-4 py-3">Actions</th>
@@ -51,10 +89,15 @@
                     <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                         @foreach ($payrolls as $payroll)
                         <tr>
-                            <td class="px-4 py-3">{{ $payroll->employee->first_name }} {{ $payroll->employee->last_name }}</td>
+                            <td class="px-4 py-3">
+                                <a href="{{ route('settings.employee.details', $payroll->employee->employee_id) }}" class="text-purple-600 hover:text-purple-900">
+                                    {{ $payroll->employee->first_name }} {{ $payroll->employee->last_name }}
+                                </a>
+                            </td>
                             <td class="px-4 py-3">{{ \Carbon\Carbon::parse($payroll->payroll_month)->format('F Y') }}</td>
                             <td class="px-4 py-3">{{ number_format($payroll->total_sales, 0) }}</td>
                             <td class="px-4 py-3">{{ number_format($payroll->gross_salary, 0) }}</td>
+                            <td class="px-4 py-3 text-red-600">{{ number_format($payroll->total_deductions, 0) }}</td>
                             <td class="px-4 py-3">{{ number_format($payroll->net_salary, 0) }}</td>
                             <td class="px-4 py-3">
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
@@ -67,16 +110,31 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3">
-                                <a href="{{ route('payrolls.show', $payroll) }}" class="text-purple-600 hover:text-purple-900">View</a>
+                                <a href="{{ route('payrolls.show', $payroll) }}" class="text-purple-600 hover:text-purple-900 mr-3">View</a>
+                                <form action="{{ route('payrolls.destroy', $payroll) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this payroll? This cannot be undone.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
+                                </form>
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
+                    <tfoot class="bg-gray-100 dark:bg-gray-700 dark:text-gray-300 font-semibold">
+                        <tr>
+                            <td class="px-4 py-3" colspan="2">Total:</td>
+                            <td class="px-4 py-3">{{ number_format($totals->total_sales ?? 0, 0) }}</td>
+                            <td class="px-4 py-3">{{ number_format($totals->total_gross_salary ?? 0, 0) }}</td>
+                            <td class="px-4 py-3 text-red-600">{{ number_format($totals->total_deductions ?? 0, 0) }}</td>
+                            <td class="px-4 py-3 text-purple-600">{{ number_format($totals->total_net_salary ?? 0, 0) }}</td>
+                            <td class="px-4 py-3" colspan="2"></td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
 
             <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700">
-                {{ $payrolls->links() }}
+                {{ $payrolls->appends(request()->query())->links() }}
             </div>
         </div>
     </div>
