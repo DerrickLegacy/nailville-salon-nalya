@@ -41,12 +41,7 @@
                             <p class="text-lg font-semibold text-gray-800 dark:text-white">{{ ucfirst($payroll->payroll_type) }}</p>
                         </div>
                         <div>
-                            <label class="text-sm text-gray-500 dark:text-gray-400">Payment Date</label>
-                            <p class="text-lg font-semibold text-gray-800 dark:text-white">{{ $payroll->payment_date ? \Carbon\Carbon::parse($payroll->payment_date)->format('M d, Y') : 'Not set' }}</p>
-                        </div>
-                        <div>
                             <label class="text-sm text-gray-500 dark:text-gray-400">Status</label>
-
                             <p class="text-lg font-semibold text-gray-800 dark:text-white {{ $payroll->status === 'draft' ? 'bg-gray-100 text-gray-800' : '' }}
                                 {{ $payroll->status === 'pending_approval' ? 'bg-yellow-100 text-yellow-800' : '' }}
                                 {{ $payroll->status === 'approved' ? 'bg-blue-100 text-blue-800' : '' }}
@@ -55,23 +50,28 @@
                                 {{ ucwords(str_replace('_', ' ', $payroll->status)) }}
 
                             </p>
+                        </div>
 
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-500 dark:text-gray-400">Total Sales (Collections)</label>
-                            <p class="text-lg font-semibold text-gray-800 dark:text-white">{{ number_format($payroll->total_sales, 0) }}</p>
-                        </div>
                         <div>
                             <label class="text-sm text-gray-500 dark:text-gray-400">Commission Rate</label>
                             <p class="text-lg font-semibold text-gray-800 dark:text-white">{{ number_format($payroll->commission_rate, 0) }}%</p>
                         </div>
                         <div>
-                            <label class="text-sm text-gray-500 dark:text-gray-400">Gross Salary</label>
-                            <p class="text-lg font-semibold text-gray-800 dark:text-white">{{ number_format($payroll->gross_salary, 0) }}</p>
+                            <label class="text-sm text-gray-500 dark:text-gray-400">Payment Date</label>
+                            <p class="text-lg font-semibold text-gray-800 dark:text-white">{{ $payroll->payment_date ? \Carbon\Carbon::parse($payroll->payment_date)->format('M d, Y') : 'Not set' }}</p>
                         </div>
+                        <div>
+                            <label class="text-sm text-gray-500 dark:text-gray-400">Total Sales (Collections)</label>
+                            <p class="text-lg font-semibold text-gray-800 dark:text-white">{{ number_format($payroll->total_sales, 0) }}</p>
+                        </div>
+
                         <div>
                             <label class="text-sm text-gray-500 dark:text-gray-400">Total Deductions</label>
                             <p class="text-lg font-semibold text-red-600">{{ number_format($payroll->total_deductions, 0) }}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500 dark:text-gray-400">Gross Salary</label>
+                            <p class="text-lg font-semibold text-gray-800 dark:text-white">{{ number_format($payroll->gross_salary, 0) }}</p>
                         </div>
                         <div class="sm:col-span-2">
                             <label class="text-sm text-gray-500 dark:text-gray-400">Net Salary</label>
