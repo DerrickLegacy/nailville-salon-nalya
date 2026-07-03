@@ -161,11 +161,9 @@
                                     <td class="px-4 py-3">{{ $deduction->reason ?? '-' }}</td>
                                     <td class="px-4 py-3">{{ $deduction->enteredBy->name ?? '-' }}</td>
                                     <td class="px-4 py-3 text-right">
-                                        @if($deduction->notes)
-                                        <button type="button" onclick="toggleNotes({{ $deduction->id }})" class="text-purple-600 hover:text-purple-900 text-sm mr-3">
+                                        <button type="button" onclick="toggleNotes({{ $deduction->id }})" class="text-purple-600 hover:text-purple-900 text-sm mr-3 font-medium">
                                             View Comment
                                         </button>
-                                        @endif
                                         @if(in_array($payroll->status, ['draft', 'pending_approval']))
                                         <form action="{{ route('payrolls.deductions.destroy', [$payroll, $deduction]) }}" method="POST" class="inline">
                                             @csrf
@@ -179,13 +177,11 @@
                                         @endif
                                     </td>
                                 </tr>
-                                @if($deduction->notes)
-                                <tr id="notes-{{ $deduction->id }}" class="hidden bg-gray-50 dark:bg-gray-700">
+                                <tr id="notes-{{ $deduction->id }}" class="{{ $deduction->notes ? '' : 'hidden' }} bg-gray-50 dark:bg-gray-700">
                                     <td class="px-4 py-3" colspan="5">
-                                        <p class="text-sm"><strong>Notes:</strong> {{ $deduction->notes }}</p>
+                                        <p class="text-sm"><strong>Notes:</strong> {{ $deduction->notes ?? 'No notes added' }}</p>
                                     </td>
                                 </tr>
-                                @endif
                                 @endforeach
                             </tbody>
                         </table>
