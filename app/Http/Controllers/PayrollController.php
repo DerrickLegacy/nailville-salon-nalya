@@ -44,7 +44,7 @@ class PayrollController extends Controller
         )->first();
 
         $payrolls = $query->latest()->paginate(20);
-        $employees = Employee::where('work_status', 'Active')->get();
+        $employees = Employee::all();
 
         return view('payrolls.index', compact('payrolls', 'employees', 'totals'));
     }
@@ -54,7 +54,7 @@ class PayrollController extends Controller
      */
     public function create()
     {
-        $employees = Employee::where('work_status', 'Active')->get();
+        $employees = Employee::all();
         return view('payrolls.create', compact('employees'));
     }
 
