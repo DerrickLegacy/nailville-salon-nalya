@@ -80,6 +80,7 @@
                             <th class="px-4 py-3">Payroll Month</th>
                             <th class="px-4 py-3">Total Sales</th>
                             <th class="px-4 py-3">Gross Salary</th>
+                            <th class="px-4 py-3">Total Deductions</th>
                             <th class="px-4 py-3">Net Salary</th>
                             <th class="px-4 py-3">Status</th>
                             <th class="px-4 py-3">Actions</th>
@@ -96,6 +97,7 @@
                             <td class="px-4 py-3">{{ \Carbon\Carbon::parse($payroll->payroll_month)->format('F Y') }}</td>
                             <td class="px-4 py-3">{{ number_format($payroll->total_sales, 0) }}</td>
                             <td class="px-4 py-3">{{ number_format($payroll->gross_salary, 0) }}</td>
+                            <td class="px-4 py-3 text-red-600">{{ number_format($payroll->total_deductions, 0) }}</td>
                             <td class="px-4 py-3">{{ number_format($payroll->net_salary, 0) }}</td>
                             <td class="px-4 py-3">
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
@@ -118,6 +120,16 @@
                         </tr>
                         @endforeach
                     </tbody>
+                    <tfoot class="bg-gray-100 dark:bg-gray-700 dark:text-gray-300 font-semibold">
+                        <tr>
+                            <td class="px-4 py-3" colspan="2">Total:</td>
+                            <td class="px-4 py-3">{{ number_format($totals->total_sales ?? 0, 0) }}</td>
+                            <td class="px-4 py-3">{{ number_format($totals->total_gross_salary ?? 0, 0) }}</td>
+                            <td class="px-4 py-3 text-red-600">{{ number_format($totals->total_deductions ?? 0, 0) }}</td>
+                            <td class="px-4 py-3 text-purple-600">{{ number_format($totals->total_net_salary ?? 0, 0) }}</td>
+                            <td class="px-4 py-3" colspan="2"></td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
 

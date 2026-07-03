@@ -37,10 +37,16 @@ class PayrollController extends Controller
                 ->whereMonth('payroll_month', $date->month);
         }
 
+        // Clone query for totals before pagination
+        $totalsQuery = clone $query;
+        $totals = $totalsQuery->selectRaw(
+            'SUM(total_sales) as total_sales, SUM(gross_salary) as total_gross_salary, SUM(total_deductions) as total_deductions, SUM(net_salary) as total_net_salary'
+        )->first();
+
         $payrolls = $query->latest()->paginate(20);
         $employees = Employee::where('work_status', 'Active')->get();
 
-        return view('payrolls.index', compact('payrolls', 'employees'));
+        return view('payrolls.index', compact('payrolls', 'employees', 'totals'));
     }
 
     /**
