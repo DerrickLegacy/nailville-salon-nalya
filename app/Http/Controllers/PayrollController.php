@@ -23,13 +23,11 @@ class PayrollController extends Controller
     }
 
     /**
-     * Show the form for creating a new payroll run.
+     * Show the form for creating a payroll run.
      */
     public function create()
     {
-        $employees = Employee::where('work_status', 'Active')
-            ->where('payroll_type', 'commission')
-            ->get();
+        $employees = Employee::where('work_status', 'Active')->get();
         return view('payrolls.create', compact('employees'));
     }
 
@@ -124,6 +122,7 @@ class PayrollController extends Controller
         $validated = $request->validate([
             'employee_id' => 'required|exists:employees,employee_id',
             'payroll_month' => 'required|date',
+            'payment_date' => 'nullable|date',
         ]);
 
         $employee = Employee::findOrFail($validated['employee_id']);
@@ -157,6 +156,7 @@ class PayrollController extends Controller
             'net_salary' => $grossSalary,
             'status' => 'draft',
             'created_by' => Auth::id(),
+            'payment_date' => $validated['payment_date'] ?? now()->toDateString(),
         ]);
 
         // Log the action
@@ -288,12 +288,14 @@ class PayrollController extends Controller
     {
         $validated = $request->validate([
             'status' => 'required|in:draft,pending_approval,approved,paid,cancelled,reversed',
+            'payment_date' => 'nullable|date',
         ]);
 
         $oldStatus = $payroll->status;
         $newStatus = $validated['status'];
         $payroll->update([
             'status' => $newStatus,
+            'payment_date' => $validated['payment_date'] ?? $payroll->payment_date,
             'updated_by' => Auth::id(),
         ]);
 
@@ -319,7 +321,7 @@ class PayrollController extends Controller
                 'payment_method' => 'other',
                 'service_description' => "Salary payment for {$payroll->employee->first_name} {$payroll->employee->last_name} - " . \Carbon\Carbon::parse($payroll->payroll_month)->format('F Y'),
                 'notes' => "Payroll Run ID: {$payroll->id}",
-                'date' => now(),
+                'date' => $payroll->payment_date ?? now(),
             ]);
 
             // Store transaction ID in payroll (we can add a column later, or just use notes for now)

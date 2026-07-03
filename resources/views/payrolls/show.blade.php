@@ -41,15 +41,21 @@
                             <p class="text-lg font-semibold text-gray-800 dark:text-white">{{ ucfirst($payroll->payroll_type) }}</p>
                         </div>
                         <div>
+                            <label class="text-sm text-gray-500 dark:text-gray-400">Payment Date</label>
+                            <p class="text-lg font-semibold text-gray-800 dark:text-white">{{ $payroll->payment_date ? \Carbon\Carbon::parse($payroll->payment_date)->format('M d, Y') : 'Not set' }}</p>
+                        </div>
+                        <div>
                             <label class="text-sm text-gray-500 dark:text-gray-400">Status</label>
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                {{ $payroll->status === 'draft' ? 'bg-gray-100 text-gray-800' : '' }}
+
+                            <p class="text-lg font-semibold text-gray-800 dark:text-white {{ $payroll->status === 'draft' ? 'bg-gray-100 text-gray-800' : '' }}
                                 {{ $payroll->status === 'pending_approval' ? 'bg-yellow-100 text-yellow-800' : '' }}
                                 {{ $payroll->status === 'approved' ? 'bg-blue-100 text-blue-800' : '' }}
                                 {{ $payroll->status === 'paid' ? 'bg-green-100 text-green-800' : '' }}
                                 {{ $payroll->status === 'cancelled' || $payroll->status === 'reversed' ? 'bg-red-100 text-red-800' : '' }}">
                                 {{ ucwords(str_replace('_', ' ', $payroll->status)) }}
-                            </span>
+
+                            </p>
+
                         </div>
                         <div>
                             <label class="text-sm text-gray-500 dark:text-gray-400">Total Sales (Collections)</label>
@@ -70,41 +76,6 @@
                         <div class="sm:col-span-2">
                             <label class="text-sm text-gray-500 dark:text-gray-400">Net Salary</label>
                             <p class="text-2xl font-bold text-purple-600">{{ number_format($payroll->net_salary, 0) }}</p>
-                        </div>
-                    </div>
-
-                    <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-3">Actions</h3>
-                        <div class="flex items-center space-x-3">
-                            @if(in_array($payroll->status, ['draft', 'pending_approval']))
-                            <form action="{{ route('payrolls.recalculate', $payroll) }}" method="POST">
-                                @csrf
-                                <button type="submit"
-                                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center">
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                    </svg>
-                                    Recalculate Payroll
-                                </button>
-                            </form>
-                            @endif
-                            <form action="{{ route('payrolls.update-status', $payroll) }}" method="POST" class="flex items-center space-x-3">
-                                @csrf
-                                @method('PUT')
-                                <select name="status" required
-                                    class="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                                    <option value="draft" {{ $payroll->status === 'draft' ? 'selected' : '' }}>Draft</option>
-                                    <option value="pending_approval" {{ $payroll->status === 'pending_approval' ? 'selected' : '' }}>Pending Approval</option>
-                                    <option value="approved" {{ $payroll->status === 'approved' ? 'selected' : '' }}>Approved</option>
-                                    <option value="paid" {{ $payroll->status === 'paid' ? 'selected' : '' }}>Paid</option>
-                                    <option value="cancelled" {{ $payroll->status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                                    <option value="reversed" {{ $payroll->status === 'reversed' ? 'selected' : '' }}>Reversed</option>
-                                </select>
-                                <button type="submit"
-                                    class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-                                    Update Status
-                                </button>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -207,6 +178,70 @@
                         @endif
                     </div>
                 </div>
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Actions</h3>
+                    <div class="flex flex-col sm:flex-row gap-4 items-end justify-end">
+                        <!-- Back to List -->
+                        <div class="flex-shrink-0">
+                            <a href="{{ route('payrolls.index') }}"
+                                class="px-5 py-2.5 bg-gray-500 text-white font-medium rounded-lg hover:bg-gray-600 transition-all flex items-center justify-center">
+                                Back to List
+                            </a>
+                        </div>
+
+                        <!-- Recalculate Button -->
+                        @if(in_array($payroll->status, ['draft', 'pending_approval']))
+                        <div class="flex-shrink-0">
+                            <form action="{{ route('payrolls.recalculate', $payroll) }}" method="POST">
+                                @csrf
+                                <button type="submit"
+                                    class="px-5 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-all flex items-center justify-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                    Recalculate Payroll
+                                </button>
+                            </form>
+                        </div>
+                        @endif
+
+                        <!-- Status Update Form -->
+                        <form action="{{ route('payrolls.update-status', $payroll) }}" method="POST" class="flex flex-col sm:flex-row gap-4 items-end">
+                            @csrf
+                            @method('PUT')
+
+                            <!-- Payment Date -->
+                            <div class="flex-shrink-0 w-full sm:w-40">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Payment Date</label>
+                                <input type="date" name="payment_date"
+                                    value="{{ old('payment_date', $payroll->payment_date ? \Carbon\Carbon::parse($payroll->payment_date)->format('Y-m-d') : now()->format('Y-m-d')) }}"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 transition-all">
+                            </div>
+
+                            <!-- Status -->
+                            <div class="flex-shrink-0 w-full sm:w-40">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Status</label>
+                                <select name="status" required
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 transition-all">
+                                    <option value="draft" {{ $payroll->status === 'draft' ? 'selected' : '' }}>Draft</option>
+                                    <option value="pending_approval" {{ $payroll->status === 'pending_approval' ? 'selected' : '' }}>Pending Approval</option>
+                                    <option value="approved" {{ $payroll->status === 'approved' ? 'selected' : '' }}>Approved</option>
+                                    <option value="paid" {{ $payroll->status === 'paid' ? 'selected' : '' }}>Paid</option>
+                                    <option value="cancelled" {{ $payroll->status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                    <option value="reversed" {{ $payroll->status === 'reversed' ? 'selected' : '' }}>Reversed</option>
+                                </select>
+                            </div>
+
+                            <!-- Save Button -->
+                            <div class="flex-shrink-0">
+                                <button type="submit"
+                                    class="px-6 py-2.5 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-all shadow-sm">
+                                    Save
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
 
             <!-- Right Column (1/3 width) -->
@@ -276,13 +311,6 @@
                     @endif
                 </div>
             </div>
-        </div>
-
-        <div class="flex justify-start space-x-3 pt-2">
-            <a href="{{ route('payrolls.index') }}"
-                class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">
-                Back to List
-            </a>
         </div>
     </div>
 

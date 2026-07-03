@@ -25,6 +25,7 @@ class PayrollRun extends Model
         'notes',
         'created_by',
         'updated_by',
+        'payment_date',
     ];
 
     /**
